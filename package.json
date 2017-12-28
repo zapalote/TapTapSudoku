@@ -1,0 +1,30 @@
+{
+	"name": "TapTapSudoku",
+	"version": "0.9.0",
+	"private": true,
+	"scripts": {
+		"start": "node node_modules/react-native/local-cli/cli.js start",
+		"test": "jest"
+	},
+	"dependencies": {
+		"lodash": "^4.17.4",
+		"prop-types": "^15.6.0",
+		"react": "^16.0.0",
+		"react-native": "^0.50.0",
+		"react-native-i18n": "^2.0.9"
+	},
+	"devDependencies": {
+		"babel-jest": "21.2.0",
+		"babel-preset-react-native": "4.0.0",
+		"jest": "21.2.1",
+		"react-test-renderer": "16.0.0"
+	},
+	"rnpm": {
+	    "assets": [
+		"./assets/fonts/"
+	    ]
+	},
+	"jest": {
+		"preset": "react-native"
+	}
+}
