@@ -10,8 +10,12 @@ const numbers = [1,2,3,4,5,6,7,8,9];
 
 class NumberPad extends Component {
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextProps.reset;
+  }
+
   render() {
-    const { pad, fillCount } = this.props;
+    const { pad } = this.props;
     return (
       <View style={styles.container} >
       {

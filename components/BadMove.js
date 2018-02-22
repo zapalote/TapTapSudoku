@@ -2,33 +2,28 @@
 
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, } from 'react-native';
+import { isNumber } from '../utils';
 
 class BadMove extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      errors: 0,
-    };
-  }
 
-  onErrorMove() {
+  state = {
+    errors: 0,
+  };
+
+  onBadMove() {
     this.setState({ errors: this.state.errors + 1 });
-    return this.state.errors;
   }
 
-  reset() {
+  reset(n) {
+    if(!isNumber(n)) n = 0;
     this.setState({
-      errors: 0,
+      errors: n,
     });
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return nextState != this.state;
-  }
-
-  formatBad() {
-    const { errors } = this.state;
-    if(errors == 0) return '0';
+  formatBad(errors) {
+    if(errors == 0 || errors > 4)
+      return errors.toString();
     let picto = "";
     for(let i=0; i < errors; i++){ picto += '✕'; }
     return picto;
@@ -36,8 +31,9 @@ class BadMove extends Component {
 
   render() {
     const { style } = this.props;
+    const { errors } = this.state;
     return (
-      <Text style={[styles.text, style]}>{'BAD '+this.formatBad()}</Text>
+      <Text style={[styles.text, style]}>{'BAD '+this.formatBad(errors)}</Text>
     );
   }
 }

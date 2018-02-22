@@ -23,16 +23,30 @@ class Board extends Component {
   state = {
     index: -1,
   }
-  puzzle = this.props.solve || this.props.puzzle
-  original = this.props.puzzle
-  cells = this.props.cells || []
-  hightlightNumber = null
-  hightlightIndex = null
-  inited = false
-  solved = false
+  grid = [];
+  cells = [];
+  puzzle = [];
+  hightlightNumber = null;
+  hightlightIndex = null;
+  inited = false;
+  solved = false;
+
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.grid || (!nextProps.reset && this.inited)) return;
+
+    this.setState({ index: -1 });
+    this.cells.forEach(x => x.reset());
+    this.grid = nextProps.grid;
+    this.initBoard();
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextProps.reset;
+  }
 
   onCellPress = (index, number, fixed) => {
     if (!this.inited || this.solved) return;
+
     if (isNumber(number)) {
       if (isNumber(this.hightlightIndex))
         this.cells[this.hightlightIndex].setHighlight(false);
@@ -46,7 +60,7 @@ class Board extends Component {
       return;
     }
     if (index != this.state.index) {
-      LayoutAnimation.easeInEaseOut();
+      //LayoutAnimation.easeInEaseOut();
       this.setState({ index });
     }
 
@@ -101,13 +115,13 @@ class Board extends Component {
       collision.forEach(i => this.cells[i].setHighlight(true));
       setTimeout(() => {
         collision.forEach(i => this.cells[i].setHighlight(false));
-      }, 300);
+      }, 400);
       this.props.onErrorMove && this.props.onErrorMove();
       return false;
     }
-    let nextPuzzle = this.puzzle.slice();
-    nextPuzzle[index] = number;
-    if (!sudoku.solvepuzzle(nextPuzzle)) {
+    let test = this.puzzle.slice();
+    test[index] = number;
+    if (!sudoku.solvepuzzle(test)) {
       // no collisions, still a bad move
       setTimeout(() => {
         this.props.onErrorMove && this.props.onErrorMove();
@@ -115,9 +129,10 @@ class Board extends Component {
       return false;
     }
 
-    this.cells[index].setNumber(number);
+    // lock the number
+    this.cells[index].setNumber(number, false);
     this.puzzle[index] = number;
-    // remove any hints
+    // remove any hints on the same grid, column or row
     this.cells.forEach((item, idx) => {
       if (item == null) return false;
       const pos = toXY(idx);
@@ -139,7 +154,9 @@ class Board extends Component {
     }
     // number solved
     if (this.puzzle.filter(x => x == number).length == 9) {
-      this.animateNumber(number);
+      this.puzzle.forEach((item, i) => {
+        if (item == number) this.cells[i].animate();
+      });
     }
     // game solved
     if (this.puzzle.filter(x => x != null).length == 81) {
@@ -150,7 +167,9 @@ class Board extends Component {
       });
       this.props.onFinish && this.props.onFinish();
       InteractionManager.runAfterInteractions(() => {
-        this.animateAll();
+        this.puzzle.forEach((item, i) => {
+          this.cells[i].animate();
+        });
       });
       return true;
     }
@@ -159,7 +178,7 @@ class Board extends Component {
     this.setHighlight(number, true);
     this.hightlightNumber = number;
 
-    if (index != this.state.index) return numberSolved;
+    if (index != this.state.index) return true;
     this.setState({
       index: -1,
     });
@@ -169,7 +188,9 @@ class Board extends Component {
 
   setHighlight(number, highlight) {
     this.puzzle.forEach((item, i) => {
-      if (item == number) this.cells[i].setHighlight(highlight);
+      if (isNumber(item) && item == number) {
+        this.cells[i].setHighlight(highlight);
+      }
     })
   }
 
@@ -178,40 +199,33 @@ class Board extends Component {
     this.solved = false;
     this.hightlightNumber = null;
     this.hightlightIndex = null;
+
     let count = 0;
-    const numberCount = this.puzzle.filter(x => x != null).length;
-    const gap = 150;
-    for (let i = 0; i < 81; i++) {
-      const number = this.puzzle[i];
-      if (isNumber(number)) {
-        count++;
-        setTimeout((count) => {
-          this.cells[i].setNumber(number, this.original[i] == this.puzzle[i]);
-          if (count == numberCount) {
-            setTimeout(() => {
-              this.inited = true;
-              this.props.onInit && this.props.onInit();
-            }, gap);
-          }
-        }, 50 * count, count);
-      }
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!nextProps.puzzle || this.original == nextProps.puzzle) {
-      this.forceUpdate();
-      return;
-    }
-    this.setState({ index: -1 });
-    this.cells.forEach(x => x.reset());
-    this.puzzle = nextProps.solve || nextProps.puzzle;
-    this.original = nextProps.puzzle;
-    this.initBoard();
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return nextState != this.state;
+    this.puzzle = new Array(81);
+    this.grid.forEach( (cell, idx) => {
+      count++;
+      let i = cell.idx;
+      setTimeout((count) => {
+        switch(cell.type){
+          case "F":
+            this.cells[i].setNumber(cell.n, true);
+            this.puzzle[i] = cell.n;
+            break;
+          case "N":
+            this.cells[i].setNumber(cell.n, false);
+            this.puzzle[i] = cell.n;
+            break;
+          case "H":
+            JSON.parse(cell.h).forEach((item) => {
+              if(isNumber(item))
+                this.cells[i].setHintNumber(item);
+            });
+            break;
+        }
+      }, 50 * count, count);
+    });
+    this.inited = true;
+    this.props.onInit && this.props.onInit();
   }
 
   animateRow(x) {
@@ -259,6 +273,7 @@ class Board extends Component {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
+    alignSelf: 'center',
     width: BoardWidth,
   },
   board: {

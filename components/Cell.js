@@ -18,13 +18,14 @@ import {
 } from './GlobalStyle';
 
 import Touchable from './Touchable';
+import { Store, isNumber } from '../utils';
 
 class Cell extends Component {
 
   state = {
     number: this.props.number,
     hints: [],
-    editing: false,
+    pencil: false,
     highlight: false,
     fixed: false,
     toggle: false,
@@ -43,12 +44,16 @@ class Cell extends Component {
 
   setNumber(number, fixed) {
     // lock number
-    if (!fixed) LayoutAnimation.easeInEaseOut();
+    if (fixed){
+      Store.setFixed(this.props.index, number);
+    } else {
+      Store.setNumber(this.props.index, number);
+    }
     this.setState({
       number,
-      hints: [],
       fixed,
-      editing: false,
+      hints: [],
+      pencil: false,
     });
   }
 
@@ -58,9 +63,10 @@ class Cell extends Component {
     if (hints.length == 6) hints.shift();
     if (hints.includes(number)) hints = hints.filter(x => x != number);
     else hints.push(number);
+    Store.setHint(this.props.index, hints);
     this.setState({
       hints,
-      editing: true,
+      pencil: true,
     });
   }
 
@@ -69,6 +75,7 @@ class Cell extends Component {
     let hints = this.state.hints;
     if (hints.includes(number)) {
       hints = hints.filter(x => x != number);
+      Store.setHint(this.props.index, hints);
       this.setState({
         hints,
       });
@@ -80,7 +87,7 @@ class Cell extends Component {
     this.setState({
       number: this.props.number,
       hints: [],
-      editing: false,
+      pencil: false,
       highlight: false,
       fixed: false,
       toggle: false,
@@ -108,7 +115,7 @@ class Cell extends Component {
   }
 
   render() {
-    const { number, fixed, highlight, editing, hints, toggle } = this.state;
+    const { number, fixed, highlight, pencil, hints, toggle } = this.state;
     const rotate = this.state.anim.interpolate({
       inputRange: [0, 1],
       outputRange: ['0deg', '360deg'],
@@ -125,8 +132,8 @@ class Cell extends Component {
     return (
       <Animated.View style={[styles.cell, filled&&styles.filledCell, fixed&&styles.fixedCell,
         highlight&&styles.highlightCell, {transform, zIndex}]}>
-        {editing?
-          <Text style={[styles.text, styles.editingText]} >{hint}</Text>:
+        {pencil?
+          <Text style={[styles.text, styles.pencilText]} >{hint}</Text>:
           <Text style={[styles.text, fixed&&styles.fixedText, highlight&&styles.highlightText]}>{text}</Text>
         }
         <Touchable activeOpacity={fixed?1:0.8} onPress={this.onPress} style={styles.handle} />
@@ -159,7 +166,7 @@ const styles = StyleSheet.create({
     fontSize: CellSize * 2 / 3,
     fontFamily: 'HelveticaNeue',
   },
-  editingText: {
+  pencilText: {
     textAlign: 'center',
     textAlignVertical: 'center',
     color: 'darkturquoise',

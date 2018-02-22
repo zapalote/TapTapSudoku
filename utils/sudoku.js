@@ -96,7 +96,7 @@ function solveboard(original) {
 }
 
 function solvenext(remembered) {
-    while (remembered.length > 0) {
+  while (remembered.length > 0) {
     	var tuple1 = remembered.pop();
 
     	if (tuple1.count >= tuple1.guesses.length) {

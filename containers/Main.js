@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import {
-  Size, CellSize, BoardWidth, BorderWidth, Board, Timer, Touchable, NumberPad, Circular,
+  Size, CellSize, BoardWidth, BorderWidth, Board, Timer, Touchable, NumberPad, Circular, BadMove,
 } from '../components';
 import { Store, sudoku, isNumber, I18n, } from '../utils';
 
@@ -18,40 +18,39 @@ function formatLevel(level) {
   return picto;
 }
 
-function formatBad(errors) {
-  if(errors == 0 || errors > 4)
-    return errors.toString();
-  let picto = "";
-  for(let i=0; i < errors; i++){ picto += '✕'; }
-  return picto;
-}
-
 class Main extends Component {
   state = {
     appState: AppState.currentState,
-    puzzle: null,
+    grid: null,
     playing: false,
-    initing: false,
     showModal: false,
     showHelp: false,
     showAbout: false,
-    error: 0,
+    updateboard: true,
     topMargin: 18,
   }
-  puzzle = null
-  solve = null
-  difficulty = -1
-  elapsed = null
-  fromStore = false
-  records = []
+  difficulty = 0;
+  elapsed = null;
+  error = 0;
+  records = [];
+  updatepad= false;
   pad = new Array(9).fill(0);
+  fromStore = false;
 
   handleAppStateChange = (nextAppState) => {
-    if (nextAppState.match(/background|inactive/)) {
-      this.saveToStore();
-    } else if (nextAppState === 'active') {
-      this.onShowModal();
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+      this.loadBoardFromStore();
     }
+    if (nextAppState === 'active'){
+      this.setState({
+        showModal: true,
+      });
+    } else {
+      this.elapsed = this.timer.pause();
+      Store.set('elapsed', this.elapsed);
+    }
+
+    this.setState({appState: nextAppState});
   }
 
   shouldComponentUpdate(nextProps, nextState){
@@ -62,22 +61,8 @@ class Main extends Component {
     AppState.addEventListener('change', this.handleAppStateChange);
 
     this.records = await Store.get('records') || [];
-    const puzzle = await Store.get('puzzle');
-    let badmoves = 0;
-    if (puzzle) {
-      this.puzzle = puzzle.slice();
-      this.fromStore = true;
-      this.solve = await Store.get('solve');
-      this.resetPad( (this.solve)? this.solve : this.puzzle );
-      this.elapsed = await Store.get('elapsed');
-      badmoves = await Store.get('error') || 0;
-    } else {
-      //this.puzzle = sudoku.makepuzzle();
-      this.puzzle = this.newPuzzle();
-    }
     this.setState({
       showModal: true,
-      error: badmoves,
     });
   }
 
@@ -85,57 +70,71 @@ class Main extends Component {
     AppState.removeEventListener('change', this.handleAppStateChange);
   }
 
-  resetPad(puzzle){
+  async loadBoardFromStore(){
     this.pad.fill(0);
-    for (let i = 0; i < 81; i++) {
-      if(isNumber(puzzle[i])) this.pad[puzzle[i]]++;
-    }
+    let grid = await Store.getBoardCells();
+    if(!grid || grid.length == 0) {
+      grid = newGrid();
+    } else this.fromStore = true;
+
+    let elapsed = await Store.get('elapsed') || 0;
+    this.timer.setElapsed(elapsed);
+    this.error = await Store.get('error') || 0;
+    this.setState({
+      grid,
+      updateboard: true,
+      showModal: true,
+      showHelp: false,
+      showAbout: false,
+    }, () => {
+      this.setPad();
+      this.bad.reset(this.error);
+    });
   }
 
-  newPuzzle = () => {
-    const puzzle, d;
-    do {
-      puzzle = sudoku.makepuzzle();
-      d = sudoku.ratepuzzle(puzzle, 4);
-    } while(d > 3);
-    return puzzle;
-  }
-  saveToStore = () => {
-    if (this.state.initing) return;
-    if (this.puzzle) Store.set('puzzle', this.puzzle);
-    if (this.solve) Store.set('solve', this.solve);
-    Store.set('error', this.state.error);
-    this.elapsed = this.timer.pause();
-    if (this.elapsed) Store.set('elapsed', this.elapsed);
+  setPad(){
+    const { grid } = this.state;
+    if(!grid) return;
+    this.pad.fill(0);
+    grid.forEach( (cell, idx) => {
+      if(isNumber(cell.n))
+        this.pad[cell.n]++;
+    });
+    this.updatepad = true;
   }
 
   onInit = () => {
     this.setState({
-      initing: false,
       playing: true,
+      updateboard: false,
       showModal: false,
       showHelp: false,
-      error: 0
     }, () => {
-      this.timer.start();
+      if(this.fromStore){
+        this.fromStore = false;
+        this.timer.resume();
+      } else {
+        this.timer.start();
+        this.error = 0;
+        this.bad.reset();
+      }
+      this.updatepad = false;
     });
   }
 
   onErrorMove = () => {
     Vibration.vibrate();
-    this.setState({
-      error: this.state.error + 1,
-    });
+    this.bad.onBadMove();
+    this.error++;
+    Store.set('error', this.error);
   }
 
   onFinish = () => {
     this.setState({
       playing: false,
     });
-    Store.multiRemove('puzzle', 'solve', 'error', 'elapsed');
+    Store.removeBoard();
     this.elapsed = null;
-    this.solve = null;
-    this.fromStore = false;
     const elapsed = this.timer.stop();
     if (!this.records.includes(elapsed)) {
       this.records.push(elapsed);
@@ -157,66 +156,72 @@ class Main extends Component {
   onResume = () => {
     this.setState({
       showModal: false,
-      showHelp: false,
+    }, () => {
+      this.updatepad = false;
+      this.timer.resume();
     });
-    if (this.fromStore) {
-      this.timer.setElapsed(this.elapsed);
-      this.setState({
-        puzzle: this.puzzle,
-        initing: true,
-      });
-      this.resetPad(this.puzzle);
-      this.fromStore = false;
-    }
-    this.timer.resume();
   }
 
   onRestart = () => {
     this.elapsed = null;
-    this.solve = null;
-    this.fromStore = false;
     this.timer.reset();
-    Store.multiRemove('solve', 'error', 'elapsed');
+    Store.removeBoard();
+    let grid = [];
+    this.state.grid.forEach( (cell, idx) => {
+      if(cell.type == 'F') grid[idx] = this.state.grid[idx];
+    });
     this.setState({
-      puzzle: this.puzzle.slice(),
-      initing: true,
+      grid,
+      updateboard: true,
       playing: false,
       showModal: false,
-      error: 0,
+    }, () => {
+      this.error = 0;
+      this.bad.reset();
+      this.setPad();
     });
-    this.resetPad(this.puzzle);
+  }
+
+  newGrid = () => {
+    let puzzle = [];
+    let d = 0;
+    do {
+      puzzle = sudoku.makepuzzle();
+      d = sudoku.ratepuzzle(puzzle, 4);
+    } while(d > 3);
+    this.difficulty = d;
+
+    let grid = [];
+    for (let i = 0; i < 81; i++) {
+      let number = puzzle[i];
+      if(isNumber(number))
+        grid[i] = { idx: i, type: 'F', n: number };
+    }
+    return grid;
   }
 
   onCreate = () => {
     this.elapsed = null;
-    this.solve = null;
-    this.fromStore = false;
     this.timer.reset();
-    //let puzzle = sudoku.makepuzzle();
-    let puzzle = this.newPuzzle();
+    Store.removeBoard();
+    let grid = this.newGrid();
     this.setState({
-      puzzle,
-      initing: true,
+      grid,
+      updateboard: true,
       playing: false,
       showModal: false,
-      showHelp: false,
-      error: 0,
-    }, async() => {
-      await Store.multiRemove('puzzle', 'solve', 'error', 'elapsed');
-      this.puzzle = puzzle.slice();
-      Store.set('puzzle', this.puzzle);
+    }, () => {
+      this.error = 0;
+      this.bad.reset();
+      this.setPad();
     });
-    this.difficulty = -1;
-    this.resetPad(puzzle);
   }
 
   onShowModal = () => {
-    if (!this.state.initing) {
-      this.saveToStore();
-    }
+    this.elapsed = this.timer.pause();
+    Store.set('elapsed', this.elapsed);
     this.setState({
       showModal: true,
-      showHelp: false,
     });
   }
 
@@ -228,13 +233,8 @@ class Main extends Component {
   }
 
   onShowHelp = () => {
-    if (!this.state.initing) {
-      this.saveToStore();
-    }
-    if(this.state.showModal)
-      this.setState({
-        showModal: false,
-      });
+    this.elapsed = this.timer.pause();
+    Store.set('elapsed', this.elapsed);
     this.setState({
       showHelp: true,
     });
@@ -258,8 +258,10 @@ class Main extends Component {
   }
 
   showInfo = () => {
-    const { error } = this.state;
-    const msg = '\n'+I18n.t('difficulty')+formatLevel(this.difficulty)+'\n'+I18n.t('errors')+formatBad(error)+'\n';
+    const fs = (this.fromStore)? ' from store ' : ' new game ';
+    const formatTime = Timer.formatTime;
+    const rs = (this.records[0])? ' record so far: '+formatTime(this.records[0]) : ' ';
+    const msg = '\n'+I18n.t('difficulty')+formatLevel(this.difficulty)+'\n'+fs+'\n'+rs+'\n';
     setTimeout(() => {
       Alert.alert(I18n.t('Info'), msg, [
         { text: I18n.t('ok') }, {},
@@ -293,14 +295,12 @@ class Main extends Component {
   }
 
   render() {
-    const { puzzle, playing, initing, showModal, showHelp, showAbout, error } = this.state;
-    const disabled = !playing && !this.fromStore;
-    if(this.difficulty < 0) this.difficulty = sudoku.ratepuzzle(puzzle, 4);
-    if (puzzle && !this.solve) this.solve = puzzle.slice();
+    const { grid, playing, showModal, showHelp, showAbout, updateboard } = this.state;
+    const disabled = !playing;
 
     return (
       <View style={[styles.container, this.getTopMargin()]} onLayout={this.onLayoutEvent} >
-          <Board puzzle={puzzle} solve={this.solve} ref={ref => this.board = ref}
+          <Board grid={grid} ref={ref => this.board = ref} reset={updateboard}
             onInit={this.onInit} onErrorMove={this.onErrorMove} onFinish={this.onFinish} />
 
           <View style={styles.box}>
@@ -308,7 +308,7 @@ class Main extends Component {
               <Timer ref={ref => this.timer = ref} style={styles.timer} />
               <Touchable onPress={this.showInfo} >
                 <View style={styles.info}>
-                  <Text style={[styles.bad, styles.level]}>{'BAD '+formatBad(error)}</Text>
+                  <BadMove style={styles.level} ref={ref => this.bad = ref}  />
                 </View>
               </Touchable>
               <View style={styles.buttonBox} >
@@ -320,7 +320,7 @@ class Main extends Component {
                 </Touchable>
               </View>
             </View>
-            <NumberPad board={this.board} pad={this.pad} reset={initing} />
+            <NumberPad board={this.board} pad={this.pad} reset={this.updatepad} />
           </View>
 
         <Modal animationType='fade' visible={showHelp} transparent={true} onRequestClose={this.onCloseHelp} >
@@ -338,7 +338,7 @@ class Main extends Component {
 
         <Modal animationType='fade' visible={showModal} transparent={true} onRequestClose={this.onCloseModal} >
           <View style={styles.modal} >
-            <View style={[styles.modalContainer]} >
+            <View style={styles.modalContainer} >
               <Image style={styles.logo} source={require('../images/tap-tap-sudoku.png')} />
               <Touchable disabled={disabled} style={styles.button} onPress={this.onResume} >
                 <Image style={[styles.buttonMenu, disabled && styles.disabled]} source={require('../images/continue.png')} />
@@ -382,8 +382,8 @@ class Main extends Component {
 const styles = StyleSheet.create({
   container: {
     marginTop:18,
-    justifyContent: 'flex-start',
     flexDirection:'row',
+    justifyContent: 'flex-start',
     flexWrap: 'wrap',
     backgroundColor: '#fff',
   },
@@ -440,6 +440,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
+    alignItems: 'center',
     justifyContent: 'center',
   },
   disabled: {
@@ -447,7 +448,6 @@ const styles = StyleSheet.create({
   },
   help: {
     marginTop: CellSize,
-    marginLeft: CellSize * 1.5,
     width: CellSize * 7,
     height: BoardWidth * 1.2,
   },
@@ -464,9 +464,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    width: 250,
-    height: 250,
-    marginLeft: CellSize * 1.5,
+    width: CellSize * 6.5,
+    height: CellSize * 6.5,
     marginBottom: CellSize * 0.5,
     padding: Size.height > 500 ? 30 : 15,
   },

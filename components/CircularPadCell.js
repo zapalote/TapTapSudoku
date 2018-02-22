@@ -50,11 +50,12 @@ class CircularPadCell extends Component {
     if( taps > 0 && dt < delay) {
       // there were two taps in short sequence
       this.timeout && clearTimeout(this.timeout);
-      if(this.props.board.onPadPress(number, false))
+      if(this.props.board.onPadPress(number, false)){
         this.setState({
           count: this.state.count + 1,
         });
-      this.forceUpdate();
+      }
+      //this.forceUpdate();
     } else if (taps < 0) {
       // after the delay there was only one tap
       this.props.board.onPadPress(number, true);
@@ -77,9 +78,10 @@ class CircularPadCell extends Component {
 
   render() {
     const { number } = this.props;
-    const fill = (this.state.count) * 11.12;
+    const { count } = this.state;
+    const fill = count * 11.12;
     const stroke = Diam / 9;
-    const disabled = this.state.count == 9;
+    const disabled = count == 9;
     return (
       <Touchable>
         <Circular size={Diam} width={stroke} fill={fill} rotation={45}

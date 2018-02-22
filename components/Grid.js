@@ -10,10 +10,6 @@ const line = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 class Grid extends Component {
   cells = []
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return nextState != this.state;
-  }
-
   render() {
     return (
       <View style={styles.container} >

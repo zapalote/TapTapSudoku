@@ -15,7 +15,7 @@ export default class Circular extends React.Component {
     return p;
   }
 
-  extractFill(fill) {
+  normalize(fill) {
     if (fill < 0.01) {
       return 0;
     } else if (fill > 100) {
@@ -29,7 +29,7 @@ export default class Circular extends React.Component {
     const { size, width, tintColor, backgroundColor, style, rotation, linecap, children } = this.props;
     const backgroundPath = this.circlePath(size / 2, size / 2, size / 2 - width / 2, 0, 360 * .9999);
 
-    const fill = this.extractFill(this.props.fill);
+    const fill = this.normalize(this.props.fill);
     const opacity = 1; //(fill == 0)? 1 : 1.0 - fill/100;
     const circlePath = this.circlePath(size / 2, size / 2, size / 2 - width / 2, 0, (360 * .9999) * fill / 100);
 
