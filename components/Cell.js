@@ -44,11 +44,6 @@ class Cell extends Component {
 
   setNumber(number, fixed) {
     // lock number
-    if (fixed){
-      Store.setFixed(this.props.index, number);
-    } else {
-      Store.setNumber(this.props.index, number);
-    }
     this.setState({
       number,
       fixed,
@@ -63,11 +58,11 @@ class Cell extends Component {
     if (hints.length == 6) hints.shift();
     if (hints.includes(number)) hints = hints.filter(x => x != number);
     else hints.push(number);
-    Store.setHint(this.props.index, hints);
     this.setState({
       hints,
       pencil: true,
     });
+    return hints;
   }
 
   removeHint(number) {
@@ -75,11 +70,11 @@ class Cell extends Component {
     let hints = this.state.hints;
     if (hints.includes(number)) {
       hints = hints.filter(x => x != number);
-      Store.setHint(this.props.index, hints);
       this.setState({
         hints,
       });
     }
+    return hints;
   }
 
   reset() {

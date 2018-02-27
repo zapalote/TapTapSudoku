@@ -1,4 +1,4 @@
-package com.taptapsudoku;
+package com.zapalote.taptapsudoku;
 
 import com.facebook.react.ReactActivity;
 

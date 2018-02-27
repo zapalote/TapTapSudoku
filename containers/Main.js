@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 
 import {
   LayoutAnimation, StyleSheet, AppState, Platform, Linking, Share, Vibration, Modal, Image,
-  Alert, View, Text, Dimensions,
+  Alert, View, Text, Dimensions, StatusBar,
 } from 'react-native';
 
 import {
@@ -21,7 +21,7 @@ function formatLevel(level) {
 class Main extends Component {
   state = {
     appState: AppState.currentState,
-    grid: null,
+    game: null,
     playing: false,
     showModal: false,
     showHelp: false,
@@ -36,6 +36,10 @@ class Main extends Component {
   updatepad= false;
   pad = new Array(9).fill(0);
   fromStore = false;
+
+  componentWillMount(){
+    StatusBar.setHidden(true);
+  }
 
   handleAppStateChange = (nextAppState) => {
     if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
@@ -72,16 +76,16 @@ class Main extends Component {
 
   async loadBoardFromStore(){
     this.pad.fill(0);
-    let grid = await Store.getBoardCells();
-    if(!grid || grid.length == 0) {
-      grid = newGrid();
+    let game = await Store.get('board');
+    if(!game || game.length == 0) {
+      game = newGrid();
     } else this.fromStore = true;
 
     let elapsed = await Store.get('elapsed') || 0;
     this.timer.setElapsed(elapsed);
     this.error = await Store.get('error') || 0;
     this.setState({
-      grid,
+      game,
       updateboard: true,
       showModal: true,
       showHelp: false,
@@ -93,11 +97,11 @@ class Main extends Component {
   }
 
   setPad(){
-    const { grid } = this.state;
-    if(!grid) return;
+    const { game } = this.state;
+    if(!game) return;
     this.pad.fill(0);
-    grid.forEach( (cell, idx) => {
-      if(isNumber(cell.n))
+    game.forEach( (cell, idx) => {
+      if(cell && isNumber(cell.n))
         this.pad[cell.n]++;
     });
     this.updatepad = true;
@@ -133,7 +137,7 @@ class Main extends Component {
     this.setState({
       playing: false,
     });
-    Store.removeBoard();
+    Store.remove('board');
     this.elapsed = null;
     const elapsed = this.timer.stop();
     if (!this.records.includes(elapsed)) {
@@ -165,13 +169,12 @@ class Main extends Component {
   onRestart = () => {
     this.elapsed = null;
     this.timer.reset();
-    Store.removeBoard();
-    let grid = [];
-    this.state.grid.forEach( (cell, idx) => {
-      if(cell.type == 'F') grid[idx] = this.state.grid[idx];
+    let game = [];
+    this.state.game.forEach( (cell, idx) => {
+      if(cell && cell.type == 'F') game[idx] = this.state.game[idx];
     });
     this.setState({
-      grid,
+      game,
       updateboard: true,
       playing: false,
       showModal: false,
@@ -180,6 +183,7 @@ class Main extends Component {
       this.bad.reset();
       this.setPad();
     });
+    Store.set('board', game);
   }
 
   newGrid = () => {
@@ -191,22 +195,22 @@ class Main extends Component {
     } while(d > 3);
     this.difficulty = d;
 
-    let grid = [];
+    let game = [];
     for (let i = 0; i < 81; i++) {
       let number = puzzle[i];
       if(isNumber(number))
-        grid[i] = { idx: i, type: 'F', n: number };
+        game[i] = { idx: i, type: 'F', n: number };
     }
-    return grid;
+    Store.set('board', game);
+    return game;
   }
 
   onCreate = () => {
     this.elapsed = null;
     this.timer.reset();
-    Store.removeBoard();
-    let grid = this.newGrid();
+    let game = this.newGrid();
     this.setState({
-      grid,
+      game,
       updateboard: true,
       playing: false,
       showModal: false,
@@ -258,10 +262,9 @@ class Main extends Component {
   }
 
   showInfo = () => {
-    const fs = (this.fromStore)? ' from store ' : ' new game ';
     const formatTime = Timer.formatTime;
     const rs = (this.records[0])? ' record so far: '+formatTime(this.records[0]) : ' ';
-    const msg = '\n'+I18n.t('difficulty')+formatLevel(this.difficulty)+'\n'+fs+'\n'+rs+'\n';
+    const msg = '\n'+I18n.t('difficulty')+formatLevel(this.difficulty)+'\n'+rs+'\n';
     setTimeout(() => {
       Alert.alert(I18n.t('Info'), msg, [
         { text: I18n.t('ok') }, {},
@@ -295,12 +298,12 @@ class Main extends Component {
   }
 
   render() {
-    const { grid, playing, showModal, showHelp, showAbout, updateboard } = this.state;
+    const { game, playing, showModal, showHelp, showAbout, updateboard } = this.state;
     const disabled = !playing;
 
     return (
       <View style={[styles.container, this.getTopMargin()]} onLayout={this.onLayoutEvent} >
-          <Board grid={grid} ref={ref => this.board = ref} reset={updateboard}
+          <Board game={game} ref={ref => this.board = ref} reset={updateboard}
             onInit={this.onInit} onErrorMove={this.onErrorMove} onFinish={this.onFinish} />
 
           <View style={styles.box}>
