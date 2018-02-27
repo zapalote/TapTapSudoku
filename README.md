@@ -27,7 +27,11 @@ Clone this repo. Then create an empty app with create-react-native-app. Copy all
 ## play
 
 You can find TapTapSudoku at
+
 [Apple Store](https://itunes.apple.com/us/app/taptapsudoku/id1320628951?mt=8)
+
+and
+
 [Google Play](https://play.google.com/store/apps/details?id=com.zapalote.taptapsudoku)
 
 ## Contributing
