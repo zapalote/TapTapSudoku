@@ -41,7 +41,7 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
-# BUCK
+# BUCK/keys
 buck-out/
 \.buckd/
 *.keystore

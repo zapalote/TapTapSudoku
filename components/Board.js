@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { InteractionManager, LayoutAnimation, StyleSheet, Platform, Dimensions, View, Alert } from 'react-native';
 import { Size, CellSize, BoardWidth, BorderWidth } from './GlobalStyle';
 import Grid from './Grid';
-import { sudoku, isNumber } from '../utils';
+import { sudoku, isNumber, Store } from '../utils';
 
 const line = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
@@ -23,7 +23,7 @@ class Board extends Component {
   state = {
     index: -1,
   }
-  grid = [];
+  game = [];
   cells = [];
   puzzle = [];
   hightlightNumber = null;
@@ -32,16 +32,29 @@ class Board extends Component {
   solved = false;
 
   componentWillReceiveProps(nextProps) {
-    if (!nextProps.grid || (!nextProps.reset && this.inited)) return;
+    if (!nextProps.game || (!nextProps.reset && this.inited)) return;
 
     this.setState({ index: -1 });
     this.cells.forEach(x => x.reset());
-    this.grid = nextProps.grid;
+    this.game = nextProps.game;
     this.initBoard();
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     return nextProps.reset;
+  }
+
+  updateGame(type, index, number, hints){
+    switch(type){
+      case 'N':
+      case 'F':
+        this.game[index] = { idx:index, n:number, type:type };
+        break;
+      case 'H':
+        this.game[index] =  { idx:index, h:JSON.stringify(hints.slice()), type:type };
+        break;
+    }
+    Store.set('board', this.game);
   }
 
   onCellPress = (index, number, fixed) => {
@@ -95,7 +108,8 @@ class Board extends Component {
 
     if (edit) {
       // single tap, pencil the number
-      this.cells[index].setHintNumber(number);
+      let hints = this.cells[index].setHintNumber(number);
+      this.updateGame('H', index, null, hints);
       return false;
     }
 
@@ -132,12 +146,17 @@ class Board extends Component {
     // lock the number
     this.cells[index].setNumber(number, false);
     this.puzzle[index] = number;
+    this.updateGame('N', index, number);
+
     // remove any hints on the same grid, column or row
     this.cells.forEach((item, idx) => {
       if (item == null) return false;
       const pos = toXY(idx);
-      if (pos.x == x || pos.y == y || toZ(idx) == z)
-        this.cells[idx].removeHint(number);
+      if (pos.x == x || pos.y == y || toZ(idx) == z){
+        let hints = this.cells[idx].removeHint(number);
+        if(this.game[idx] && this.game[idx].type == 'H')
+          this.updateGame('H', idx, null, hints);
+      }
     });
 
     // grid solved
@@ -202,7 +221,8 @@ class Board extends Component {
 
     let count = 0;
     this.puzzle = new Array(81);
-    this.grid.forEach( (cell, idx) => {
+    this.game.forEach( (cell, idx) => {
+      if(!cell) return;
       count++;
       let i = cell.idx;
       setTimeout((count) => {
@@ -217,7 +237,7 @@ class Board extends Component {
             break;
           case "H":
             JSON.parse(cell.h).forEach((item) => {
-              if(isNumber(item))
+              if(item && isNumber(item))
                 this.cells[i].setHintNumber(item);
             });
             break;

@@ -22,6 +22,7 @@ class Timer extends Component {
   static formatTime = formatTime
   startTime = null
   lastElapsed = 0
+  iconizeable = false;
 
   start() {
     this.setState({
@@ -90,15 +91,19 @@ class Timer extends Component {
     return nextState != this.state;
   }
 
+  componentWillReceiveProps(nextProps){
+    if(nextProps.iconizeable) this.iconizeable = nextProps.iconizeable;
+  }
+
   render() {
     const { elapsed, disabled, iconized } = this.state;
     const { style, disabledStyle } = this.props;
     // U+023F1
     return (
-      <Touchable onPress={() => this.setState({iconized: !iconized}) } >
-      <Text style={[styles.text, style, disabled && disabledStyle]}>
-        {iconized? '\u23f1' : formatTime(elapsed) }
-      </Text>
+      <Touchable onPress={() => { this.iconizeable && this.setState({iconized: !iconized}) } } >
+        <Text style={[styles.text, style, disabled && disabledStyle]}>
+          {iconized? '\u23f1' : formatTime(elapsed) }
+        </Text>
       </Touchable>
     );
   }
