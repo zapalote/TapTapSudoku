@@ -36,6 +36,7 @@ class Main extends Component {
   updatepad= false;
   pad = new Array(9).fill(0);
   fromStore = false;
+  TEST = false;
 
   componentWillMount(){
     StatusBar.setHidden(true);
@@ -192,7 +193,7 @@ class Main extends Component {
     do {
       puzzle = sudoku.makepuzzle();
       d = sudoku.ratepuzzle(puzzle, 4);
-    } while(d > 3);
+    } while(d > 3 && this.TEST);
     this.difficulty = d;
 
     let game = [];
