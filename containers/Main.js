@@ -254,7 +254,7 @@ class Main extends Component {
 
   onRate = () => {
     const link = Platform.OS == 'android' ?
-      'https://play.google.com/store/apps/details?id=com.zapalote.TapTapSudoku' :
+      'https://play.google.com/store/apps/details?id=com.zapalote.taptapsudoku' :
       'itms-apps://itunes.apple.com/us/app/taptapsudoku/id1320628951?mt=8';
     Alert.alert(I18n.t('rate'), I18n.t('ratemessage'), [
       { text: I18n.t('notnow') },

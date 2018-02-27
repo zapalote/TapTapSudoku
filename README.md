@@ -24,6 +24,12 @@ Install node, react-native, react-native-cli
 
 Clone this repo. Then create an empty app with create-react-native-app. Copy all the source files to the empty skeleton. Then solve all dependencies. Sorry. I couldn't find an easier way.
 
+## play
+
+You can find TapTapSudoku at
+[Apple Store](https://itunes.apple.com/us/app/taptapsudoku/id1320628951?mt=8)
+[Google Play](https://play.google.com/store/apps/details?id=com.zapalote.taptapsudoku)
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
