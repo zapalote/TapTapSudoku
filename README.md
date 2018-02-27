@@ -12,7 +12,7 @@ No rankings, no competitions. It's just you solving a game.
 
 Install node, react-native, react-native-cli
 
-## dependencies
+## Dependencies
 
 ```
 "react": "^16.0.0",
@@ -20,11 +20,11 @@ Install node, react-native, react-native-cli
 "react-native-i18n": "^2.0.9"
 ```
 
-## build
+## Build
 
 Clone this repo. Then create an empty app with create-react-native-app. Copy all the source files to the empty skeleton. Then solve all dependencies. Sorry. I couldn't find an easier way.
 
-## play
+## Play
 
 You can find TapTapSudoku at
 
