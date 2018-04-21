@@ -192,6 +192,7 @@ class Board extends Component {
       });
       return true;
     }
+    // cell solved
     if (isNumber(this.hightlightNumber))
       this.setHighlight(this.hightlightNumber, false);
     this.setHighlight(number, true);
@@ -237,7 +238,7 @@ class Board extends Component {
             break;
           case "H":
             JSON.parse(cell.h).forEach((item) => {
-              if(item && isNumber(item))
+              if(isNumber(item))
                 this.cells[i].setHintNumber(item);
             });
             break;

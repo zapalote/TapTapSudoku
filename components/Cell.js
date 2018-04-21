@@ -55,9 +55,12 @@ class Cell extends Component {
   setHintNumber(number) {
     // pencil number or toggle
     let hints = this.state.hints;
-    if (hints.length == 6) hints.shift();
     if (hints.includes(number)) hints = hints.filter(x => x != number);
-    else hints.push(number);
+    else {
+      if (hints.length == 6) hints.shift();
+      hints.push(number);
+      hints.sort((a, b) => a - b);
+    }
     this.setState({
       hints,
       pencil: true,
