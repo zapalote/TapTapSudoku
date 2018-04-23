@@ -14,15 +14,21 @@ Install node, react-native, react-native-cli
 
 ## Dependencies
 
+See also package.json.
 ```
-"react": "^16.0.0",
-"react-native": "^0.50.0",
-"react-native-i18n": "^2.0.9"
+"react": "16.0.0",
+"react-native": "0.50.0",
+"react-native-i18n": "2.0.9"
 ```
 
 ## Build
 
-Clone this repo. Then create an empty app with create-react-native-app. Copy all the source files to the empty skeleton. Then solve all dependencies. Sorry. I couldn't find an easier way.
+Clone this repo.
+```
+npm install
+react-native link
+react-native run-ios or react-native run-android.
+```
 
 ## Play
 
