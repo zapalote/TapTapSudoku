@@ -27,6 +27,7 @@ class Cell extends Component {
     hints: [],
     pencil: false,
     highlight: false,
+    glow: false,
     fixed: false,
     toggle: false,
     anim: new Animated.Value(0),
@@ -39,6 +40,12 @@ class Cell extends Component {
   setHighlight(highlight) {
     this.setState({
       highlight: highlight,
+    });
+  }
+
+  setGlow(glow) {
+    this.setState({
+      glow: glow,
     });
   }
 
@@ -113,7 +120,7 @@ class Cell extends Component {
   }
 
   render() {
-    const { number, fixed, highlight, pencil, hints, toggle } = this.state;
+    const { number, fixed, highlight, glow, pencil, hints, toggle } = this.state;
     const rotate = this.state.anim.interpolate({
       inputRange: [0, 1],
       outputRange: ['0deg', '360deg'],
@@ -127,12 +134,17 @@ class Cell extends Component {
     const filled = typeof(number) == 'number';
     const text = filled ? (number + 1) : '';
     const hint = hints.map(x => x + 1).join('');
+
+    let styleArray = [styles.text, fixed&&styles.fixedText, highlight&&styles.highlightText];
+    if(glow){
+      styleArray = [styles.text, styles.glowText, fixed&&styles.fixedText];
+    }
     return (
       <Animated.View style={[styles.cell, filled&&styles.filledCell, fixed&&styles.fixedCell,
         highlight&&styles.highlightCell, {transform, zIndex}]}>
         {pencil?
           <Text style={[styles.text, styles.pencilText]} >{hint}</Text>:
-          <Text style={[styles.text, fixed&&styles.fixedText, highlight&&styles.highlightText]}>{text}</Text>
+          <Text style={styleArray}>{text}</Text>
         }
         <Touchable activeOpacity={fixed?1:0.8} onPress={this.onPress} style={styles.handle} />
       </Animated.View>
@@ -195,6 +207,10 @@ const styles = StyleSheet.create({
   },
   highlightText: {
     color: '#c90',
+  },
+  glowText: {
+    //color: 'aqua',
+    fontWeight: 'bold',
   },
 });
 

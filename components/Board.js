@@ -27,6 +27,8 @@ class Board extends Component {
   cells = [];
   puzzle = [];
   hightlightNumber = null;
+  glowNumber = null;
+  glowTimeout = null;
   hightlightIndex = null;
   inited = false;
   solved = false;
@@ -94,6 +96,7 @@ class Board extends Component {
 
     if (index == -1) {
       // no cell selected
+      // highlight number
       if (isNumber(this.hightlightNumber)) {
         this.setHighlight(this.hightlightNumber, false);
         if (this.hightlightNumber == number) {
@@ -103,12 +106,17 @@ class Board extends Component {
       }
       this.setHighlight(number, true);
       this.hightlightNumber = number;
+
       return false;
     }
 
     if (edit) {
       // single tap, pencil the number
       let hints = this.cells[index].setHintNumber(number);
+      if(isNumber(this.glowNumber) && this.glowNumber != number){
+        this.setGlow(this.glowNumber, false);
+      }
+      this.setGlow(number, true);
       this.updateGame('H', index, null, hints);
       return false;
     }
@@ -211,7 +219,24 @@ class Board extends Component {
       if (isNumber(item) && item == number) {
         this.cells[i].setHighlight(highlight);
       }
-    })
+    });
+  }
+
+  setGlow(number, glow) {
+    this.puzzle.forEach((item, i) => {
+      if (isNumber(item) && item == number) {
+        this.cells[i].setGlow(glow);
+      }
+    });
+    clearTimeout(this.glowTimeout);
+    if(glow){
+      this.glowNumber = number;
+      this.glowTimeout = setTimeout(() => {
+        this.setGlow(number, false);
+      }, 2000);
+    } else {
+      this.glowNumber = null;
+    }
   }
 
   initBoard() {

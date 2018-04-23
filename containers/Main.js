@@ -143,7 +143,7 @@ class Main extends Component {
     const elapsed = this.timer.stop();
     if (!this.records.includes(elapsed)) {
       this.records.push(elapsed);
-      this.records.sort((a, b) => a - b);
+      this.records.sort((a, b) => b - a);
       this.records = this.records.slice(0, 5);
       Store.set('records', this.records);
     }
