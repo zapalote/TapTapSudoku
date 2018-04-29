@@ -137,11 +137,11 @@ class Cell extends Component {
 
     let styleArray = [styles.text, fixed&&styles.fixedText, highlight&&styles.highlightText];
     if(glow){
-      styleArray = [styles.text, styles.glowText, fixed&&styles.fixedText];
+      styleArray = [styles.text, styles.glowText];
     }
     return (
       <Animated.View style={[styles.cell, filled&&styles.filledCell, fixed&&styles.fixedCell,
-        highlight&&styles.highlightCell, {transform, zIndex}]}>
+        highlight&&styles.highlightCell, glow&&styles.glowCell, {transform, zIndex}]}>
         {pencil?
           <Text style={[styles.text, styles.pencilText]} >{hint}</Text>:
           <Text style={styleArray}>{text}</Text>
@@ -208,9 +208,13 @@ const styles = StyleSheet.create({
   highlightText: {
     color: '#c90',
   },
+  glowCell: {
+    borderColor: 'darkturquoise',
+    borderWidth: 3,
+  },
   glowText: {
-    //color: 'aqua',
-    fontWeight: 'bold',
+    color: 'darkturquoise',
+    //fontWeight: 'bold',
   },
 });
 

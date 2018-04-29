@@ -1,8 +1,44 @@
+#!/usr/bin/env node
 // Sudoku Generator and Solver for node.js
 // Copyright (c) 2011 Blagovest Dachev.  All rights reserved.
 //
 // This is a port of David Bau's python  implementation:
 // http://davidbau.com/archives/2006/09/04/sudoku_generator.html
+
+let puzzle     = makepuzzle(solvepuzzle(makeArray(81, null)));
+let d          = ratepuzzle(puzzle, 4);
+console.log('difficulty: '+d+' puzzle: '+puzzle.length);
+var solution   = solvepuzzle(puzzle);
+// var data       = {puzzle:puzzle, solution:solution};
+// console.log('DATA:');
+// console.log(JSON.stringify(data));
+console.log('PUZZLE:');
+console.log(printboard(puzzle));
+console.log('SOLUTION:');
+console.log(printboard(solution));
+console.log('RATING:', d);
+
+function printboard(board) {
+	var out = '';
+
+	for (var row = 0; row < 9; row++) {
+		for (var col = 0; col < 9; col++) {
+			out += [""," "," ","  "," "," ","  "," "," "][col];
+      		out += printcode(board[posfor(row, col)]);
+		}
+		out += ['\n','\n','\n\n','\n','\n','\n\n','\n','\n','\n'][row];
+	}
+
+	return out;
+}
+
+function printcode(n) {
+	if (n == null) {
+		return '_';
+	}
+
+	return n + 1 + '';
+}
 
 function makepuzzle(board) {
   var puzzle = [];
@@ -386,11 +422,13 @@ function makeArray(length, value) {
 function rangeArray(n){
   return new Array(n).fill(0).map((item, idx) => idx);
 }
-
-module.exports = {
-	makepuzzle  : function () { return makepuzzle(solvepuzzle(makeArray(81, null))); },
-	solvepuzzle : solvepuzzle,
-	ratepuzzle  : ratepuzzle,
-	checkpuzzle : checkpuzzle,
-	posfor      : posfor
-};
+//
+// module.exports = {
+//   makepuzzle: function() {
+//     return makepuzzle(solvepuzzle(makeArray(81, null)));
+//   },
+//   solvepuzzle: solvepuzzle,
+//   ratepuzzle: ratepuzzle,
+//   checkpuzzle: checkpuzzle,
+//   posfor: posfor
+// };
