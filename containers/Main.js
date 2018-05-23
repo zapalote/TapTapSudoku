@@ -12,12 +12,6 @@ import {
 } from '../components';
 import { Store, sudoku, isNumber, I18n, } from '../utils';
 
-function formatLevel(level) {
-  let picto = '•';
-  for(let i=0; i < level; i++){ picto += '•'; }
-  return picto;
-}
-
 class Main extends Component {
   state = {
     appState: AppState.currentState,
@@ -264,8 +258,12 @@ class Main extends Component {
 
   showInfo = () => {
     const formatTime = Timer.formatTime;
-    const rs = (this.records[0])? ' record so far: '+formatTime(this.records[0]) : ' ';
-    const msg = '\n'+I18n.t('difficulty')+formatLevel(this.difficulty)+'\n'+rs+'\n';
+    const level = '•'.repeat(this.difficulty+1);
+    const record = (this.records[0])? I18n.t('record')+formatTime(this.records[0]) : ' ';
+    const msg = `
+      ${I18n.t('difficulty') + level}
+      ${record}`;
+
     setTimeout(() => {
       Alert.alert(I18n.t('Info'), msg, [
         { text: I18n.t('ok') }, {},

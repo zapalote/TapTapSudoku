@@ -16,6 +16,7 @@ I18n.translations = {
     congrats: 'Congrats',
     success: 'You solved this game in\n',
     newrecord: 'New record! You solved this game in\n',
+    record: 'Record so far: ',
 
     error: 'Error',
 
