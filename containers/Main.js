@@ -129,27 +129,28 @@ class Main extends Component {
   }
 
   onFinish = () => {
-    this.setState({
-      playing: false,
-    });
-    Store.remove('board');
-    this.elapsed = null;
-    const elapsed = this.timer.stop();
-    if (!this.records.includes(elapsed)) {
-      this.records.push(elapsed);
-      this.records.sort((a, b) => a - b);
-      this.records = this.records.slice(0, 5);
-      Store.set('records', this.records);
-    }
-    const formatTime = Timer.formatTime;
-    const length = this.records.length;
-    const newRecord = elapsed == this.records[0] && this.records.length > 1;
-    setTimeout(() => {
-      Alert.alert(I18n.t('congrats'), (newRecord ? I18n.t('newrecord') : I18n.t('success')) + formatTime(elapsed), [
-        { text: I18n.t('ok') },
-        { text: I18n.t('newgame'), onPress: this.onCreate },
-      ]);
-    }, 1000);
+     this.elapsed = null;
+     const eta = this.timer.stop();
+     this.setState({
+       playing: false,
+     });
+     Store.remove('board');
+
+     // check if this is a record eta (don't bother for uniqueness)
+     this.records.push(eta);
+     this.records.sort((a, b) => a - b);
+     this.records = this.records.slice(0, 5);
+     Store.set('records', this.records);
+
+     const formatTime = Timer.formatTime;
+     const newRecord = eta == this.records[0];
+     const msg = (newRecord ? I18n.t('newrecord') : I18n.t('success')) + formatTime(eta);
+     setTimeout(() => {
+       Alert.alert(I18n.t('congrats'), msg, [
+         { text: I18n.t('ok') },
+         { text: I18n.t('newgame'), onPress: this.onCreate },
+       ]);
+     }, 1000);
   }
 
   onResume = () => {
