@@ -24,9 +24,8 @@ class BadMove extends Component {
   formatBad(errors) {
     if(errors == 0 || errors > 4)
       return errors.toString();
-    let picto = "";
-    for(let i=0; i < errors; i++){ picto += '✕'; }
-    return picto;
+
+    return '✕'.repeat(errors);
   }
 
   render() {

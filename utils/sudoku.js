@@ -26,7 +26,7 @@ function makepuzzle(board) {
 
   shuffleArray(puzzle);
 
-  for (var i = puzzle.length - 1; i >= 0; i--) {
+  for (i = puzzle.length - 1; i >= 0; i--) {
     var e = puzzle[i];
     removeElement(puzzle, i);
 
@@ -162,7 +162,9 @@ function deduce(board) {
           board[pos] = numbers[0];
           stuck = false;
         } else if (stuck == true) {
-          var t = numbers.map(val => { return { pos: pos, num: val }});
+          var t = numbers.map(val => {
+            return { pos: pos, num: val };
+          });
 
           var tuple2 = pickbetter(guess, count, t);
           guess = tuple2.guess;
@@ -180,7 +182,7 @@ function deduce(board) {
     // fill in any spots determined by elimination of other locations
     for (var axis = 0; axis < 3; axis++) {
       for (var x = 0; x < 9; x++) {
-        var numbers = listbits(needed[axis * 9 + x]);
+        numbers = listbits(needed[axis * 9 + x]);
 
         for (var i = 0; i < numbers.length; i++) {
           var n = numbers[i];
@@ -188,7 +190,7 @@ function deduce(board) {
           var spots = [];
 
           for (var y = 0; y < 9; y++) {
-            var pos = posfor(x, y, axis);
+            pos = posfor(x, y, axis);
             if (allowed[pos] & bit) {
               spots.push(pos);
             }
@@ -200,7 +202,9 @@ function deduce(board) {
             board[spots[0]] = n;
             stuck = false;
           } else if (stuck) {
-            var t = spots.map(val => { return { pos: val, num: n }} );
+            t = spots.map(val => {
+              return { pos: val, num: n };
+            });
 
             var tuple4 = pickbetter(guess, count, t);
             guess = tuple4.guess;
@@ -223,8 +227,8 @@ function deduce(board) {
 function figurebits(board) {
   var needed = [];
   var index = -1,
-      length = board == null ? 0 : board.length,
-      allowed = Array(length);
+    length = board == null ? 0 : board.length,
+    allowed = Array(length);
 
   while (++index < length) {
     allowed[index] = (board[index] == null)? 511 : 0;
@@ -259,7 +263,7 @@ function posfor(x, y, axis) {
     return y * 9 + x;
   }
 
-  return ([0, 3, 6, 27, 30, 33, 54, 57, 60][x] + [0, 1, 2, 9, 10, 11, 18, 19, 20][y])
+  return ([0, 3, 6, 27, 30, 33, 54, 57, 60][x] + [0, 1, 2, 9, 10, 11, 18, 19, 20][y]);
 }
 
 function axisfor(pos, axis) {
@@ -377,7 +381,7 @@ function removeElement(array, from, to) {
   var rest = array.slice((to || from) + 1 || array.length);
   array.length = from < 0 ? array.length + from : from;
   return array.push.apply(array, rest);
-};
+}
 
 function makeArray(length, value) {
   return new Array(length).fill(value);
@@ -388,9 +392,10 @@ function rangeArray(n){
 }
 
 module.exports = {
-	makepuzzle  : function () { return makepuzzle(solvepuzzle(makeArray(81, null))); },
-	solvepuzzle : solvepuzzle,
-	ratepuzzle  : ratepuzzle,
-	checkpuzzle : checkpuzzle,
-	posfor      : posfor
+  makepuzzle  : function () { return makepuzzle(solvepuzzle(makeArray(81, null))); },
+  solvepuzzle : solvepuzzle,
+  ratepuzzle  : ratepuzzle,
+  checkpuzzle : checkpuzzle,
+  posfor      : posfor,
+  allowed     : allowed
 };

@@ -3,22 +3,17 @@
 import React, { Component } from 'react';
 
 import {
-  LayoutAnimation,
   StyleSheet,
   Animated,
   Platform,
-  View,
   Text,
-  PanResponder,
 } from 'react-native';
 
 import {
   CellSize,
-  BorderWidth,
 } from './GlobalStyle';
 
 import Touchable from './Touchable';
-import { Store, isNumber } from '../utils';
 
 class Cell extends Component {
 
@@ -33,7 +28,7 @@ class Cell extends Component {
     anim: new Animated.Value(0),
   }
 
-  onPress = (e) => {
+  onPress = () => {
     this.props.onPress && this.props.onPress(this.props.index, this.state.number, this.state.fixed);
   }
 
@@ -110,7 +105,7 @@ class Cell extends Component {
       Animated.timing(this.state.anim, {
         toValue: 1,
         duration: 1000,
-        //useNativeDriver: true,
+        useNativeDriver: true,
       }).start(() => {
         this.setState({
           toggle: false,
@@ -140,8 +135,7 @@ class Cell extends Component {
       styleArray = [styles.text, styles.glowText];
     }
     return (
-      <Animated.View style={[styles.cell, filled&&styles.filledCell, fixed&&styles.fixedCell,
-        highlight&&styles.highlightCell, glow&&styles.glowCell, {transform, zIndex}]}>
+      <Animated.View style={[styles.cell, highlight&&styles.highlightCell, glow&&styles.glowCell, {transform, zIndex}]}>
         {pencil?
           <Text style={[styles.text, styles.pencilText]} >{hint}</Text>:
           <Text style={styleArray}>{text}</Text>
@@ -192,12 +186,6 @@ const styles = StyleSheet.create({
       },
     })
   },
-  filledCell: {
-    //color: '#00ff00',
-  },
-  fixedCell: {
-    //color: '#666',
-  },
   fixedText: {
     color: '#888',
   },
@@ -214,7 +202,6 @@ const styles = StyleSheet.create({
   },
   glowText: {
     color: 'darkturquoise',
-    //fontWeight: 'bold',
   },
 });
 

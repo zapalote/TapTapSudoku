@@ -3,12 +3,7 @@
 import React, { Component } from 'react';
 
 import {
-  AppRegistry,
-  Text,
-  StyleSheet,
-  StatusBar,
-  UIManager,
-  View,
+  AppRegistry, StyleSheet, StatusBar, UIManager, View
 } from 'react-native';
 
 AppRegistry.registerComponent('TapTapSudoku', () => App);

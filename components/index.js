@@ -3,7 +3,6 @@
 import { Size, CellSize, BoardWidth, BorderWidth, } from './GlobalStyle';
 import Board from './Board';
 import NumberPad from './NumberPad';
-import PadCell from './PadCell';
 import CircularPadCell from './CircularPadCell';
 import Timer from './Timer';
 import Touchable from './Touchable';
@@ -16,7 +15,6 @@ export {
   BoardWidth,
   BorderWidth,
   NumberPad,
-  PadCell,
   CircularPadCell,
   Board,
   Timer,

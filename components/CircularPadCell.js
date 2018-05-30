@@ -4,7 +4,6 @@ import { CellSize } from './GlobalStyle';
 import Touchable from './Touchable';
 import Circular from './Circular';
 
-const pad = [1,2,3,4,5,6,7,8,9];
 const doubleTap = {
   delay: 300
 }
@@ -12,39 +11,39 @@ const Diam = CellSize * 1.3;
 
 class CircularPadCell extends Component {
   constructor(props) {
-		super(props);
+    super(props);
 
-		this.myPanResponder = {};
-		this.prevTouchTimeStamp = 0;
+    this.myPanResponder = {};
+    this.prevTouchTimeStamp = 0;
     this.timeout = null;
-		this.handlePanResponderGrant = this.handlePanResponderGrant.bind(this);
-	}
+    this.handlePanResponderGrant = this.handlePanResponderGrant.bind(this);
+  }
 
   timeout = null;
   state = {
     count: 0
   }
 
-	componentWillMount() {
+  componentWillMount() {
     this.setState({
       count: this.props.fillCount,
     });
 
-		this.myPanResponder = PanResponder.create({
-			onStartShouldSetPanResponder: (evt, gestureState) => true,
-			onPanResponderGrant: this.handlePanResponderGrant,
-		});
-	}
+    this.myPanResponder = PanResponder.create({
+      onStartShouldSetPanResponder: (evt, gestureState) => true,
+      onPanResponderGrant: this.handlePanResponderGrant,
+    });
+  }
 
-	handlePanResponderGrant(evt, gestureState) {
+  handlePanResponderGrant(evt, gestureState) {
     this.handleTaps(1);
     this.prevTouchTimeStamp = Date.now();
   }
 
   handleTaps(taps){
-		const currentTouchTimeStamp = Date.now();
+    const currentTouchTimeStamp = Date.now();
     const dt = currentTouchTimeStamp - this.prevTouchTimeStamp;
-		const { delay } = doubleTap;
+    const { delay } = doubleTap;
     let number = this.props.number - 1;
 
     if( taps > 0 && dt < delay) {
@@ -59,12 +58,12 @@ class CircularPadCell extends Component {
     } else if (taps < 0) {
       // after the delay there was only one tap
       this.props.board.onPadPress(number, true);
-		} else {
+    } else {
       // first tap, sleep and call ourselves to check if there is another tap coming
       this.timeout = setTimeout(() => {
         this.handleTaps(-1);
       }, delay);
-		}
+    }
   }
 
   componentWillReceiveProps(nextProps) {

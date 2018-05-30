@@ -3,26 +3,37 @@
 import React, { Component } from 'react';
 
 import {
-  LayoutAnimation, StyleSheet, AppState, Platform, Linking, Share, Vibration, Modal, Image,
-  Alert, View, Text, Dimensions, StatusBar,
+  StyleSheet, AppState, Platform, Linking, Vibration, Modal, Image, Text, Alert, View, StatusBar,
 } from 'react-native';
 
 import {
-  Size, CellSize, BoardWidth, BorderWidth, Board, Timer, Touchable, NumberPad, Circular, BadMove,
+  Size, CellSize, BoardWidth, BorderWidth, Board, Timer, Touchable, NumberPad, BadMove,
 } from '../components';
 import { Store, sudoku, isNumber, I18n, } from '../utils';
 
 class Main extends Component {
-  state = {
-    appState: AppState.currentState,
-    game: null,
-    playing: false,
-    showModal: false,
-    showHelp: false,
-    showAbout: false,
-    updateboard: true,
-    topMargin: 18,
-  }
+version = '1.2';
+currentYear = (new Date()).getFullYear();
+aboutMsg =
+  `A sudoku app for
+  players by players.
+  v${this.version}`;
+privacyMsg  =
+  `Privacy: we don't
+  collect any data.`;
+copyrightMsg = `© ${this.currentYear} zapalote.com`;
+copyrightLink = 'https://zapalote.com/TapTapSudoku/';
+
+ state = {
+   appState: AppState.currentState,
+   game: null,
+   playing: false,
+   showModal: false,
+   showHelp: false,
+   showAbout: false,
+   updateboard: true,
+   topMargin: 18,
+ }
   difficulty = 0;
   elapsed = null;
   error = 0;
@@ -73,7 +84,7 @@ class Main extends Component {
     this.pad.fill(0);
     let game = await Store.get('board');
     if(!game || game.length == 0) {
-      game = newGrid();
+      game = this.newGrid();
     } else this.fromStore = true;
 
     let elapsed = await Store.get('elapsed') || 0;
@@ -95,7 +106,7 @@ class Main extends Component {
     const { game } = this.state;
     if(!game) return;
     this.pad.fill(0);
-    game.forEach( (cell, idx) => {
+    game.forEach( (cell) => {
       if(cell && isNumber(cell.n))
         this.pad[cell.n]++;
     });
@@ -129,28 +140,28 @@ class Main extends Component {
   }
 
   onFinish = () => {
-     this.elapsed = null;
-     const eta = this.timer.stop();
-     this.setState({
-       playing: false,
-     });
-     Store.remove('board');
+    this.elapsed = null;
+    const eta = this.timer.stop();
+    this.setState({
+      playing: false,
+    });
+    Store.remove('board');
 
-     // check if this is a record eta (don't bother for uniqueness)
-     this.records.push(eta);
-     this.records.sort((a, b) => a - b);
-     this.records = this.records.slice(0, 5);
-     Store.set('records', this.records);
+    // check if this is a record eta (don't bother for uniqueness)
+    this.records.push(eta);
+    this.records.sort((a, b) => a - b);
+    this.records = this.records.slice(0, 5);
+    Store.set('records', this.records);
 
-     const formatTime = Timer.formatTime;
-     const newRecord = eta == this.records[0];
-     const msg = (newRecord ? I18n.t('newrecord') : I18n.t('success')) + formatTime(eta);
-     setTimeout(() => {
-       Alert.alert(I18n.t('congrats'), msg, [
-         { text: I18n.t('ok') },
-         { text: I18n.t('newgame'), onPress: this.onCreate },
-       ]);
-     }, 1000);
+    const formatTime = Timer.formatTime;
+    const newRecord = eta == this.records[0];
+    const msg = (newRecord ? I18n.t('newrecord') : I18n.t('success')) + formatTime(eta);
+    setTimeout(() => {
+      Alert.alert(I18n.t('congrats'), msg, [
+        { text: I18n.t('ok') },
+        { text: I18n.t('newgame'), onPress: this.onCreate },
+      ]);
+    }, 1000);
   }
 
   onResume = () => {
@@ -303,28 +314,28 @@ class Main extends Component {
 
     return (
       <View style={[styles.container, this.getTopMargin()]} onLayout={this.onLayoutEvent} >
-          <Board game={game} ref={ref => this.board = ref} reset={updateboard}
-            onInit={this.onInit} onErrorMove={this.onErrorMove} onFinish={this.onFinish} />
+        <Board game={game} ref={ref => this.board = ref} reset={updateboard}
+          onInit={this.onInit} onErrorMove={this.onErrorMove} onFinish={this.onFinish} />
 
-          <View style={styles.box}>
-            <View style={styles.menuBox}>
-              <Timer ref={ref => this.timer = ref} style={styles.timer} />
-              <Touchable onPress={this.showInfo} >
-                <View style={styles.info}>
-                  <BadMove style={styles.level} ref={ref => this.bad = ref}  />
-                </View>
-              </Touchable>
-              <View style={styles.buttonBox} >
-                <Touchable onPress={this.onShowHelp} >
-                  <Image style={styles.menuIcon} source={require('../images/help.png')} />
-                </Touchable>
-                <Touchable onPress={this.onShowModal} >
-                  <Image style={styles.menuIcon} source={require('../images/menu.png')} />
-                </Touchable>
+        <View style={styles.box}>
+          <View style={styles.menuBox}>
+            <Timer ref={ref => this.timer = ref} style={styles.timer} />
+            <Touchable onPress={this.showInfo} >
+              <View style={styles.info}>
+                <BadMove style={styles.level} ref={ref => this.bad = ref}  />
               </View>
+            </Touchable>
+            <View style={styles.buttonBox} >
+              <Touchable onPress={this.onShowHelp} >
+                <Image style={styles.menuIcon} source={require('../images/help.png')} />
+              </Touchable>
+              <Touchable onPress={this.onShowModal} >
+                <Image style={styles.menuIcon} source={require('../images/menu.png')} />
+              </Touchable>
             </View>
-            <NumberPad board={this.board} pad={this.pad} reset={this.updatepad} />
           </View>
+          <NumberPad board={this.board} pad={this.pad} reset={this.updatepad} />
+        </View>
 
         <Modal animationType='fade' visible={showHelp} transparent={true} onRequestClose={this.onCloseHelp} >
           <View style={styles.modal} >
@@ -366,7 +377,13 @@ class Main extends Component {
           <Modal animationType='fade' visible={showAbout} transparent={true} onRequestClose={this.onCloseAbout} >
             <View style={styles.modal} >
               <View style={[styles.modalContainer]} >
-                <Image style={styles.help} source={require('../images/aboutText.png')} />
+                <Image style={styles.logo} source={require('../images/tap-tap-sudoku.png')} />
+                <Text style={styles.aboutText}>{this.aboutMsg}</Text>
+                <Text style={[styles.aboutText, styles.privacyText]}>{this.privacyMsg}</Text>
+                <View style={styles.link}>
+                  <Text style={[styles.aboutText, styles.copyrightText]}
+                    onPress={() => Linking.openURL(this.copyrightLink)}>{this.copyrightMsg}</Text>
+                </View>
               </View>
               <View style={styles.footer}>
                 <Touchable style={styles.button} onPress={this.onCloseAbout} >
@@ -424,10 +441,10 @@ const styles = StyleSheet.create({
     color: '#6b6b6b',
   },
   info:{
-   flexDirection:'row',
-   backgroundColor: '#f2f2f2',
-   justifyContent:'space-between',
-   padding: 2,
+    flexDirection:'row',
+    backgroundColor: '#f2f2f2',
+    justifyContent:'space-between',
+    padding: 2,
   },
   level: {
     marginLeft: BorderWidth * 2,
@@ -448,6 +465,26 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.5,
+  },
+  aboutText: {
+    fontFamily: "Varela Round",
+    fontSize: CellSize / 1.8,
+    textAlign: "center",
+    margin: BorderWidth * 5,
+  },
+  privacyText :{
+    color: '#000'
+  },
+  copyrightText: {
+    //color: '#6b6b6b',
+    backgroundColor: 'transparent',
+    bottom: -8 * BorderWidth,
+    //textDecorationLine: 'underline'
+  },
+  link:{
+    borderBottomColor: '#fc0',
+    borderBottomWidth: BorderWidth * 2.5,
+    opacity: 0.65,
   },
   help: {
     marginTop: CellSize,

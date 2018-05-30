@@ -1,8 +1,8 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { InteractionManager, LayoutAnimation, StyleSheet, Platform, Dimensions, View, Alert } from 'react-native';
-import { Size, CellSize, BoardWidth, BorderWidth } from './GlobalStyle';
+import { InteractionManager, StyleSheet, View } from 'react-native';
+import { CellSize, BoardWidth, BorderWidth } from './GlobalStyle';
 import Grid from './Grid';
 import { sudoku, isNumber, Store } from '../utils';
 
@@ -48,13 +48,13 @@ class Board extends Component {
 
   updateGame(type, index, number, hints){
     switch(type){
-      case 'N':
-      case 'F':
-        this.game[index] = { idx:index, n:number, type:type };
-        break;
-      case 'H':
-        this.game[index] =  { idx:index, h:JSON.stringify(hints.slice()), type:type };
-        break;
+    case 'N':
+    case 'F':
+      this.game[index] = { idx:index, n:number, type:type };
+      break;
+    case 'H':
+      this.game[index] =  { idx:index, h:JSON.stringify(hints.slice()), type:type };
+      break;
     }
     Store.set('board', this.game);
   }
@@ -251,22 +251,22 @@ class Board extends Component {
       if(!cell) return;
       count++;
       let i = cell.idx;
-      setTimeout((count) => {
+      setTimeout( () => {
         switch(cell.type){
-          case "F":
-            this.cells[i].setNumber(cell.n, true);
-            this.puzzle[i] = cell.n;
-            break;
-          case "N":
-            this.cells[i].setNumber(cell.n, false);
-            this.puzzle[i] = cell.n;
-            break;
-          case "H":
-            JSON.parse(cell.h).forEach((item) => {
-              if(isNumber(item))
-                this.cells[i].setHintNumber(item);
-            });
-            break;
+        case "F":
+          this.cells[i].setNumber(cell.n, true);
+          this.puzzle[i] = cell.n;
+          break;
+        case "N":
+          this.cells[i].setNumber(cell.n, false);
+          this.puzzle[i] = cell.n;
+          break;
+        case "H":
+          JSON.parse(cell.h).forEach((item) => {
+            if(isNumber(item))
+              this.cells[i].setHintNumber(item);
+          });
+          break;
         }
       }, 50 * count, count);
     });
@@ -289,7 +289,7 @@ class Board extends Component {
       const xx = i % 3;
       const yy = (i - xx) / 3;
       const index = xx + yy * 3 * 3 + y * 27 + x * 3;
-      this.cells[index].animate()
+      this.cells[index].animate();
     });
   }
 
