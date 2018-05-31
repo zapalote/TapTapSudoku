@@ -12,28 +12,29 @@ import {
 import { Store, sudoku, isNumber, I18n, } from '../utils';
 
 class Main extends Component {
-version = '1.2';
-currentYear = (new Date()).getFullYear();
-aboutMsg =
-  `A sudoku app for
-  players by players.
-  v${this.version}`;
-privacyMsg  =
-  `Privacy: we don't
-  collect any data.`;
-copyrightMsg = `© ${this.currentYear} zapalote.com`;
-copyrightLink = 'https://zapalote.com/TapTapSudoku/';
 
- state = {
-   appState: AppState.currentState,
-   game: null,
-   playing: false,
-   showModal: false,
-   showHelp: false,
-   showAbout: false,
-   updateboard: true,
-   topMargin: 18,
- }
+  version = '1.2';
+  currentYear = (new Date()).getFullYear();
+  aboutMsg =
+    `A sudoku app for
+    players by players.
+    v${this.version}`;
+  privacyMsg  =
+    `Privacy: we don't
+    collect any data.`;
+  copyrightMsg = `© ${this.currentYear} zapalote.com`;
+  copyrightLink = 'https://zapalote.com/TapTapSudoku/';
+
+  state = {
+    appState: AppState.currentState,
+    game: null,
+    playing: false,
+    showModal: false,
+    showHelp: false,
+    showAbout: false,
+    updateboard: true,
+    topMargin: 18,
+  }
   difficulty = 0;
   elapsed = null;
   error = 0;
@@ -45,22 +46,6 @@ copyrightLink = 'https://zapalote.com/TapTapSudoku/';
 
   componentWillMount(){
     StatusBar.setHidden(true);
-  }
-
-  handleAppStateChange = (nextAppState) => {
-    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-      this.loadBoardFromStore();
-    }
-    if (nextAppState === 'active'){
-      this.setState({
-        showModal: true,
-      });
-    } else {
-      this.elapsed = this.timer.pause();
-      Store.set('elapsed', this.elapsed);
-    }
-
-    this.setState({appState: nextAppState});
   }
 
   shouldComponentUpdate(nextProps, nextState){
@@ -78,6 +63,22 @@ copyrightLink = 'https://zapalote.com/TapTapSudoku/';
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
+  }
+
+  handleAppStateChange = (nextAppState) => {
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+      this.loadBoardFromStore();
+    }
+    if (nextAppState === 'active'){
+      this.setState({
+        showModal: true,
+      });
+    } else {
+      this.elapsed = this.timer.pause();
+      Store.set('elapsed', this.elapsed);
+    }
+
+    this.setState({appState: nextAppState});
   }
 
   async loadBoardFromStore(){
@@ -102,7 +103,7 @@ copyrightLink = 'https://zapalote.com/TapTapSudoku/';
     });
   }
 
-  setPad(){
+  setPad = () => {
     const { game } = this.state;
     if(!game) return;
     this.pad.fill(0);
