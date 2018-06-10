@@ -29,7 +29,7 @@ class Cell extends Component {
   }
 
   onPress = () => {
-    this.props.onPress && this.props.onPress(this.props.index, this.state.number, this.state.fixed);
+    this.props.onPress && this.props.onPress(this.props.index, this.state.number);
   }
 
   setHighlight(highlight) {

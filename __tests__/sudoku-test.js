@@ -4,40 +4,59 @@
 //
 // This is a port of David Bau's python  implementation:
 // http://davidbau.com/archives/2006/09/04/sudoku_generator.html
+const levels = [
+  { label: 'manageable', value: 2, levs: [0,1], selected: true },
+  { label: 'challenging', value: 4, levs: [2,3] },
+  { label: 'impossible', value: 6, levs: [4,5,6,7] }
+];
+let target = 6;
+let d = 0;
+let lev = levels.findIndex(e => e.value == target);
+const levelRange = lev > -1 ? levels[lev].levs : [0,1];
+console.log('Range: '+levelRange);
+let puzzle = [];
+let retries = 0;
+let tt = new Date();
 
-let puzzle     = makepuzzle(solvepuzzle(makeArray(81, null)));
-let d          = ratepuzzle(puzzle, 4);
-console.log('difficulty: '+d+' puzzle: '+puzzle.length);
-var solution   = solvepuzzle(puzzle);
+do {
+  puzzle = makepuzzle(solvepuzzle(makeArray(81, null)));
+  d = ratepuzzle(puzzle, 4);
+  retries++;
+} while(!levelRange.includes(d));
+
+tt = new Date() - tt;
+console.log('Time:', tt);
+console.log('Retries:', retries);
+console.log('RATING:', d);
+//var solution   = solvepuzzle(puzzle);
 // var data       = {puzzle:puzzle, solution:solution};
 // console.log('DATA:');
 // console.log(JSON.stringify(data));
-console.log('PUZZLE:');
-console.log(printboard(puzzle));
-console.log('SOLUTION:');
-console.log(printboard(solution));
-console.log('RATING:', d);
+//console.log('PUZZLE:');
+//console.log(printboard(puzzle));
+//console.log('SOLUTION:');
+//console.log(printboard(solution));
 
 function printboard(board) {
-	var out = '';
+  var out = '';
 
-	for (var row = 0; row < 9; row++) {
-		for (var col = 0; col < 9; col++) {
-			out += [""," "," ","  "," "," ","  "," "," "][col];
-      		out += printcode(board[posfor(row, col)]);
-		}
-		out += ['\n','\n','\n\n','\n','\n','\n\n','\n','\n','\n'][row];
-	}
+  for (var row = 0; row < 9; row++) {
+    for (var col = 0; col < 9; col++) {
+      out += [""," "," ","  "," "," ","  "," "," "][col];
+      out += printcode(board[posfor(row, col)]);
+    }
+    out += ['\n','\n','\n\n','\n','\n','\n\n','\n','\n','\n'][row];
+  }
 
-	return out;
+  return out;
 }
 
 function printcode(n) {
-	if (n == null) {
-		return '_';
-	}
+  if (n == null) {
+    return '_';
+  }
 
-	return n + 1 + '';
+  return n + 1 + '';
 }
 
 function makepuzzle(board) {
@@ -62,7 +81,7 @@ function makepuzzle(board) {
 
   shuffleArray(puzzle);
 
-  for (var i = puzzle.length - 1; i >= 0; i--) {
+  for (i = puzzle.length - 1; i >= 0; i--) {
     var e = puzzle[i];
     removeElement(puzzle, i);
 
@@ -198,7 +217,7 @@ function deduce(board) {
           board[pos] = numbers[0];
           stuck = false;
         } else if (stuck == true) {
-          var t = numbers.map(val => { return { pos: pos, num: val }});
+          var t = numbers.map(val => { return { pos: pos, num: val }; });
 
           var tuple2 = pickbetter(guess, count, t);
           guess = tuple2.guess;
@@ -216,7 +235,7 @@ function deduce(board) {
     // fill in any spots determined by elimination of other locations
     for (var axis = 0; axis < 3; axis++) {
       for (var x = 0; x < 9; x++) {
-        var numbers = listbits(needed[axis * 9 + x]);
+        numbers = listbits(needed[axis * 9 + x]);
 
         for (var i = 0; i < numbers.length; i++) {
           var n = numbers[i];
@@ -224,7 +243,7 @@ function deduce(board) {
           var spots = [];
 
           for (var y = 0; y < 9; y++) {
-            var pos = posfor(x, y, axis);
+            pos = posfor(x, y, axis);
             if (allowed[pos] & bit) {
               spots.push(pos);
             }
@@ -236,7 +255,7 @@ function deduce(board) {
             board[spots[0]] = n;
             stuck = false;
           } else if (stuck) {
-            var t = spots.map(val => { return { pos: val, num: n }} );
+            t = spots.map(val => { return { pos: val, num: n }; });
 
             var tuple4 = pickbetter(guess, count, t);
             guess = tuple4.guess;
@@ -259,8 +278,8 @@ function deduce(board) {
 function figurebits(board) {
   var needed = [];
   var index = -1,
-      length = board == null ? 0 : board.length,
-      allowed = Array(length);
+    length = board == null ? 0 : board.length,
+    allowed = Array(length);
 
   while (++index < length) {
     allowed[index] = (board[index] == null)? 511 : 0;
@@ -295,7 +314,7 @@ function posfor(x, y, axis) {
     return y * 9 + x;
   }
 
-  return ([0, 3, 6, 27, 30, 33, 54, 57, 60][x] + [0, 1, 2, 9, 10, 11, 18, 19, 20][y])
+  return ([0, 3, 6, 27, 30, 33, 54, 57, 60][x] + [0, 1, 2, 9, 10, 11, 18, 19, 20][y]);
 }
 
 function axisfor(pos, axis) {
@@ -413,7 +432,7 @@ function removeElement(array, from, to) {
   var rest = array.slice((to || from) + 1 || array.length);
   array.length = from < 0 ? array.length + from : from;
   return array.push.apply(array, rest);
-};
+}
 
 function makeArray(length, value) {
   return new Array(length).fill(value);

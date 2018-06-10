@@ -34,15 +34,16 @@ class Board extends Component {
   solved = false;
 
   componentWillReceiveProps(nextProps) {
-    if (!nextProps.game || (!nextProps.reset && this.inited)) return;
-
-    this.setState({ index: -1 });
-    this.cells.forEach(x => x.reset());
-    this.game = nextProps.game;
-    this.initBoard();
+    //if (!nextProps.game || (!nextProps.reset && this.inited)) return;
+    if (nextProps.game && nextProps.reset){
+      this.setState({ index: -1 });
+      this.cells.forEach(x => x.reset());
+      this.game = nextProps.game;
+      this.initBoard();
+    }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps) {
     return nextProps.reset;
   }
 
@@ -59,7 +60,7 @@ class Board extends Component {
     Store.set('board', this.game);
   }
 
-  onCellPress = (index, number, fixed) => {
+  onCellPress = (index, number) => {
     if (!this.inited || this.solved) return;
 
     if (isNumber(number)) {
@@ -247,7 +248,7 @@ class Board extends Component {
 
     let count = 0;
     this.puzzle = new Array(81);
-    this.game.forEach( (cell, idx) => {
+    this.game.forEach( (cell) => {
       if(!cell) return;
       count++;
       let i = cell.idx;

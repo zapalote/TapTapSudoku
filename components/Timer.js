@@ -1,8 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Image, } from 'react-native';
-import { Touchable, } from '../components';
+import { StyleSheet, Text } from 'react-native';
 
 function formatTime(elapsed) {
   const hour = Math.floor(elapsed / 60 / 60);
@@ -14,20 +13,16 @@ function formatTime(elapsed) {
 
 class Timer extends Component {
   state = {
-      paused: false,
-      iconized: false,
-      elapsed: this.props.elapsed || 0,
-      disabled: this.props.disabled || true,
+    paused: false,
+    elapsed: this.props.elapsed || 0,
   }
-  static formatTime = formatTime
-  startTime = null
-  lastElapsed = 0
-  iconizeable = false;
+  static formatTime = formatTime;
+  startTime = null;
+  lastElapsed = 0;
+  interval = null;
 
   start() {
-    this.setState({
-      disabled: false,
-    });
+    this.interval && clearInterval(this.interval);
     this.startTime = new Date();
     this.interval = setInterval(() => {
       if (this.state.paused) return;
@@ -36,7 +31,7 @@ class Timer extends Component {
       this.setState({
         elapsed,
       });
-    }, 100)
+    }, 100);
   }
 
   pause() {
@@ -59,8 +54,8 @@ class Timer extends Component {
     if (this.state.paused) {
       this.setState({
         paused: false,
-      })
-    };
+      });
+    }
     return this.state.elapsed;
   }
 
@@ -71,7 +66,6 @@ class Timer extends Component {
     this.setState({
       paused: false,
       elapsed: this.props.elapsed || 0,
-      disabled: this.props.disabled || true,
     });
   }
 
@@ -91,20 +85,12 @@ class Timer extends Component {
     return nextState != this.state;
   }
 
-  componentWillReceiveProps(nextProps){
-    if(nextProps.iconizeable) this.iconizeable = nextProps.iconizeable;
-  }
-
   render() {
-    const { elapsed, disabled, iconized } = this.state;
-    const { style, disabledStyle } = this.props;
-    // U+023F1
+    const { elapsed } = this.state;
+    const { style } = this.props;
+
     return (
-      <Touchable onPress={() => { this.iconizeable && this.setState({iconized: !iconized}) } } >
-        <Text style={[styles.text, style, disabled && disabledStyle]}>
-          {iconized? '\u23f1' : formatTime(elapsed) }
-        </Text>
-      </Touchable>
+      <Text style={[styles.text, style]}>{formatTime(elapsed)}</Text>
     );
   }
 }

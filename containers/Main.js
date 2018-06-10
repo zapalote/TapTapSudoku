@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 
 import {
-  Size, CellSize, BoardWidth, BorderWidth, Board, Timer, Touchable, NumberPad, BadMove,
+  Size, CellSize, BoardWidth, BorderWidth, Board, Timer, Touchable, NumberPad, BadMove, RadioGroup,
 } from '../components';
 import { Store, sudoku, isNumber, I18n, } from '../utils';
 
@@ -16,12 +16,12 @@ class Main extends Component {
   version = '1.2';
   currentYear = (new Date()).getFullYear();
   aboutMsg =
-    `A sudoku app for
-    players by players.
+    `A SUDOKU APP FOR
+    PLAYERS BY PLAYERS
     v${this.version}`;
   privacyMsg  =
-    `Privacy: we don't
-    collect any data.`;
+    `PRIVACY: WE DON'T
+    COLLECT ANY DATA`;
   copyrightMsg = `© ${this.currentYear} zapalote.com`;
   copyrightLink = 'https://zapalote.com/TapTapSudoku/';
 
@@ -32,17 +32,25 @@ class Main extends Component {
     showModal: false,
     showHelp: false,
     showAbout: false,
-    updateboard: true,
+    showSettings: false,
+    updateBoard: true,
     topMargin: 18,
+    level: 2,
+    showActivity: false,
   }
   difficulty = 0;
   elapsed = null;
   error = 0;
   records = [];
-  updatepad= false;
+  updatePad= false;
   pad = new Array(9).fill(0);
   fromStore = false;
-  TEST = false;
+  levels = [
+    { label: I18n.t('manageable'), value: 2, levs: [0,1], color: '#fc0', selected: true },
+    { label: I18n.t('challenging'), value: 4, levs: [2,3], color: '#fc0',},
+    { label: I18n.t('impossible'), value: 6, levs: [4,5,6,7], color: '#fc0' },
+    { label: I18n.t('anylevel'), value: 0, levs: [0,1,2,3,4,5,6,7], color: '#fc0' }
+  ];
 
   componentWillMount(){
     StatusBar.setHidden(true);
@@ -85,7 +93,7 @@ class Main extends Component {
     this.pad.fill(0);
     let game = await Store.get('board');
     if(!game || game.length == 0) {
-      game = this.newGrid();
+      game = this.newGame();
     } else this.fromStore = true;
 
     let elapsed = await Store.get('elapsed') || 0;
@@ -93,13 +101,14 @@ class Main extends Component {
     this.error = await Store.get('error') || 0;
     this.setState({
       game,
-      updateboard: true,
+      updateBoard: false,
       showModal: true,
       showHelp: false,
       showAbout: false,
     }, () => {
       this.setPad();
       this.bad.reset(this.error);
+      this.timer.resume();
     });
   }
 
@@ -111,13 +120,13 @@ class Main extends Component {
       if(cell && isNumber(cell.n))
         this.pad[cell.n]++;
     });
-    this.updatepad = true;
+    this.updatePad = true;
   }
 
   onInit = () => {
     this.setState({
       playing: true,
-      updateboard: false,
+      updateBoard: false,
       showModal: false,
       showHelp: false,
     }, () => {
@@ -125,11 +134,11 @@ class Main extends Component {
         this.fromStore = false;
         this.timer.resume();
       } else {
-        this.timer.start();
         this.error = 0;
         this.bad.reset();
       }
-      this.updatepad = false;
+      this.updatePad = false;
+      this.timer.start();
     });
   }
 
@@ -169,7 +178,7 @@ class Main extends Component {
     this.setState({
       showModal: false,
     }, () => {
-      this.updatepad = false;
+      this.updatePad = false;
       this.timer.resume();
     });
   }
@@ -183,7 +192,7 @@ class Main extends Component {
     });
     this.setState({
       game,
-      updateboard: true,
+      updateBoard: true,
       playing: false,
       showModal: false,
     }, () => {
@@ -192,17 +201,24 @@ class Main extends Component {
       this.setPad();
     });
     Store.set('board', game);
+    Store.set('error', 0);
   }
 
-  newGrid = () => {
+  newGame = () => {
+    this.setState({
+      showActivity: true
+    });
     let puzzle = [];
     let d = 0;
+    let lev = this.levels.findIndex(e => e.value == this.state.level);
+    const levelRange = lev > -1 ? this.levels[lev].levs : [0,1];
+
     do {
       puzzle = sudoku.makepuzzle();
       d = sudoku.ratepuzzle(puzzle, 4);
-    } while(d > 3 && this.TEST);
-    this.difficulty = d;
+    } while(!levelRange.includes(d));
 
+    this.difficulty = d;
     let game = [];
     for (let i = 0; i < 81; i++) {
       let number = puzzle[i];
@@ -210,16 +226,19 @@ class Main extends Component {
         game[i] = { idx: i, type: 'F', n: number };
     }
     Store.set('board', game);
+    this.setState({
+      showActivity: false
+    });
     return game;
   }
 
   onCreate = () => {
     this.elapsed = null;
     this.timer.reset();
-    let game = this.newGrid();
+    let game = this.newGame();
     this.setState({
       game,
-      updateboard: true,
+      updateBoard: true,
       playing: false,
       showModal: false,
     }, () => {
@@ -227,6 +246,7 @@ class Main extends Component {
       this.bad.reset();
       this.setPad();
     });
+    Store.set('error', 0);
   }
 
   onShowModal = () => {
@@ -296,6 +316,26 @@ class Main extends Component {
     });
   }
 
+  onSettings = () => {
+    this.setState({
+      showSettings: true,
+    });
+  }
+
+  onCloseSettings = () => {
+    this.setState({
+      showSettings: false,
+    });
+  }
+
+  onLevelsPress = (levels) => {
+    let selectedLevel = levels.find(e => e.selected == true);
+    this.setState({
+      level: selectedLevel ? selectedLevel.value : 2,
+      playing: false,
+    });
+  }
+
   getTopMargin = () => {
     return ({ marginTop: this.state.topMargin });
   }
@@ -310,12 +350,12 @@ class Main extends Component {
   }
 
   render() {
-    const { game, playing, showModal, showHelp, showAbout, updateboard } = this.state;
+    const { game, playing, showModal, showHelp, showAbout, showSettings, updateBoard} = this.state;
     const disabled = !playing;
 
     return (
       <View style={[styles.container, this.getTopMargin()]} onLayout={this.onLayoutEvent} >
-        <Board game={game} ref={ref => this.board = ref} reset={updateboard}
+        <Board game={game} ref={ref => this.board = ref} reset={updateBoard}
           onInit={this.onInit} onErrorMove={this.onErrorMove} onFinish={this.onFinish} />
 
         <View style={styles.box}>
@@ -323,7 +363,7 @@ class Main extends Component {
             <Timer ref={ref => this.timer = ref} style={styles.timer} />
             <Touchable onPress={this.showInfo} >
               <View style={styles.info}>
-                <BadMove style={styles.level} ref={ref => this.bad = ref}  />
+                <BadMove style={styles.levelInfo} ref={ref => this.bad = ref}  />
               </View>
             </Touchable>
             <View style={styles.buttonBox} >
@@ -335,7 +375,7 @@ class Main extends Component {
               </Touchable>
             </View>
           </View>
-          <NumberPad board={this.board} pad={this.pad} reset={this.updatepad} />
+          <NumberPad board={this.board} pad={this.pad} reset={this.updatePad} />
         </View>
 
         <Modal animationType='fade' visible={showHelp} transparent={true} onRequestClose={this.onCloseHelp} >
@@ -369,6 +409,9 @@ class Main extends Component {
               <Touchable style={styles.button} onPress={this.onAbout} >
                 <Image style={styles.buttonIcon} source={require('../images/about.png')} />
               </Touchable>
+              <Touchable style={styles.button} onPress={this.onSettings} >
+                <Image style={styles.buttonIcon} source={require('../images/settings.png')} />
+              </Touchable>
               <Touchable style={styles.button} onPress={this.onRate} >
                 <Image style={styles.buttonIcon} source={require('../images/rate.png')} />
               </Touchable>
@@ -388,6 +431,21 @@ class Main extends Component {
               </View>
               <View style={styles.footer}>
                 <Touchable style={styles.button} onPress={this.onCloseAbout} >
+                  <Image style={styles.buttonIcon} source={require('../images/close.png')} />
+                </Touchable>
+              </View>
+            </View>
+          </Modal>
+
+          <Modal animationType='fade' visible={showSettings} transparent={true} onRequestClose={this.onCloseSettings} >
+            <View style={styles.modal} >
+              <View style={[styles.modalContainer]} >
+                <Image style={styles.logo} source={require('../images/tap-tap-sudoku.png')} />
+                <RadioGroup radioButtons={this.levels} onPress={this.onLevelsPress}
+                  style={styles.radioText} heading={'LEVEL'} headingStyle={styles.optionHeading}/>
+              </View>
+              <View style={styles.footer}>
+                <Touchable style={styles.button} onPress={this.onCloseSettings} >
                   <Image style={styles.buttonIcon} source={require('../images/close.png')} />
                 </Touchable>
               </View>
@@ -447,7 +505,7 @@ const styles = StyleSheet.create({
     justifyContent:'space-between',
     padding: 2,
   },
-  level: {
+  levelInfo: {
     marginLeft: BorderWidth * 2,
     color: '#6b6b6b',
     alignItems:'flex-start',
@@ -467,9 +525,19 @@ const styles = StyleSheet.create({
   disabled: {
     opacity: 0.5,
   },
-  aboutText: {
+  optionHeading:{
+    fontFamily: "Varela Round",
+    fontSize: CellSize / 1.3 ,
+    textAlign: "center",
+    marginBottom: CellSize / 2,
+  },
+  radioText:{
     fontFamily: "Varela Round",
     fontSize: CellSize / 1.8,
+  },
+  aboutText: {
+    fontFamily: "Varela Round",
+    fontSize: CellSize / 2.3,
     textAlign: "center",
     margin: BorderWidth * 5,
   },
@@ -477,10 +545,9 @@ const styles = StyleSheet.create({
     color: '#000'
   },
   copyrightText: {
-    //color: '#6b6b6b',
     backgroundColor: 'transparent',
     bottom: -8 * BorderWidth,
-    //textDecorationLine: 'underline'
+    fontSize: CellSize / 2,
   },
   link:{
     borderBottomColor: '#fc0',
@@ -494,7 +561,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: 'row',
-    marginBottom: 10,
+    marginBottom: CellSize / 1.7 ,
     alignItems: 'center',
     justifyContent: 'space-around',
   },

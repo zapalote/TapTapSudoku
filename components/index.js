@@ -8,6 +8,7 @@ import Timer from './Timer';
 import Touchable from './Touchable';
 import BadMove from './BadMove';
 import Circular from './Circular';
+import RadioGroup from './RadioButtonsGroup';
 
 export {
   Size,
@@ -21,4 +22,5 @@ export {
   Touchable,
   BadMove,
   Circular,
+  RadioGroup,
 };

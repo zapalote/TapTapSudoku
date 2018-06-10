@@ -18,7 +18,8 @@ I18n.translations = {
     newrecord: 'New record! You solved this game in\n',
     record: 'Record so far: ',
 
-    error: 'Error',
+    error: 'BAD ',
+    errors: 'Bad moves ',
 
     share: 'Share',
     sharemessage: 'tap:tap Sudoku - by players, for players',
@@ -33,7 +34,10 @@ I18n.translations = {
 
     Info: 'This game',
     difficulty: 'Master difficulty ',
-    errors: 'Bad moves ',
+    manageable: 'MANAGEABLE',
+    challenging: 'CHALLENGING',
+    impossible: 'IMPOSSIBLE',
+    anylevel: 'SURPRISE ME'
   },
 };
 
