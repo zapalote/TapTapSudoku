@@ -418,13 +418,6 @@ class Main extends Component {
             </View>
           </View>
 
-          {/* <Modal animationType='fade' visible={loading} transparent={true} >
-            <View style={styles.loadingBackground}>
-              <View style={styles.loading}>
-                <ActivityIndicator color='#fc0' size='large' style={styles.loading} animating={loading} />
-              </View>
-            </View>
-          </Modal> */}
           {loading?
             <View style={styles.loadingBackground}>
               <View style={styles.loading}>
@@ -551,13 +544,14 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-around',
     backgroundColor: 'white',
-    opacity: 0.6,
+    opacity: 0.7,
   },
   loading: {
-    backgroundColor: '#ccc',
+    backgroundColor: 'white',
+    opacity: 1,
     height: 100,
     width: 100,
-    borderRadius: 10,
+    borderRadius: 50,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-around'
