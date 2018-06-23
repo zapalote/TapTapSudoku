@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 
 import {
-  StyleSheet, AppState, Platform, Linking, Vibration, Modal, Image, Text, Alert, View, StatusBar,
+  StyleSheet, AppState, Platform, Linking, Vibration, Modal, Image, Text, Alert, View, StatusBar, ActivityIndicator,
 } from 'react-native';
 
 import {
@@ -14,7 +14,6 @@ import { Store, sudoku, isNumber, I18n, } from '../utils';
 class Main extends Component {
 
   version = '1.2';
-  currentYear = (new Date()).getFullYear();
   aboutMsg =
     `A SUDOKU APP FOR
     PLAYERS BY PLAYERS
@@ -22,21 +21,21 @@ class Main extends Component {
   privacyMsg  =
     `PRIVACY: WE DON'T
     COLLECT ANY DATA`;
-  copyrightMsg = `© ${this.currentYear} zapalote.com`;
+  copyrightMsg = `© ${(new Date()).getFullYear()} zapalote.com`;
   copyrightLink = 'https://zapalote.com/TapTapSudoku/';
 
   state = {
     appState: AppState.currentState,
     game: null,
     playing: false,
-    showModal: false,
+    showMenu: false,
     showHelp: false,
     showAbout: false,
     showSettings: false,
     updateBoard: true,
     topMargin: 18,
     level: 2,
-    showActivity: false,
+    loading: false,
   }
   difficulty = 0;
   elapsed = null;
@@ -46,10 +45,10 @@ class Main extends Component {
   pad = new Array(9).fill(0);
   fromStore = false;
   levels = [
-    { label: I18n.t('manageable'), value: 2, levs: [0,1], color: '#fc0', selected: true },
-    { label: I18n.t('challenging'), value: 4, levs: [2,3], color: '#fc0',},
-    { label: I18n.t('impossible'), value: 6, levs: [4,5,6,7], color: '#fc0' },
-    { label: I18n.t('anylevel'), value: 0, levs: [0,1,2,3,4,5,6,7], color: '#fc0' }
+    { label: I18n.t('manageable'),  value: 2, size: CellSize/1.8, range: [0,1],     color: '#fc0', selected: true },
+    { label: I18n.t('challenging'), value: 4, size: CellSize/1.8, range: [2,3],     color: '#fc0',},
+    { label: I18n.t('impossible'),  value: 6, size: CellSize/1.8, range: [4,5,6,7], color: '#fc0' },
+    { label: I18n.t('anylevel'),    value: 0, size: CellSize/1.8, range: [0,1,2,3,4,5,6,7], color: '#fc0' }
   ];
 
   componentWillMount(){
@@ -65,7 +64,7 @@ class Main extends Component {
 
     this.records = await Store.get('records') || [];
     this.setState({
-      showModal: true,
+      showMenu: true,
     });
   }
 
@@ -79,7 +78,7 @@ class Main extends Component {
     }
     if (nextAppState === 'active'){
       this.setState({
-        showModal: true,
+        showMenu: true,
       });
     } else {
       this.elapsed = this.timer.pause();
@@ -93,16 +92,18 @@ class Main extends Component {
     this.pad.fill(0);
     let game = await Store.get('board');
     if(!game || game.length == 0) {
-      game = this.newGame();
-    } else this.fromStore = true;
+      this.fromStore = false;
+      return;
+    }
 
+    this.fromStore = true;
     let elapsed = await Store.get('elapsed') || 0;
     this.timer.setElapsed(elapsed);
     this.error = await Store.get('error') || 0;
     this.setState({
       game,
       updateBoard: false,
-      showModal: true,
+      showMenu: true,
       showHelp: false,
       showAbout: false,
     }, () => {
@@ -127,7 +128,7 @@ class Main extends Component {
     this.setState({
       playing: true,
       updateBoard: false,
-      showModal: false,
+      showMenu: false,
       showHelp: false,
     }, () => {
       if(this.fromStore){
@@ -176,7 +177,7 @@ class Main extends Component {
 
   onResume = () => {
     this.setState({
-      showModal: false,
+      showMenu: false,
     }, () => {
       this.updatePad = false;
       this.timer.resume();
@@ -194,7 +195,7 @@ class Main extends Component {
       game,
       updateBoard: true,
       playing: false,
-      showModal: false,
+      showMenu: false,
     }, () => {
       this.error = 0;
       this.bad.reset();
@@ -205,13 +206,10 @@ class Main extends Component {
   }
 
   newGame = () => {
-    this.setState({
-      showActivity: true
-    });
     let puzzle = [];
     let d = 0;
     let lev = this.levels.findIndex(e => e.value == this.state.level);
-    const levelRange = lev > -1 ? this.levels[lev].levs : [0,1];
+    const levelRange = lev > -1 ? this.levels[lev].range : [0,1];
 
     do {
       puzzle = sudoku.makepuzzle();
@@ -225,42 +223,42 @@ class Main extends Component {
       if(isNumber(number))
         game[i] = { idx: i, type: 'F', n: number };
     }
-    Store.set('board', game);
-    this.setState({
-      showActivity: false
-    });
-    return game;
-  }
-
-  onCreate = () => {
-    this.elapsed = null;
-    this.timer.reset();
-    let game = this.newGame();
     this.setState({
       game,
       updateBoard: true,
       playing: false,
-      showModal: false,
+      showMenu: false,
+      loading: false,
     }, () => {
       this.error = 0;
       this.bad.reset();
       this.setPad();
     });
     Store.set('error', 0);
+    Store.set('board', game);
   }
 
-  onShowModal = () => {
+  onCreate = () => {
+    this.setState({ loading: true });
+    this.elapsed = null;
+    this.timer.reset();
+    setTimeout(() => {
+      this.newGame();
+    }, 100);
+  }
+
+  onShowMenu = () => {
     this.elapsed = this.timer.pause();
     Store.set('elapsed', this.elapsed);
     this.setState({
-      showModal: true,
+      showMenu: true,
     });
   }
 
-  onCloseModal = () => {
+  onCloseMenu = () => {
     this.timer.resume();
     this.setState({
-      showModal: false,
+      showMenu: false,
     });
   }
 
@@ -350,11 +348,13 @@ class Main extends Component {
   }
 
   render() {
-    const { game, playing, showModal, showHelp, showAbout, showSettings, updateBoard} = this.state;
+    const { game, playing, showMenu, showHelp, showAbout, showSettings, updateBoard, loading } = this.state;
     const disabled = !playing;
 
     return (
+
       <View style={[styles.container, this.getTopMargin()]} onLayout={this.onLayoutEvent} >
+
         <Board game={game} ref={ref => this.board = ref} reset={updateBoard}
           onInit={this.onInit} onErrorMove={this.onErrorMove} onFinish={this.onFinish} />
 
@@ -370,7 +370,7 @@ class Main extends Component {
               <Touchable onPress={this.onShowHelp} >
                 <Image style={styles.menuIcon} source={require('../images/help.png')} />
               </Touchable>
-              <Touchable onPress={this.onShowModal} >
+              <Touchable onPress={this.onShowMenu} >
                 <Image style={styles.menuIcon} source={require('../images/menu.png')} />
               </Touchable>
             </View>
@@ -391,7 +391,7 @@ class Main extends Component {
           </View>
         </Modal>
 
-        <Modal animationType='fade' visible={showModal} transparent={true} onRequestClose={this.onCloseModal} >
+        <Modal animationType='fade' visible={showMenu} transparent={true} onRequestClose={this.onCloseMenu} >
           <View style={styles.modal} >
             <View style={styles.modalContainer} >
               <Image style={styles.logo} source={require('../images/tap-tap-sudoku.png')} />
@@ -417,6 +417,21 @@ class Main extends Component {
               </Touchable>
             </View>
           </View>
+
+          {/* <Modal animationType='fade' visible={loading} transparent={true} >
+            <View style={styles.loadingBackground}>
+              <View style={styles.loading}>
+                <ActivityIndicator color='#fc0' size='large' style={styles.loading} animating={loading} />
+              </View>
+            </View>
+          </Modal> */}
+          {loading?
+            <View style={styles.loadingBackground}>
+              <View style={styles.loading}>
+                <ActivityIndicator color='black' size='large' style={styles.loading} animating={loading} />
+              </View>
+            </View>
+            : null }
 
           <Modal animationType='fade' visible={showAbout} transparent={true} onRequestClose={this.onCloseAbout} >
             <View style={styles.modal} >
@@ -525,6 +540,28 @@ const styles = StyleSheet.create({
   disabled: {
     opacity: 0.5,
   },
+  loadingBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: Size.width,
+    height: Size.height,
+    flex: 1,
+    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    backgroundColor: 'white',
+    opacity: 0.6,
+  },
+  loading: {
+    backgroundColor: '#ccc',
+    height: 100,
+    width: 100,
+    borderRadius: 10,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-around'
+  },
   optionHeading:{
     fontFamily: "Varela Round",
     fontSize: CellSize / 1.3 ,
@@ -533,7 +570,7 @@ const styles = StyleSheet.create({
   },
   radioText:{
     fontFamily: "Varela Round",
-    fontSize: CellSize / 1.8,
+    fontSize: CellSize / 1.7,
   },
   aboutText: {
     fontFamily: "Varela Round",

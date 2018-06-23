@@ -100,9 +100,9 @@ class RadioButton extends Component {
             <View
               style={{
                 backgroundColor: data.color,
-                width: data.size / 2,
-                height: data.size / 2,
-                borderRadius: data.size / 2,
+                width: data.size / 2.5,
+                height: data.size / 2.5,
+                borderRadius: data.size / 2.5,
               }}
             />}
         </View>
