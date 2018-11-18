@@ -1,46 +1,38 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, Image, PanResponder } from 'react-native';
+import { Text, View, StyleSheet, PanResponder } from 'react-native';
 import { CellSize } from './GlobalStyle';
 import Touchable from './Touchable';
 import Circular from './Circular';
 
 const doubleTap = {
   delay: 300
-}
+};
 const Diam = CellSize * 1.3;
 
 class CircularPadCell extends Component {
   constructor(props) {
     super(props);
 
-    this.myPanResponder = {};
+    this.handlePanResponderGrant = this.handlePanResponderGrant.bind(this);
+    this.myPanResponder = PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderGrant: this.handlePanResponderGrant,
+    });
     this.prevTouchTimeStamp = 0;
     this.timeout = null;
-    this.handlePanResponderGrant = this.handlePanResponderGrant.bind(this);
   }
 
   timeout = null;
   state = {
-    count: 0
+    count: this.props.fillCount,
   }
 
-  componentWillMount() {
-    this.setState({
-      count: this.props.fillCount,
-    });
-
-    this.myPanResponder = PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onPanResponderGrant: this.handlePanResponderGrant,
-    });
-  }
-
-  handlePanResponderGrant(evt, gestureState) {
+  handlePanResponderGrant() {
     this.handleTaps(1);
     this.prevTouchTimeStamp = Date.now();
   }
 
-  handleTaps(taps){
+  handleTaps = (taps) => {
     const currentTouchTimeStamp = Date.now();
     const dt = currentTouchTimeStamp - this.prevTouchTimeStamp;
     const { delay } = doubleTap;
@@ -66,13 +58,11 @@ class CircularPadCell extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if(nextProps.reset) {
-      // after an initing event
-      this.setState({
-        count: nextProps.fillCount,
-       });
-    }
+  //componentWillReceiveProps(nextProps) {
+  resetPadCell = (fillCount) => {
+    this.setState({
+      count: fillCount,
+    });
   }
 
   render() {
@@ -85,13 +75,13 @@ class CircularPadCell extends Component {
       <Touchable>
         <Circular size={Diam} width={stroke} fill={fill} rotation={45}
           style={styles.surface} tintColor={'#999'} backgroundColor={'#000'}>
-        {
-          () => (
-          <View style={[styles.padCell, disabled && styles.disabled]} {...this.myPanResponder.panHandlers}>
-              <Text style={styles.padText}>{number}</Text>
-          </View>
-          )
-        }
+          {
+            () => (
+              <View style={[styles.padCell, disabled && styles.disabled]} {...this.myPanResponder.panHandlers}>
+                <Text style={styles.padText}>{number}</Text>
+              </View>
+            )
+          }
         </Circular>
       </Touchable>
     );

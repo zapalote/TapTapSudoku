@@ -23,6 +23,7 @@ class Cell extends Component {
     pencil: false,
     highlight: false,
     glow: false,
+    error: false,
     fixed: false,
     toggle: false,
     anim: new Animated.Value(0),
@@ -41,6 +42,12 @@ class Cell extends Component {
   setGlow(glow) {
     this.setState({
       glow: glow,
+    });
+  }
+
+  setError(err) {
+    this.setState({
+      error: err,
     });
   }
 
@@ -115,7 +122,7 @@ class Cell extends Component {
   }
 
   render() {
-    const { number, fixed, highlight, glow, pencil, hints, toggle } = this.state;
+    const { number, fixed, highlight, glow, pencil, hints, toggle, error } = this.state;
     const rotate = this.state.anim.interpolate({
       inputRange: [0, 1],
       outputRange: ['0deg', '360deg'],
@@ -135,7 +142,8 @@ class Cell extends Component {
       styleArray = [styles.text, styles.glowText];
     }
     return (
-      <Animated.View style={[styles.cell, highlight&&styles.highlightCell, glow&&styles.glowCell, {transform, zIndex}]}>
+      <Animated.View style={[styles.cell, highlight && styles.highlightCell,
+        glow && styles.glowCell, error && styles.errorCell, {transform, zIndex}]}>
         {pencil?
           <Text style={[styles.text, styles.pencilText]} >{hint}</Text>:
           <Text style={styleArray}>{text}</Text>
@@ -195,6 +203,10 @@ const styles = StyleSheet.create({
   },
   highlightText: {
     color: '#c90',
+  },
+  errorCell:{
+    borderColor: 'red',
+    borderWidth: 4,
   },
   glowCell: {
     borderColor: 'darkturquoise',

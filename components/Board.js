@@ -29,25 +29,57 @@ class Board extends Component {
   hightlightNumber = null;
   glowNumber = null;
   glowTimeout = null;
+  errTimeout = null;
   hightlightIndex = null;
   inited = false;
   solved = false;
-
-  componentWillReceiveProps(nextProps) {
-    //if (!nextProps.game || (!nextProps.reset && this.inited)) return;
-    if (nextProps.game && nextProps.reset){
-      this.setState({ index: -1 });
-      this.cells.forEach(x => x.reset());
-      this.game = nextProps.game;
-      this.initBoard();
-    }
-  }
 
   shouldComponentUpdate(nextProps) {
     return nextProps.reset;
   }
 
-  updateGame(type, index, number, hints){
+  initBoard() {
+    this.inited = false;
+    this.solved = false;
+    this.hightlightNumber = null;
+    this.hightlightIndex = null;
+
+    let count = 0;
+    this.puzzle = new Array(81);
+    this.game.forEach( (cell) => {
+      if(!cell) return;
+      count++;
+      let i = cell.idx;
+      setTimeout( () => {
+        switch(cell.type){
+        case "F":
+          this.cells[i].setNumber(cell.n, true);
+          this.puzzle[i] = cell.n;
+          break;
+        case "N":
+          this.cells[i].setNumber(cell.n, false);
+          this.puzzle[i] = cell.n;
+          break;
+        case "H":
+          JSON.parse(cell.h).forEach((item) => {
+            if(isNumber(item))
+              this.cells[i].setHintNumber(item);
+          });
+          break;
+        }
+      }, 50 * count, count);
+    });
+    this.inited = true;
+    this.props.onInit && this.props.onInit();
+  }
+
+  resetGame = (game) => {
+    this.cells && this.cells.forEach(x => x.reset());
+    this.game = game;
+    this.initBoard();
+  }
+
+  storeGame = (type, index, number, hints) => {
     switch(type){
     case 'N':
     case 'F':
@@ -118,7 +150,7 @@ class Board extends Component {
         this.setGlow(this.glowNumber, false);
       }
       this.setGlow(number, true);
-      this.updateGame('H', index, null, hints);
+      this.storeGame('H', index, null, hints);
       return false;
     }
 
@@ -135,10 +167,11 @@ class Board extends Component {
     });
     if (collision.length) {
       // collisions: bad move
+      this.setError(index, true);
       collision.forEach(i => this.cells[i].setHighlight(true));
       setTimeout(() => {
         collision.forEach(i => this.cells[i].setHighlight(false));
-      }, 400);
+      }, 800);
       this.props.onErrorMove && this.props.onErrorMove();
       return false;
     }
@@ -146,6 +179,7 @@ class Board extends Component {
     test[index] = number;
     if (!sudoku.solvepuzzle(test)) {
       // no collisions, still a bad move
+      this.setError(index, true);
       setTimeout(() => {
         this.props.onErrorMove && this.props.onErrorMove();
       }, 300);
@@ -155,7 +189,7 @@ class Board extends Component {
     // lock the number
     this.cells[index].setNumber(number, false);
     this.puzzle[index] = number;
-    this.updateGame('N', index, number);
+    this.storeGame('N', index, number);
 
     // remove any hints on the same grid, column or row
     this.cells.forEach((item, idx) => {
@@ -164,7 +198,7 @@ class Board extends Component {
       if (pos.x == x || pos.y == y || toZ(idx) == z){
         let hints = this.cells[idx].removeHint(number);
         if(this.game[idx] && this.game[idx].type == 'H')
-          this.updateGame('H', idx, null, hints);
+          this.storeGame('H', idx, null, hints);
       }
     });
 
@@ -223,6 +257,16 @@ class Board extends Component {
     });
   }
 
+  setError(index, toggle){
+    clearTimeout(this.errTimeout);
+    this.cells[index].setError(toggle);
+    if(toggle){
+      this.errTimeout = setTimeout(() => {
+        this.setError(index, false);
+      }, 1000);
+    }
+  }
+
   setGlow(number, glow) {
     this.puzzle.forEach((item, i) => {
       if (isNumber(item) && item == number) {
@@ -238,41 +282,6 @@ class Board extends Component {
     } else {
       this.glowNumber = null;
     }
-  }
-
-  initBoard() {
-    this.inited = false;
-    this.solved = false;
-    this.hightlightNumber = null;
-    this.hightlightIndex = null;
-
-    let count = 0;
-    this.puzzle = new Array(81);
-    this.game.forEach( (cell) => {
-      if(!cell) return;
-      count++;
-      let i = cell.idx;
-      setTimeout( () => {
-        switch(cell.type){
-        case "F":
-          this.cells[i].setNumber(cell.n, true);
-          this.puzzle[i] = cell.n;
-          break;
-        case "N":
-          this.cells[i].setNumber(cell.n, false);
-          this.puzzle[i] = cell.n;
-          break;
-        case "H":
-          JSON.parse(cell.h).forEach((item) => {
-            if(isNumber(item))
-              this.cells[i].setHintNumber(item);
-          });
-          break;
-        }
-      }, 50 * count, count);
-    });
-    this.inited = true;
-    this.props.onInit && this.props.onInit();
   }
 
   animateRow(x) {

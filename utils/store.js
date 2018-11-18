@@ -2,8 +2,13 @@
 // model layer over AsyncStorage
 import { AsyncStorage } from 'react-native';
 
-function get(key) {
-  return AsyncStorage.getItem(key).then(value => JSON.parse(value));
+async function get(key){
+  try {
+    const value = await AsyncStorage.getItem(key);
+    return (value !== null)? JSON.parse(value) : null;
+  } catch (error) {
+    return null;
+  }
 }
 
 function set(key, value) {
@@ -14,24 +19,8 @@ function remove(key) {
   return AsyncStorage.removeItem(key);
 }
 
-function multiGet(...keys) {
-  return AsyncStorage.multiGet([...keys]).then((stores) => {
-    let data = {};
-    stores.map((result, i, store) => {
-      data[store[i][0]] = JSON.parse(store[i][1]);
-    });
-    return data;
-  });
-}
-
-function multiRemove(...keys) {
-  return AsyncStorage.multiRemove([...keys]);
-}
-
 export default {
   get,
   set,
   remove,
-  multiGet,
-  multiRemove,
 };

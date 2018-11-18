@@ -16,9 +16,8 @@ Install node, react-native, react-native-cli
 
 See also package.json.
 ```
-"react": "16.0.0",
-"react-native": "0.50.0",
-"react-native-i18n": "2.0.9"
+"react": "16.6.0-alpha.8af6728",
+"react-native": "0.57.4"
 ```
 
 ## Build

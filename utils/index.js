@@ -2,12 +2,12 @@
 
 import Store from './store';
 import sudoku from './sudoku';
-import I18n from './i18n';
+import Lang from './language';
 
 export {
   Store,
   sudoku,
-  I18n,
+  Lang,
 };
 
 export function isNumber(number) {

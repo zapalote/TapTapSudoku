@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import { StyleSheet, Text } from 'react-native';
-import { isNumber, I18n } from '../utils';
+import { isNumber, Lang } from '../utils';
 
 class BadMove extends Component {
 
@@ -32,7 +32,7 @@ class BadMove extends Component {
     const { style } = this.props;
     const { errors } = this.state;
     return (
-      <Text style={[styles.text, style]}>{I18n.t('error')+this.formatBad(errors)}</Text>
+      <Text style={[styles.text, style]}>{Lang.txt('error')+this.formatBad(errors)}</Text>
     );
   }
 }
