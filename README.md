@@ -8,6 +8,8 @@ We found no other app that would offer this usability.
 It's free of charge. No ads. We don't collect any data.
 No rankings, no competitions. It's just you solving a game.
 
+![](./assets/mockup-3d-for-app-store.jpg)
+
 ## Prerequisites
 
 Install node, react-native, react-native-cli
