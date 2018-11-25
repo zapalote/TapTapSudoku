@@ -39,11 +39,11 @@ You can find TapTapSudoku at
 <a href="https://play.google.com/store/apps/details?id=com.zapalote.taptapsudoku" style="display:inline-block;overflow:hidden;background:url(google-play-badge.png) no-repeat;width:135px;height:40px;background-size:contain;"></a>
 
 
-![https://linkmaker.itunes.apple.com/assets/shared/badges/en-us/appstore-lrg.svg](https://itunes.apple.com/us/app/taptapsudoku/id1320628951?mt=8)
+[![App Store][https://linkmaker.itunes.apple.com/assets/shared/badges/en-us/appstore-lrg.svg]](https://itunes.apple.com/us/app/taptapsudoku/id1320628951?mt=8)
 
 and
 
-![./assets/google-play-badge.png](https://play.google.com/store/apps/details?id=com.zapalote.taptapsudoku)
+[![Play Store][./assets/google-play-badge.png]](https://play.google.com/store/apps/details?id=com.zapalote.taptapsudoku)
 
 ## Contributing
 
