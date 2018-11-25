@@ -43,7 +43,7 @@ You can find TapTapSudoku at
 
 and
 
-[![Play Store](./assets/google-play-badge.png)](https://play.google.com/store/apps/details?id=com.zapalote.taptapsudoku)
+[![Play Store](./assets/google-play-badge.png) | width=135](https://play.google.com/store/apps/details?id=com.zapalote.taptapsudoku)
 
 ## Contributing
 
