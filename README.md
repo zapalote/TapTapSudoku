@@ -35,11 +35,15 @@ react-native run-ios or react-native run-android.
 
 You can find TapTapSudoku at
 
-[Apple Store](https://itunes.apple.com/us/app/taptapsudoku/id1320628951?mt=8)
+<a href="https://itunes.apple.com/us/app/taptapsudoku/id1320628951?mt=8" style="display:inline-block;overflow:hidden;background:url(https://linkmaker.itunes.apple.com/assets/shared/badges/en-us/appstore-lrg.svg) no-repeat;width:135px;height:40px;background-size:contain;"></a>
+<a href="https://play.google.com/store/apps/details?id=com.zapalote.taptapsudoku" style="display:inline-block;overflow:hidden;background:url(google-play-badge.png) no-repeat;width:135px;height:40px;background-size:contain;"></a>
+
+
+![https://linkmaker.itunes.apple.com/assets/shared/badges/en-us/appstore-lrg.svg](https://itunes.apple.com/us/app/taptapsudoku/id1320628951?mt=8)
 
 and
 
-[Google Play](https://play.google.com/store/apps/details?id=com.zapalote.taptapsudoku)
+![./assets/google-play-badge.png](https://play.google.com/store/apps/details?id=com.zapalote.taptapsudoku)
 
 ## Contributing
 
