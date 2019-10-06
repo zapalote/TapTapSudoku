@@ -18,8 +18,10 @@ Install node, react-native, react-native-cli
 
 See also package.json.
 ```
-"react": "16.6.0-alpha.8af6728",
-"react-native": "0.57.4"
+"@react-native-community/async-storage": "^1.5.1",
+"react": "16.8.6",
+"react-native": "0.60.3",
+"react-native-svg": "^9.5.3"
 ```
 
 ## Build
