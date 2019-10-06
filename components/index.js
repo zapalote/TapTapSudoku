@@ -7,7 +7,7 @@ import CircularPadCell from './CircularPadCell';
 import Timer from './Timer';
 import Touchable from './Touchable';
 import BadMove from './BadMove';
-import Circular from './Circular';
+import CircularProgress from './CircularProgress';
 import RadioGroup from './RadioButtonsGroup';
 
 export {
@@ -17,10 +17,10 @@ export {
   BorderWidth,
   NumberPad,
   CircularPadCell,
+  CircularProgress,
   Board,
   Timer,
   Touchable,
   BadMove,
-  Circular,
   RadioGroup,
 };

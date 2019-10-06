@@ -13,7 +13,7 @@ const translations = {
     congrats: 'Congrats',
     success: 'You solved this game in\n',
     newrecord: 'New record! You solved this game in\n',
-    record: 'Record so far: ',
+    record: 'Record so far (this level): ',
 
     error: 'BAD ',
     errors: 'Bad moves ',
@@ -22,15 +22,15 @@ const translations = {
     sharemessage: 'tap:tap Sudoku - by players, for players',
     sharefailed: 'Share failed',
 
-    rate: 'Rate this app',
-    ratemessage: 'Thanks for your rating!',
+    rate: 'Would you mind rating TapTapSudoku?',
+    ratemessage: 'Thank you!',
     notnow: 'Not now',
     appstore: 'Yes',
     cancel: 'Cancel',
     confirm: 'Confirm',
 
     Info: 'This game',
-    difficulty: 'Master difficulty ',
+    difficulty: 'Difficulty ',
     manageable: 'MANAGEABLE',
     challenging: 'CHALLENGING',
     impossible: 'IMPOSSIBLE',

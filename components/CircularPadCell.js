@@ -2,12 +2,13 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet, PanResponder } from 'react-native';
 import { CellSize } from './GlobalStyle';
 import Touchable from './Touchable';
-import Circular from './Circular';
+import CircularProgress from './CircularProgress';
 
 const doubleTap = {
   delay: 300
 };
-const Diam = CellSize * 1.3;
+const Diam = CellSize * 1.5;
+const activePadColor = '#333';
 
 class CircularPadCell extends Component {
   constructor(props) {
@@ -58,7 +59,6 @@ class CircularPadCell extends Component {
     }
   }
 
-  //componentWillReceiveProps(nextProps) {
   resetPadCell = (fillCount) => {
     this.setState({
       count: fillCount,
@@ -73,8 +73,8 @@ class CircularPadCell extends Component {
     const disabled = count == 9;
     return (
       <Touchable>
-        <Circular size={Diam} width={stroke} fill={fill} rotation={45}
-          style={styles.surface} tintColor={'#999'} backgroundColor={'#000'}>
+        <CircularProgress size={Diam} width={stroke} fill={fill}
+          style={styles.surface} tintColor={'#999'} backgroundColor={activePadColor}>
           {
             () => (
               <View style={[styles.padCell, disabled && styles.disabled]} {...this.myPanResponder.panHandlers}>
@@ -82,7 +82,7 @@ class CircularPadCell extends Component {
               </View>
             )
           }
-        </Circular>
+        </CircularProgress>
       </Touchable>
     );
   }
@@ -90,12 +90,11 @@ class CircularPadCell extends Component {
 
 const styles = StyleSheet.create({
   disabled: {
-    //backgroundColor: '#eee',
     opacity: 0.3,
   },
   surface: {
     backgroundColor: 'transparent',
-    margin: 3,
+    margin: 2,
   },
   padCell: {
     position: 'absolute',
@@ -108,11 +107,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     borderRadius: Diam,
   },
-  padText:{
+  padText: {
     fontSize: Diam / 1.7,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#000',
+    color: activePadColor,
     backgroundColor: 'transparent',
   }
 });

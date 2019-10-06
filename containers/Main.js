@@ -3,55 +3,47 @@
 import React, { Component } from 'react';
 
 import {
-  StyleSheet, AppState, Platform, Linking, Vibration, Modal, Image, Text, Alert, View, StatusBar, ActivityIndicator,
+  StyleSheet, AppState, Platform, Linking, Vibration, Modal, Image, Alert, View, SafeAreaView,
+  StatusBar, ActivityIndicator, Dimensions,
 } from 'react-native';
 
 import {
-  Size, CellSize, BoardWidth, BorderWidth, Board, Timer, Touchable, NumberPad, BadMove, RadioGroup,
+  Size, CellSize, BorderWidth, Board, Timer, Touchable, NumberPad, BadMove,
 } from '../components';
+import { ProvideHelp, ProvideAbout, ProvideSettings, ProvideMenu, } from '../containers';
 import { Store, sudoku, isNumber, Lang, } from '../utils';
 
 class Main extends Component {
 
-  version = '1.3';
-  aboutMsg =
-    `A SUDOKU APP FOR
-    PLAYERS BY PLAYERS
-    v${this.version}`;
-  privacyMsg  =
-    `PRIVACY: WE DON'T
-    COLLECT ANY DATA`;
-  copyrightMsg = `© ${(new Date()).getFullYear()} zapalote.com`;
-  copyrightLink = 'https://zapalote.com/TapTapSudoku/';
+  appVersion = '1.4';
 
   state = {
     appState: AppState.currentState,
     game: null,
     playing: false,
-    showMenu: false,
+    showMenu: true,
     showHelp: false,
+    showDoc: false,
     showAbout: false,
     showSettings: false,
-    updateBoard: true,
-    topMargin: 18,
-    level: 2,
+    updateBoard: false,
+    levelRange: [0,1],
+    levelValue: 0,
     loading: false,
+    orientation: 'portrait',
+    topMargin: 18,
+    screenWidth: Size.width,
+    screenHeight: Size.height,
+    storeError: '',
   }
   difficulty = 0;
   elapsed = null;
   error = 0;
-  records = [];
+  records = new Array(8).fill(3600);
   numberPad = null;
   pad = new Array(9).fill(0);
   board = null;
-  fromStore = false;
-  levels = [
-    { label: Lang.txt('manageable'),  value: 2, size: CellSize/1.8, range: [0,1],     color: '#fc0', selected: true },
-    { label: Lang.txt('challenging'), value: 4, size: CellSize/1.8, range: [2,3],     color: '#fc0',},
-    { label: Lang.txt('impossible'),  value: 6, size: CellSize/1.8, range: [4,5,6,7], color: '#fc0' },
-    { label: Lang.txt('anylevel'),    value: 0, size: CellSize/1.8, range: [0,1,2,3,4,5,6,7], color: '#fc0' }
-  ];
-  TEST = 'init';
+  firstTime = false;
 
   shouldComponentUpdate(nextProps, nextState){
     return this.state != nextState;
@@ -59,45 +51,74 @@ class Main extends Component {
 
   async componentDidMount() {
     AppState.addEventListener('change', this.handleAppStateChange);
+    Dimensions.addEventListener('change', this.listenOrientationChange);
 
     StatusBar.setHidden(true);
-    this.records = await Store.get('records') || [];
-    this.setState({
-      showMenu: true,
-    });
+    this.firstTime = await Store.get('first', this.setError) || true;
+    if(this.firstTime){
+      await Store.clear(this.setError);
+      this.setState({
+        showDoc: true,
+      });
+    } else {
+      this.loadBoardFromStore();
+      this.setState({
+        showMenu: true,
+      });
+    }
   }
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
+    Dimensions.removeEventListener('change', this.listenOrientationChange);
   }
 
-  handleAppStateChange = (nextAppState) => {
-    if (nextAppState == null || nextAppState === 'active' ){
-      //if (this.state.appState.match(/inactive|background/)) {
+  setError = (storeError) => {
+    this.setState({ storeError });
+  }
+
+  handleAppStateChange = async (nextAppState) => {
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active' ){
       this.loadBoardFromStore();
-      //}
     } else {
-      this.elapsed = this.timer.pause();
-      Store.set('elapsed', this.elapsed);
+      this.elapsed = (this.timer && this.timer.pause()) || 0;
+      await Store.set('elapsed', this.elapsed, this.setError);
     }
 
     this.setState({appState: nextAppState});
   }
 
+  listenOrientationChange = (newDimensions) => {
+    const screenWidth = newDimensions.window.width;
+    const screenHeight = newDimensions.window.height;
+
+    this.setState({
+      orientation: screenWidth < screenHeight ? 'portrait' : 'landscape',
+      topMargin: screenWidth < screenHeight ? 18 : 6,
+      screenWidth,
+      screenHeight,
+    });
+  }
+
+  getLayout = () => {
+    const { orientation, topMargin } = this.state;
+    return ({
+      marginTop: topMargin,
+      flexDirection: orientation === 'portrait'? 'column' : 'row',
+    });
+  }
+
   loadBoardFromStore = async () => {
     this.pad.fill(0);
-    let game = await Store.get('board');
-    if(game == null || game.length == 0) {
-      this.fromStore = false;
-      this.TEST = 'empty';
-      return;
-    }
+    const recs = await Store.get('records', this.setError);
+    if (recs) this.records = recs;
+    const game = await Store.get('board', this.setError);
 
-    this.TEST = 'store';
-    this.fromStore = true;
-    let elapsed = await Store.get('elapsed') || 0;
-    this.timer.setElapsed(elapsed);
+    const elapsed = await Store.get('elapsed', this.setError) || 0;
+    this.timer && this.timer.setElapsed(elapsed);
     this.error = await Store.get('error') || 0;
+    const levelRange = await Store.get('levelRange', this.setError) || [0,1];
+    const levelValue = await Store.get('levelValue', this.setError) || 0;
     this.setState({
       game,
       playing: true,
@@ -105,15 +126,17 @@ class Main extends Component {
       showMenu: true,
       showHelp: false,
       showAbout: false,
+      levelRange,
+      levelValue,
     }, () => {
       this.board.resetGame(game);
       this.setPad();
       this.bad.reset(this.error);
-      this.timer.resume();
+      this.timer && this.timer.resume();
     });
   }
 
-  onRestart = () => {
+  onRestart = async () => {
     this.elapsed = null;
     this.timer.reset();
     let game = [];
@@ -131,9 +154,8 @@ class Main extends Component {
       this.bad.reset();
       this.setPad();
     });
-    Store.set('board', game);
-    Store.set('error', 0);
-    this.TEST = `${this.TEST} onRestart`;
+    await Store.set('board', game, this.setError);
+    await Store.set('error', 0, this.setError);
   }
 
   setPad = () => {
@@ -151,43 +173,45 @@ class Main extends Component {
     this.setState({
       playing: true,
       updateBoard: false,
-      showMenu: this.fromStore,
+      showMenu: false,
       showHelp: false,
     }, () => {
-      if(this.fromStore){
-        this.fromStore = false;
-      } else {
-        this.error = 0;
-        this.bad.reset();
-      }
+      this.error = 0;
+      this.bad.reset();
       this.timer.start();
     });
-    this.TEST = `${this.TEST} onInit`;
   }
 
-  onErrorMove = () => {
+  onErrorMove = async () => {
     Vibration.vibrate();
     this.bad.onBadMove();
     this.error++;
-    Store.set('error', this.error);
+    await Store.set('error', this.error, this.setError);
   }
 
-  onFinish = () => {
+  storeElapsed = async () => {
+    const time = this.timer.getElapsed();
+    await Store.set('elapsed', time, this.setError);
+  }
+
+  onFinish = async () => {
     this.elapsed = null;
     const eta = this.timer.stop();
     this.setState({
       playing: false,
     });
-    Store.remove('board');
+    Store.remove('board', this.setError);
 
     // check if this is a record eta (don't bother for uniqueness)
-    this.records.push(eta);
-    this.records.sort((a, b) => a - b);
-    this.records = this.records.slice(0, 5);
-    Store.set('records', this.records);
+    let newRecord = false;
+    const difficulty = this.difficulty;
+    if(eta < this.records[difficulty]){
+      this.records[difficulty] = eta;
+      newRecord = true;
+      await Store.set('records', this.records, this.setError);
+    }
 
     const formatTime = Timer.formatTime;
-    const newRecord = eta == this.records[0];
     const msg = (newRecord ? Lang.txt('newrecord') : Lang.txt('success')) + formatTime(eta);
     setTimeout(() => {
       Alert.alert(Lang.txt('congrats'), msg, [
@@ -195,7 +219,6 @@ class Main extends Component {
         { text: Lang.txt('newgame'), onPress: this.onCreate },
       ]);
     }, 1000);
-    this.TEST = `${this.TEST} onFinish`;
   }
 
   onResume = () => {
@@ -204,14 +227,21 @@ class Main extends Component {
     }, () => {
       this.timer.resume();
     });
-    this.TEST = `${this.TEST} onResume`;
   }
 
-  newGame = () => {
+  onCreate = () => {
+    this.setState({ loading: true });
+    this.elapsed = null;
+    this.timer && this.timer.reset();
+    setTimeout(() => {
+      this.newGame();
+    }, 100);
+  }
+
+  newGame = async () => {
     let puzzle = [];
     let d = 0;
-    let lev = this.levels.findIndex(e => e.value == this.state.level);
-    const levelRange = lev > -1 ? this.levels[lev].range : [0,1];
+    const levelRange = await Store.get('levelRange', this.setError) || [0,1];
 
     do {
       puzzle = sudoku.makepuzzle();
@@ -236,46 +266,35 @@ class Main extends Component {
       this.bad.reset();
       this.setPad();
     });
-    Store.set('error', 0);
-    Store.set('board', game);
-    this.TEST = `${this.TEST} newGame`;
+    await Store.set('error', 0, this.setError);
+    await Store.set('board', game, this.setError);
   }
 
-  onCreate = () => {
-    this.setState({ loading: true });
-    this.elapsed = null;
-    this.timer.reset();
-    setTimeout(() => {
-      this.newGame();
-    }, 100);
-    this.TEST = `${this.TEST} onCreate`;
-  }
-
-  onShowMenu = () => {
-    this.elapsed = this.timer.pause();
-    Store.set('elapsed', this.elapsed);
+  onShowMenu = async () => {
+    this.elapsed = (this.timer && this.timer.pause()) || 0;
+    await Store.set('elapsed', this.elapsed, this.setError);
     this.setState({
       showMenu: true,
     });
   }
 
   onCloseMenu = () => {
-    this.timer.resume();
+    this.timer && this.timer.resume();
     this.setState({
       showMenu: false,
     });
   }
 
-  onShowHelp = () => {
-    this.elapsed = this.timer.pause();
-    Store.set('elapsed', this.elapsed);
+  onShowHelp = async () => {
+    this.elapsed = (this.timer && this.timer.pause()) || 0;
+    await Store.set('elapsed', this.elapsed, this.setError);
     this.setState({
       showHelp: true,
     });
   }
 
-  onCloseHelp = () => {
-    this.timer.resume();
+  onCloseHelp = async () => {
+    this.timer && this.timer.resume();
     this.setState({
       showHelp: false,
     });
@@ -293,10 +312,12 @@ class Main extends Component {
 
   showInfo = () => {
     const formatTime = Timer.formatTime;
-    const level = '•'.repeat(this.difficulty+1);
-    const record = (this.records[0])? Lang.txt('record')+formatTime(this.records[0]) : ' ';
-    const msg = `${Lang.txt('difficulty') + level}
-          ${record}`;
+    const difficulty = '•'.repeat(this.difficulty+1);
+    const record = Lang.txt('record')+formatTime(this.records[this.difficulty]);
+    const info = (__DEV__ != undefined)?
+      `level: ${this.state.levelValue}-${this.state.levelRange} StoreErr ${this.state.storeError}`:
+      '';
+    const msg = `${info}\n${Lang.txt('difficulty') + difficulty}\n${record}`;
 
     setTimeout(() => {
       Alert.alert(Lang.txt('Info'), msg, [
@@ -306,62 +327,56 @@ class Main extends Component {
   }
 
   onAbout = () => {
-    this.setState({
-      showAbout: true,
-    });
+    this.setState({ showAbout: true, });
   }
 
   onCloseAbout = () => {
-    this.setState({
-      showAbout: false,
-    });
+    this.setState({ showAbout: false, });
   }
 
   onSettings = () => {
-    this.setState({
-      showSettings: true,
-    });
+    this.setState({ showSettings: true, });
   }
 
   onCloseSettings = () => {
+    this.setState({ showSettings: false, });
+  }
+
+  onDoc = () => {
+    this.setState({ showDoc: true, });
+  }
+
+  onCloseDoc = async () => {
+    if(this.firstTime){
+      this.firstTime = false;
+      await Store.set('first', false, this.setError);
+    }
     this.setState({
-      showSettings: false,
+      showDoc: false,
     });
   }
 
-  onLevelsPress = (levels) => {
-    let selectedLevel = levels.find(e => e.selected == true);
+  onSetLevel = async (value, range) => {
     this.setState({
-      level: selectedLevel ? selectedLevel.value : 2,
+      levelValue: value,
+      levelRange: range,
       playing: false,
     });
-  }
-
-  getTopMargin = () => {
-    return ({ marginTop: this.state.topMargin });
-  }
-
-  onLayoutEvent = (event) => {
-    if(!this) return;
-    const {width,height} = event.nativeEvent.layout;
-    const T = (height < width)? 6 : 18;
-    this.setState({
-      topMargin: T,
-    });
+    await Store.set('levelRange', range, this.setError);
+    await Store.set('levelValue', value, this.setError);
   }
 
   render() {
-    const { game, playing, showMenu, showHelp, showAbout, showSettings, updateBoard, loading } = this.state;
+    const {
+      game, playing, showMenu, showHelp, showAbout, showSettings, showDoc, updateBoard, loading, levelValue,
+    } = this.state;
     const disabled = !playing;
-    const aboutInfo = this.aboutMsg.replace(/\n\s+/g,"\n");
-    const privacyInfo = this.privacyMsg.replace(/\n\s+/g,"\n");
 
     return (
-
-      <View style={[styles.container, this.getTopMargin()]} onLayout={this.onLayoutEvent} >
-
+      <SafeAreaView style={styles.container}>
         <Board game={game} ref={ref => this.board = ref} reset={updateBoard}
-          onInit={this.onInit} onErrorMove={this.onErrorMove} onFinish={this.onFinish} />
+          storeElapsed={this.storeElapsed} onInit={this.onInit}
+          onErrorMove={this.onErrorMove} onFinish={this.onFinish} />
 
         <View style={styles.box}>
           <View style={styles.menuBox}>
@@ -384,44 +399,13 @@ class Main extends Component {
         </View>
 
         <Modal animationType='fade' visible={showHelp} transparent={true} onRequestClose={this.onCloseHelp} >
-          <View style={styles.modal} >
-            <View style={[styles.modalContainer]} >
-              <Image style={styles.help} source={require('../images/helpText.png')} />
-            </View>
-            <View style={styles.footer}>
-              <Touchable style={styles.button} onPress={this.onCloseHelp} >
-                <Image style={styles.buttonIcon} source={require('../images/close.png')} />
-              </Touchable>
-            </View>
-          </View>
+          <ProvideHelp layoutStyle={this.getLayout()} onClose={this.onCloseHelp} />
         </Modal>
 
         <Modal animationType='fade' visible={showMenu} transparent={true} onRequestClose={this.onCloseMenu} >
-          <View style={styles.modal} >
-            <View style={styles.modalContainer} >
-              <Image style={styles.logo} source={require('../images/tap-tap-sudoku.png')} />
-              <Touchable disabled={disabled} style={styles.button} onPress={this.onResume} >
-                <Image style={[styles.buttonMenu, disabled && styles.disabled]} source={require('../images/continue.png')} />
-              </Touchable>
-              <Touchable disabled={disabled} style={styles.button} onPress={this.onRestart} >
-                <Image style={[styles.buttonMenu, disabled && styles.disabled]} source={require('../images/restart.png')} />
-              </Touchable>
-              <Touchable style={styles.button} onPress={this.onCreate} >
-                <Image style={styles.buttonMenu} source={require('../images/newgame.png')} />
-              </Touchable>
-            </View>
-            <View style={styles.footer} >
-              <Touchable style={styles.button} onPress={this.onAbout} >
-                <Image style={styles.buttonIcon} source={require('../images/about.png')} />
-              </Touchable>
-              <Touchable style={styles.button} onPress={this.onSettings} >
-                <Image style={styles.buttonIcon} source={require('../images/settings.png')} />
-              </Touchable>
-              <Touchable style={styles.button} onPress={this.onRate} >
-                <Image style={styles.buttonIcon} source={require('../images/rate.png')} />
-              </Touchable>
-            </View>
-          </View>
+          <ProvideMenu disabled={disabled} layoutStyle={this.getLayout()}
+            onResume={this.onResume} onRestart={this.onRestart} onCreate={this.onCreate} onDoc={this.onDoc}
+            onAbout={this.onAbout} onSettings={this.onSettings} onRate={this.onRate} />
 
           {loading?
             <View style={styles.loadingBackground}>
@@ -431,49 +415,28 @@ class Main extends Component {
             </View>
             : null }
 
+          <Modal animationType='fade' visible={showDoc} transparent={true} onRequestClose={this.onCloseDoc} >
+            <ProvideHelp layoutStyle={this.getLayout()} onClose={this.onCloseDoc} />
+          </Modal>
+
           <Modal animationType='fade' visible={showAbout} transparent={true} onRequestClose={this.onCloseAbout} >
-            <View style={styles.modal} >
-              <View style={[styles.modalContainer]} >
-                <Image style={styles.logo} source={require('../images/tap-tap-sudoku.png')} />
-                <Text style={styles.aboutText}>{aboutInfo}</Text>
-                <Text style={[styles.aboutText, styles.privacyText]}>{privacyInfo}</Text>
-                <View style={styles.link}>
-                  <Text style={[styles.aboutText, styles.copyrightText]}
-                    onPress={() => Linking.openURL(this.copyrightLink)}>{this.copyrightMsg}</Text>
-                </View>
-              </View>
-              <View style={styles.footer}>
-                <Touchable style={styles.button} onPress={this.onCloseAbout} >
-                  <Image style={styles.buttonIcon} source={require('../images/close.png')} />
-                </Touchable>
-              </View>
-            </View>
+            <ProvideAbout textStyle={styles.helpTextStyle} layoutStyle={this.getLayout()}
+              appVersion={this.appVersion} onClose={this.onCloseAbout} />
           </Modal>
 
           <Modal animationType='fade' visible={showSettings} transparent={true} onRequestClose={this.onCloseSettings} >
-            <View style={styles.modal} >
-              <View style={[styles.modalContainer]} >
-                <Image style={styles.logo} source={require('../images/tap-tap-sudoku.png')} />
-                <RadioGroup radioButtons={this.levels} onPress={this.onLevelsPress}
-                  style={styles.radioText} heading={'LEVEL'} headingStyle={styles.optionHeading}/>
-              </View>
-              <View style={styles.footer}>
-                <Touchable style={styles.button} onPress={this.onCloseSettings} >
-                  <Image style={styles.buttonIcon} source={require('../images/close.png')} />
-                </Touchable>
-              </View>
-            </View>
+            <ProvideSettings layoutStyle={this.getLayout()}
+              levelValue={levelValue} onSetLevel={this.onSetLevel} onClose={this.onCloseSettings}/>
           </Modal>
 
         </Modal>
-      </View>
+      </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop:18,
     flexDirection:'row',
     justifyContent: 'flex-start',
     flexWrap: 'wrap',
@@ -493,7 +456,7 @@ const styles = StyleSheet.create({
   },
   buttonBox:{
     marginTop: CellSize * 0.3,
-    width: CellSize * 2.3,
+    width: CellSize * 2.1,
     flexDirection: 'row',
     justifyContent: 'space-between'
   },
@@ -508,7 +471,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Menlo',
   },
   timer: {
-    fontSize: CellSize * 3 / 4,
+    fontSize: CellSize * 0.65,
     alignSelf: 'flex-start',
     color: '#6b6b6b',
   },
@@ -526,18 +489,6 @@ const styles = StyleSheet.create({
     fontWeight: '100',
     fontFamily: 'Menlo',
   },
-  modal: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  modalContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  disabled: {
-    opacity: 0.5,
-  },
   loadingBackground: {
     position: 'absolute',
     top: 0,
@@ -554,52 +505,12 @@ const styles = StyleSheet.create({
   loading: {
     backgroundColor: 'white',
     opacity: 1,
-    height: 100,
-    width: 100,
+    height: CellSize * 3,
+    width: CellSize * 3,
     borderRadius: 50,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-around'
-  },
-  optionHeading:{
-    fontFamily: "Varela Round",
-    fontSize: CellSize / 1.3 ,
-    textAlign: "center",
-    marginBottom: CellSize / 2,
-  },
-  radioText:{
-    fontFamily: "Varela Round",
-    fontSize: CellSize / 1.7,
-  },
-  aboutText: {
-    fontFamily: "Varela Round",
-    fontSize: CellSize / 2.3,
-    textAlign: "center",
-    margin: BorderWidth * 5,
-  },
-  privacyText :{
-    color: '#000'
-  },
-  copyrightText: {
-    backgroundColor: 'transparent',
-    bottom: -8 * BorderWidth,
-    fontSize: CellSize / 2,
-  },
-  link:{
-    borderBottomColor: '#fc0',
-    borderBottomWidth: BorderWidth * 2.5,
-    opacity: 0.65,
-  },
-  help: {
-    marginTop: CellSize,
-    width: CellSize * 7,
-    height: BoardWidth * 1.2,
-  },
-  footer: {
-    flexDirection: 'row',
-    marginBottom: CellSize / 1.7 ,
-    alignItems: 'center',
-    justifyContent: 'space-around',
   },
   button: {
     padding: Size.height > 500 ? 10 : 5,

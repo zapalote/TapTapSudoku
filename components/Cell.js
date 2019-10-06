@@ -1,18 +1,8 @@
 'use strict';
 
 import React, { Component } from 'react';
-
-import {
-  StyleSheet,
-  Animated,
-  Platform,
-  Text,
-} from 'react-native';
-
-import {
-  CellSize,
-} from './GlobalStyle';
-
+import { StyleSheet, Animated, Platform, Text, } from 'react-native';
+import { CellSize, } from './GlobalStyle';
 import Touchable from './Touchable';
 
 class Cell extends Component {
@@ -29,36 +19,29 @@ class Cell extends Component {
     anim: new Animated.Value(0),
   }
 
+  shouldComponentUpdate = (nextProps, nextState) => {
+    return this.state != nextState;
+  }
+
   onPress = () => {
     this.props.onPress && this.props.onPress(this.props.index, this.state.number);
   }
 
   setHighlight(highlight) {
-    this.setState({
-      highlight: highlight,
-    });
+    this.setState({ highlight, });
   }
 
   setGlow(glow) {
-    this.setState({
-      glow: glow,
-    });
+    this.setState({ glow, });
   }
 
-  setError(err) {
-    this.setState({
-      error: err,
-    });
+  setError(error) {
+    this.setState({ error, });
   }
 
   setNumber(number, fixed) {
     // lock number
-    this.setState({
-      number,
-      fixed,
-      hints: [],
-      pencil: false,
-    });
+    this.setState({ number, fixed, hints: [], pencil: false, });
   }
 
   setHintNumber(number) {
@@ -82,9 +65,7 @@ class Cell extends Component {
     let hints = this.state.hints;
     if (hints.includes(number)) {
       hints = hints.filter(x => x != number);
-      this.setState({
-        hints,
-      });
+      this.setState({ hints, });
     }
     return hints;
   }

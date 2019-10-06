@@ -34,8 +34,22 @@ class Board extends Component {
   inited = false;
   solved = false;
 
+  constructor(props) {
+    super(props);
+
+    this.resetGame(this.props.game);
+  }
+
   shouldComponentUpdate(nextProps) {
     return nextProps.reset;
+  }
+
+  resetGame = (game) => {
+    this.cells && this.cells.forEach(x => x.reset());
+    this.game = game;
+    if(game) {
+      this.initBoard();
+    }
   }
 
   initBoard() {
@@ -73,12 +87,6 @@ class Board extends Component {
     this.props.onInit && this.props.onInit();
   }
 
-  resetGame = (game) => {
-    this.cells && this.cells.forEach(x => x.reset());
-    this.game = game;
-    this.initBoard();
-  }
-
   storeGame = (type, index, number, hints) => {
     switch(type){
     case 'N':
@@ -90,6 +98,7 @@ class Board extends Component {
       break;
     }
     Store.set('board', this.game);
+    this.props.storeElapsed && this.props.storeElapsed();
   }
 
   onCellPress = (index, number) => {

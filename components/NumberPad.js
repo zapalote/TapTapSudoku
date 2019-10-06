@@ -37,10 +37,9 @@ class NumberPad extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    //borderWidth: 1,
+    width: CellSize * 5,
+    height: CellSize * 5,
     alignItems: 'flex-start',
-    width: CellSize * 4.5,
-    height: CellSize * 4.5,
     flexDirection: 'row',
     flexWrap: 'wrap',
   }
