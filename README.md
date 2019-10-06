@@ -1,7 +1,7 @@
 # TapTapSudoku
 
 One tap to pencil, two taps to lock-in the number.
-Developed entirely with react-native.
+Developed entirely with react-native (no expo).
 
 We developed this app for the pure pleasure of a daily sudoku.
 We found no other app that would offer this usability.
