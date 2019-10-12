@@ -81,9 +81,9 @@ PODS:
   - React-RCTWebSocket (0.60.3):
     - React-Core (= 0.60.3)
     - React-fishhook (= 0.60.3)
-  - RNCAsyncStorage (1.5.1):
+  - RNCAsyncStorage (1.6.2):
     - React
-  - RNSVG (9.5.3):
+  - RNSVG (9.11.1):
     - React
   - yoga (0.60.3.React)
 
@@ -114,7 +114,7 @@ DEPENDENCIES:
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - boost-for-react-native
 
 EXTERNAL SOURCES:
@@ -190,10 +190,10 @@ SPEC CHECKSUMS:
   React-RCTText: b026f8350c2cbe0daeb9880dd9c6e018fce0daf7
   React-RCTVibration: 5d9ed4a968e9d42880ddcc7c29bee3417c745408
   React-RCTWebSocket: 69d8565d66043f244b4129f3d7154c5689fb7d3e
-  RNCAsyncStorage: b63d6e83fc629b01df6b624688f17944cea5637f
-  RNSVG: 90c76b7cf235654d45e54655b6c189ea4041057c
+  RNCAsyncStorage: 60a80e72d95bf02a01cace55d3697d9724f0d77f
+  RNSVG: be27aa7c58819f97399388ae53d7fa0572f32c7f
   yoga: 843fe25849b56131275bf3e5da2c468e96f68aff
 
-PODFILE CHECKSUM: 3cb32688af1c82e96b6ca0de72e8aa63f37849a0
+PODFILE CHECKSUM: 33938a2884a3666c501fa81672172056068d1f5d
 
-COCOAPODS: 1.7.4
+COCOAPODS: 1.8.3

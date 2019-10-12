@@ -29,11 +29,11 @@ target 'TapTapSudoku' do
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
 
-
-  target 'TapTapSudokuTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
+  #
+  # target 'TapTapSudokuTests' do
+  #   inherit! :search_paths
+  #   # Pods for testing
+  # end
 
   use_native_modules!
 

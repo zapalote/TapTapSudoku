@@ -43,7 +43,7 @@ class Main extends Component {
   numberPad = null;
   pad = new Array(9).fill(0);
   board = null;
-  firstTime = false;
+  firstTime = null;
 
   shouldComponentUpdate(nextProps, nextState){
     return this.state != nextState;
@@ -54,9 +54,9 @@ class Main extends Component {
     Dimensions.addEventListener('change', this.listenOrientationChange);
 
     StatusBar.setHidden(true);
-    this.firstTime = await Store.get('first', this.setError) || true;
-    if(this.firstTime){
-      await Store.clear(this.setError);
+    this.firstTime = await Store.get('first', this.setError);
+    if(this.firstTime == null){
+      await Store.clearAll(this.setError);
       this.setState({
         showDoc: true,
       });
@@ -113,6 +113,7 @@ class Main extends Component {
     const recs = await Store.get('records', this.setError);
     if (recs) this.records = recs;
     const game = await Store.get('board', this.setError);
+    const playing = (game !== null);
 
     const elapsed = await Store.get('elapsed', this.setError) || 0;
     this.timer && this.timer.setElapsed(elapsed);
@@ -121,8 +122,8 @@ class Main extends Component {
     const levelValue = await Store.get('levelValue', this.setError) || 0;
     this.setState({
       game,
-      playing: true,
-      updateBoard: true,
+      playing,
+      updateBoard: playing,
       showMenu: true,
       showHelp: false,
       showAbout: false,
@@ -314,10 +315,8 @@ class Main extends Component {
     const formatTime = Timer.formatTime;
     const difficulty = '•'.repeat(this.difficulty+1);
     const record = Lang.txt('record')+formatTime(this.records[this.difficulty]);
-    const info = (__DEV__ != undefined)?
-      `level: ${this.state.levelValue}-${this.state.levelRange} StoreErr ${this.state.storeError}`:
-      '';
-    const msg = `${info}\n${Lang.txt('difficulty') + difficulty}\n${record}`;
+    const info = ''; //`first: ${this.firstTime} StoreErr: ${this.state.storeError}\n`;
+    const msg = `${info}${Lang.txt('difficulty') + difficulty}\n${record}`;
 
     setTimeout(() => {
       Alert.alert(Lang.txt('Info'), msg, [
@@ -347,9 +346,9 @@ class Main extends Component {
   }
 
   onCloseDoc = async () => {
-    if(this.firstTime){
-      this.firstTime = false;
-      await Store.set('first', false, this.setError);
+    if(this.firstTime == null){
+      this.firstTime = new Date().toDateString();
+      await Store.set('first', this.firstTime, this.setError);
     }
     this.setState({
       showDoc: false,

@@ -11,7 +11,7 @@
     "@react-native-community/async-storage": "^1.5.1",
     "react": "16.8.6",
     "react-native": "0.60.3",
-    "react-native-svg": "^9.5.3"
+    "react-native-svg": "^9.11.1"
   },
   "devDependencies": {
     "@babel/core": "^7.5.4",

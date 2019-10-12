@@ -27,7 +27,7 @@ async function remove(key, setError) {
   }
 }
 
-async function clear(setError) {
+async function clearAll(setError) {
   try {
     await AsyncStorage.clear();
   } catch (error) {
@@ -39,5 +39,5 @@ export default {
   get,
   set,
   remove,
-  clear,
+  clearAll,
 };

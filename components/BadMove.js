@@ -11,7 +11,9 @@ class BadMove extends Component {
   };
 
   onBadMove() {
-    this.setState({ errors: this.state.errors + 1 });
+    this.setState((prevState) => ({
+      errors: prevState.errors + 1
+    }) );
   }
 
   reset(n) {
