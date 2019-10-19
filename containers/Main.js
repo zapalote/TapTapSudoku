@@ -200,6 +200,7 @@ class Main extends Component {
     const eta = this.timer.stop();
     this.setState({
       playing: false,
+      showMenu: true,
     });
     Store.remove('board', this.setError);
 
