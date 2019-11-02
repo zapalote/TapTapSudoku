@@ -15,7 +15,7 @@ import { Store, sudoku, isNumber, Lang, } from '../utils';
 
 class Main extends Component {
 
-  appVersion = '1.4';
+  appVersion = '1.4.2';
 
   state = {
     appState: AppState.currentState,
@@ -198,10 +198,6 @@ class Main extends Component {
   onFinish = async () => {
     this.elapsed = null;
     const eta = this.timer.stop();
-    this.setState({
-      playing: false,
-      showMenu: true,
-    });
     Store.remove('board', this.setError);
 
     // check if this is a record eta (don't bother for uniqueness)
@@ -217,10 +213,32 @@ class Main extends Component {
     const msg = (newRecord ? Lang.txt('newrecord') : Lang.txt('success')) + formatTime(eta);
     setTimeout(() => {
       Alert.alert(Lang.txt('congrats'), msg, [
-        { text: Lang.txt('ok') },
-        { text: Lang.txt('newgame'), onPress: this.onCreate },
+        { text: Lang.txt('ok'), 
+          onPress: () => {
+            this.setState({
+              playing: false,
+              showMenu: true,
+            });  
+          } 
+        },
+        { text: Lang.txt('newgame'), onPress: () => this.onCreate() },
       ]);
     }, 1000);
+  }
+
+  showInfo = () => {
+    const formatTime = Timer.formatTime;
+    const difficulty = '•'.repeat(this.difficulty+1);
+    const record = Lang.txt('record')+formatTime(this.records[this.difficulty]);
+    const info = ''; //`first: ${this.firstTime} StoreErr: ${this.state.storeError}\n`;
+    const msg = `${info}${Lang.txt('difficulty') + difficulty}\n${record}`;
+
+    setTimeout(() => {
+      Alert.alert(Lang.txt('Info'), msg, [
+        { text: Lang.txt('ok') }, 
+        // { text: 'Stop', onPress: () => this.onFinish() },
+      ]);
+    }, 300);
   }
 
   onResume = () => {
@@ -310,20 +328,6 @@ class Main extends Component {
       { text: Lang.txt('notnow') },
       { text: Lang.txt('appstore'), onPress: () => Linking.openURL(link) },
     ]);
-  }
-
-  showInfo = () => {
-    const formatTime = Timer.formatTime;
-    const difficulty = '•'.repeat(this.difficulty+1);
-    const record = Lang.txt('record')+formatTime(this.records[this.difficulty]);
-    const info = ''; //`first: ${this.firstTime} StoreErr: ${this.state.storeError}\n`;
-    const msg = `${info}${Lang.txt('difficulty') + difficulty}\n${record}`;
-
-    setTimeout(() => {
-      Alert.alert(Lang.txt('Info'), msg, [
-        { text: Lang.txt('ok') }, {},
-      ]);
-    }, 300);
   }
 
   onAbout = () => {
