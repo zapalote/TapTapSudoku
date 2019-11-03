@@ -2,7 +2,12 @@
 // model layer over AsyncStorage
 import AsyncStorage  from '@react-native-community/async-storage';
 
-async function get(key, setError) {
+let setError;
+function setErrorMethod (method) {
+  setError = method;
+}
+
+async function get(key) {
   try {
     const value = await AsyncStorage.getItem(key);
     return (value !== null) ? JSON.parse(value) : null;
@@ -11,7 +16,7 @@ async function get(key, setError) {
   }
 }
 
-async function set(key, value, setError) {
+async function set(key, value) {
   try {
     await AsyncStorage.setItem(key, JSON.stringify(value));
   } catch (error) {
@@ -19,7 +24,7 @@ async function set(key, value, setError) {
   }
 }
 
-async function remove(key, setError) {
+async function remove(key) {
   try {
     return await AsyncStorage.removeItem(key);
   } catch (error) {
@@ -27,7 +32,7 @@ async function remove(key, setError) {
   }
 }
 
-async function clearAll(setError) {
+async function clearAll() {
   try {
     await AsyncStorage.clear();
   } catch (error) {
@@ -40,4 +45,5 @@ export default {
   set,
   remove,
   clearAll,
+  setErrorMethod
 };

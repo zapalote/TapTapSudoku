@@ -34,7 +34,7 @@ class Main extends Component {
     topMargin: 18,
     screenWidth: Size.width,
     screenHeight: Size.height,
-    storeError: '',
+    storeError: null,
   }
   difficulty = 0;
   elapsed = null;
@@ -54,14 +54,15 @@ class Main extends Component {
     Dimensions.addEventListener('change', this.listenOrientationChange);
 
     StatusBar.setHidden(true);
-    this.firstTime = await Store.get('first', this.setError);
+    Store.setErrorMethod(this.setStoreError);
+    this.firstTime = await Store.get('first');
     if(this.firstTime == null){
-      await Store.clearAll(this.setError);
+      await Store.clearAll();
       this.setState({
         showDoc: true,
       });
     } else {
-      this.loadBoardFromStore();
+      this.loadBoardFromStore() || this.newGame();
       this.setState({
         showMenu: true,
       });
@@ -73,16 +74,16 @@ class Main extends Component {
     Dimensions.removeEventListener('change', this.listenOrientationChange);
   }
 
-  setError = (storeError) => {
+  setStoreError = (storeError) => {
     this.setState({ storeError });
   }
 
   handleAppStateChange = async (nextAppState) => {
     if (this.state.appState.match(/inactive|background/) && nextAppState === 'active' ){
-      this.loadBoardFromStore();
+      this.loadBoardFromStore() || this.newGame();
     } else {
       this.elapsed = (this.timer && this.timer.pause()) || 0;
-      await Store.set('elapsed', this.elapsed, this.setError);
+      await Store.set('elapsed', this.elapsed);
     }
 
     this.setState({appState: nextAppState});
@@ -109,21 +110,22 @@ class Main extends Component {
   }
 
   loadBoardFromStore = async () => {
+    this.setStoreError(null);
     this.pad.fill(0);
-    const recs = await Store.get('records', this.setError);
+    const recs = await Store.get('records');
     if (recs) this.records = recs;
-    const game = await Store.get('board', this.setError);
-    const playing = (game !== null);
+    const game = await Store.get('board');
+    if(game ===  null || this.state.storeError) return false;
 
-    const elapsed = await Store.get('elapsed', this.setError) || 0;
+    const elapsed = await Store.get('elapsed') || 0;
     this.timer && this.timer.setElapsed(elapsed);
     this.error = await Store.get('error') || 0;
-    const levelRange = await Store.get('levelRange', this.setError) || [0,1];
-    const levelValue = await Store.get('levelValue', this.setError) || 0;
+    const levelRange = await Store.get('levelRange') || [0,1];
+    const levelValue = await Store.get('levelValue') || 0;
     this.setState({
       game,
-      playing,
-      updateBoard: playing,
+      playing: true,
+      updateBoard: true,
       showMenu: true,
       showHelp: false,
       showAbout: false,
@@ -135,6 +137,7 @@ class Main extends Component {
       this.bad.reset(this.error);
       this.timer && this.timer.resume();
     });
+    return true;
   }
 
   onRestart = async () => {
@@ -155,8 +158,8 @@ class Main extends Component {
       this.bad.reset();
       this.setPad();
     });
-    await Store.set('board', game, this.setError);
-    await Store.set('error', 0, this.setError);
+    await Store.set('board', game);
+    await Store.set('error', 0);
   }
 
   setPad = () => {
@@ -187,18 +190,18 @@ class Main extends Component {
     Vibration.vibrate();
     this.bad.onBadMove();
     this.error++;
-    await Store.set('error', this.error, this.setError);
+    await Store.set('error', this.error);
   }
 
   storeElapsed = async () => {
     const time = this.timer.getElapsed();
-    await Store.set('elapsed', time, this.setError);
+    await Store.set('elapsed', time);
   }
 
   onFinish = async () => {
     this.elapsed = null;
     const eta = this.timer.stop();
-    Store.remove('board', this.setError);
+    Store.remove('board');
 
     // check if this is a record eta (don't bother for uniqueness)
     let newRecord = false;
@@ -206,20 +209,20 @@ class Main extends Component {
     if(eta < this.records[difficulty]){
       this.records[difficulty] = eta;
       newRecord = true;
-      await Store.set('records', this.records, this.setError);
+      await Store.set('records', this.records);
     }
 
     const formatTime = Timer.formatTime;
     const msg = (newRecord ? Lang.txt('newrecord') : Lang.txt('success')) + formatTime(eta);
     setTimeout(() => {
       Alert.alert(Lang.txt('congrats'), msg, [
-        { text: Lang.txt('ok'), 
+        { text: Lang.txt('ok'),
           onPress: () => {
             this.setState({
               playing: false,
               showMenu: true,
-            });  
-          } 
+            });
+          }
         },
         { text: Lang.txt('newgame'), onPress: () => this.onCreate() },
       ]);
@@ -235,7 +238,7 @@ class Main extends Component {
 
     setTimeout(() => {
       Alert.alert(Lang.txt('Info'), msg, [
-        { text: Lang.txt('ok') }, 
+        { text: Lang.txt('ok') },
         // { text: 'Stop', onPress: () => this.onFinish() },
       ]);
     }, 300);
@@ -261,7 +264,7 @@ class Main extends Component {
   newGame = async () => {
     let puzzle = [];
     let d = 0;
-    const levelRange = await Store.get('levelRange', this.setError) || [0,1];
+    const levelRange = await Store.get('levelRange') || [0,1];
 
     do {
       puzzle = sudoku.makepuzzle();
@@ -286,28 +289,28 @@ class Main extends Component {
       this.bad.reset();
       this.setPad();
     });
-    await Store.set('error', 0, this.setError);
-    await Store.set('board', game, this.setError);
+    await Store.set('error', 0);
+    await Store.set('board', game);
   }
 
   onShowMenu = async () => {
     this.elapsed = (this.timer && this.timer.pause()) || 0;
-    await Store.set('elapsed', this.elapsed, this.setError);
+    await Store.set('elapsed', this.elapsed);
     this.setState({
       showMenu: true,
     });
   }
 
-  onCloseMenu = () => {
+  onMenuBackArrow = () => {
     this.timer && this.timer.resume();
     this.setState({
-      showMenu: false,
+      showMenu: true,
     });
   }
 
   onShowHelp = async () => {
     this.elapsed = (this.timer && this.timer.pause()) || 0;
-    await Store.set('elapsed', this.elapsed, this.setError);
+    await Store.set('elapsed', this.elapsed);
     this.setState({
       showHelp: true,
     });
@@ -353,7 +356,7 @@ class Main extends Component {
   onCloseDoc = async () => {
     if(this.firstTime == null){
       this.firstTime = new Date().toDateString();
-      await Store.set('first', this.firstTime, this.setError);
+      await Store.set('first', this.firstTime);
     }
     this.setState({
       showDoc: false,
@@ -366,8 +369,8 @@ class Main extends Component {
       levelRange: range,
       playing: false,
     });
-    await Store.set('levelRange', range, this.setError);
-    await Store.set('levelValue', value, this.setError);
+    await Store.set('levelRange', range);
+    await Store.set('levelValue', value);
   }
 
   render() {
@@ -406,7 +409,7 @@ class Main extends Component {
           <ProvideHelp layoutStyle={this.getLayout()} onClose={this.onCloseHelp} />
         </Modal>
 
-        <Modal animationType='fade' visible={showMenu} transparent={true} onRequestClose={this.onCloseMenu} >
+        <Modal animationType='fade' visible={showMenu} transparent={true} onRequestClose={this.onMenuBackArrow} >
           <ProvideMenu disabled={disabled} layoutStyle={this.getLayout()}
             onResume={this.onResume} onRestart={this.onRestart} onCreate={this.onCreate} onDoc={this.onDoc}
             onAbout={this.onAbout} onSettings={this.onSettings} onRate={this.onRate} />
