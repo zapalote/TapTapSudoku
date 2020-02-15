@@ -15,7 +15,7 @@ import { Store, sudoku, isNumber, Lang, } from '../utils';
 
 class Main extends Component {
 
-  appVersion = '1.4.2';
+  appVersion = '1.4.3';
 
   state = {
     appState: AppState.currentState,

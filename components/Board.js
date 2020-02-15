@@ -211,6 +211,21 @@ class Board extends Component {
       }
     });
 
+    // game solved
+    if (this.puzzle.filter(x => x != null).length == 81) {
+      this.solved = true;
+      this.cells[index].setHighlight(false);
+      this.setState({
+        index: -1,
+      });
+      this.props.onFinish && this.props.onFinish();
+      // InteractionManager.runAfterInteractions(() => {
+      //   this.puzzle.forEach((item, i) => {
+      //     this.cells[i].animate();
+      //   });
+      // });
+      return true;
+    }
     // grid solved
     if (this.puzzle.filter((item, idx) => item != null && toZ(idx) == z).length == 9) {
       this.animateGrid(z);
@@ -228,21 +243,6 @@ class Board extends Component {
       this.puzzle.forEach((item, i) => {
         if (item == number) this.cells[i].animate();
       });
-    }
-    // game solved
-    if (this.puzzle.filter(x => x != null).length == 81) {
-      this.solved = true;
-      this.cells[index].setHighlight(false);
-      this.setState({
-        index: -1,
-      });
-      this.props.onFinish && this.props.onFinish();
-      InteractionManager.runAfterInteractions(() => {
-        this.puzzle.forEach((item, i) => {
-          this.cells[i].animate();
-        });
-      });
-      return true;
     }
     // cell solved
     if (isNumber(this.hightlightNumber))
