@@ -27,6 +27,11 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  // Place this code after "[self.window makeKeyAndVisible]" and before "return YES;"
+  UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil];
+  UIViewController *vc = [sb instantiateInitialViewController];
+  rootView.loadingView = vc.view;
+  
   return YES;
 }
 
