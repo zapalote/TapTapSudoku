@@ -12,9 +12,10 @@
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		2413FDACB7A1B23389DF5C2D /* libPods-TapTapSudoku.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D74C45BD6BB91B52DA5C269 /* libPods-TapTapSudoku.a */; };
 		3E9A8746809747048CB100A7 /* Varela Round Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 445F9BE47BE94D0A8AC385A4 /* Varela Round Regular.ttf */; };
+		499EA7F02608DF5000E716E8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499EA7EF2608DF5000E716E8 /* File.swift */; };
 		49C7A20126087EAF00D64B97 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49C7A20026087EAF00D64B97 /* Launch Screen.storyboard */; };
+		F5BF79166DF90C5131EA5BD2 /* libPods-TapTapSudoku.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 93D59BD854F11F13CAB1B179 /* libPods-TapTapSudoku.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,12 +30,14 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = TapTapSudoku/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = TapTapSudoku/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = TapTapSudoku/main.m; sourceTree = "<group>"; };
-		1D74C45BD6BB91B52DA5C269 /* libPods-TapTapSudoku.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TapTapSudoku.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		257976FA05C8162CB6E87C58 /* Pods-TapTapSudoku-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TapTapSudoku-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-TapTapSudoku-tvOSTests/Pods-TapTapSudoku-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		32E5F284CEE1EF1EFF174EC5 /* Pods-TapTapSudokuTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TapTapSudokuTests.debug.xcconfig"; path = "Target Support Files/Pods-TapTapSudokuTests/Pods-TapTapSudokuTests.debug.xcconfig"; sourceTree = "<group>"; };
 		445F9BE47BE94D0A8AC385A4 /* Varela Round Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Varela Round Regular.ttf"; path = "../assets/fonts/Varela Round Regular.ttf"; sourceTree = "<group>"; };
+		499EA7EE2608DF5000E716E8 /* TapTapSudoku-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TapTapSudoku-Bridging-Header.h"; sourceTree = "<group>"; };
+		499EA7EF2608DF5000E716E8 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		49C7A20026087EAF00D64B97 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		9372CD8E1DD32F4A7337BCE4 /* libPods-TapTapSudokuTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TapTapSudokuTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		93D59BD854F11F13CAB1B179 /* libPods-TapTapSudoku.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TapTapSudoku.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9869C83C8FC7DCA3DEFCDCE /* Pods-TapTapSudoku.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TapTapSudoku.debug.xcconfig"; path = "Target Support Files/Pods-TapTapSudoku/Pods-TapTapSudoku.debug.xcconfig"; sourceTree = "<group>"; };
 		AC9A5302589D142959F1EE2A /* Pods-TapTapSudokuTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TapTapSudokuTests.release.xcconfig"; path = "Target Support Files/Pods-TapTapSudokuTests/Pods-TapTapSudokuTests.release.xcconfig"; sourceTree = "<group>"; };
 		B08A83FE355FB03A77C98C9B /* Pods-TapTapSudoku-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TapTapSudoku-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-TapTapSudoku-tvOSTests/Pods-TapTapSudoku-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -52,7 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2413FDACB7A1B23389DF5C2D /* libPods-TapTapSudoku.a in Frameworks */,
+				F5BF79166DF90C5131EA5BD2 /* libPods-TapTapSudoku.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,6 +91,8 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				0C2D9D7422F1CE3B002092E3 /* Images-2.xcassets */,
 				49C7A20026087EAF00D64B97 /* Launch Screen.storyboard */,
+				499EA7EF2608DF5000E716E8 /* File.swift */,
+				499EA7EE2608DF5000E716E8 /* TapTapSudoku-Bridging-Header.h */,
 			);
 			name = TapTapSudoku;
 			sourceTree = "<group>";
@@ -97,10 +102,10 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
-				1D74C45BD6BB91B52DA5C269 /* libPods-TapTapSudoku.a */,
 				CB400B4ED69B2B32853563C0 /* libPods-TapTapSudoku-tvOS.a */,
 				E61B3CD44A5045417324A197 /* libPods-TapTapSudoku-tvOSTests.a */,
 				9372CD8E1DD32F4A7337BCE4 /* libPods-TapTapSudokuTests.a */,
+				93D59BD854F11F13CAB1B179 /* libPods-TapTapSudoku.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -172,6 +177,8 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				C04EF9BB126D247CDF922FA2 /* [CP] Embed Pods Frameworks */,
+				827A3F016577BADDAE6DFCBB /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -194,6 +201,7 @@
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = JV96YA4RCX;
+						LastSwiftMigration = 1240;
 					};
 				};
 			};
@@ -245,6 +253,23 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
+		827A3F016577BADDAE6DFCBB /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TapTapSudoku/Pods-TapTapSudoku-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TapTapSudoku/Pods-TapTapSudoku-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TapTapSudoku/Pods-TapTapSudoku-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		BCB6A4E775924021BA551109 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -265,6 +290,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C04EF9BB126D247CDF922FA2 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TapTapSudoku/Pods-TapTapSudoku-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TapTapSudoku/Pods-TapTapSudoku-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TapTapSudoku/Pods-TapTapSudoku-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -294,6 +336,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				499EA7F02608DF5000E716E8 /* File.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -319,7 +362,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CURRENT_PROJECT_VERSION = 14;
+				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 15;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = JV96YA4RCX;
 				INFOPLIST_FILE = TapTapSudoku/Info.plist;
@@ -328,7 +372,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.4;
+				MARKETING_VERSION = 1.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -336,6 +380,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.zapalote.TapTapSudoku;
 				PRODUCT_NAME = TapTapSudoku;
+				SWIFT_OBJC_BRIDGING_HEADER = "TapTapSudoku-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -346,7 +393,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CURRENT_PROJECT_VERSION = 14;
+				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 15;
 				DEVELOPMENT_TEAM = JV96YA4RCX;
 				INFOPLIST_FILE = TapTapSudoku/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -354,7 +402,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.4;
+				MARKETING_VERSION = 1.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -362,6 +410,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.zapalote.TapTapSudoku;
 				PRODUCT_NAME = TapTapSudoku;
+				SWIFT_OBJC_BRIDGING_HEADER = "TapTapSudoku-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
@@ -399,6 +449,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 ";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -454,6 +505,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 ";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

@@ -184,6 +184,12 @@ const styles = StyleSheet.create({
   },
   highlightText: {
     color: '#c90',
+    ...Platform.select({
+      ios: {  },
+      android: {
+        lineHeight: Math.floor(CellSize * 0.85),
+      },
+    })
   },
   errorCell:{
     borderColor: 'red',

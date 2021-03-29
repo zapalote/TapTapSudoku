@@ -131,8 +131,8 @@ android {
         applicationId "com.zapalote.taptapsudoku"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 12
-        versionName "1.4.3"
+        versionCode 16
+        versionName "1.5"
     }
     splits {
         abi {
@@ -183,6 +183,10 @@ android {
             }
 
         }
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
     }
 
     packagingOptions {

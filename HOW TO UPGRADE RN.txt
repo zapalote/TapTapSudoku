@@ -1,0 +1,18 @@
+HOW TO UPGRADE RN (from the RN docs)
+
+In case you see issues after updating React Native from 0.63.x to 0.64.x (via rn upgrade), try this solution:
+
+Create a new 0.64.x project, for example:
+
+npx react-native init MyApp --template react-native-template-typescript
+
+Compare package.json of the new project and of your old 0.63.x project, and modify the old one.
+
+Do similarly with ios/Podfile.
+
+Run yarn install or npm install.
+
+Run pod install in ios directory. Probably you need to remove the old Podfile.lock file.
+
+Now, when you rebuild your project, hopefully the issue will be fixed.
+

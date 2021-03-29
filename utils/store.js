@@ -1,6 +1,6 @@
 'use strict';
 // model layer over AsyncStorage
-import AsyncStorage  from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let setError;
 function setErrorMethod (method) {

@@ -328,7 +328,9 @@ class Board extends Component {
     return (
       <View style={styles.container} >
         <View style={styles.board} >
-          <Grid ref={ref => ref && (this.cells = ref.cells)} onPress={this.onCellPress} />
+          <View style={this.solved && styles.finished} >
+            <Grid ref={ref => ref && (this.cells = ref.cells)} onPress={this.onCellPress} />
+          </View>
         </View>
       </View>
     );
@@ -336,6 +338,11 @@ class Board extends Component {
 }
 
 const styles = StyleSheet.create({
+  finished: {
+    backgroundColor: '#fc0',
+    opacity: 0.4,
+    zIndex: 999,
+  },
   container: {
     alignItems: 'center',
     alignSelf: 'center',
@@ -347,30 +354,30 @@ const styles = StyleSheet.create({
     backgroundColor: '#ddd',
     padding: BorderWidth,
   },
-  row: {
-    position: 'absolute',
-    backgroundColor: 'transparent',
-    margin: BorderWidth * 2,
-    top: 0,
-    left: 0,
-    width: CellSize * 9 + BorderWidth * 4,
-    height: CellSize + BorderWidth,
-    borderColor: '#fc0',
-    borderWidth: 2,
-    borderRadius: BorderWidth,
-  },
-  column: {
-    position: 'absolute',
-    backgroundColor: 'transparent',
-    margin: BorderWidth * 2,
-    top: 0,
-    left: 0,
-    width: CellSize + BorderWidth,
-    height: CellSize * 9 + BorderWidth * 4,
-    borderColor: '#fc0',
-    borderWidth: 2,
-    borderRadius: BorderWidth,
-  },
+  // row: {
+  //   position: 'absolute',
+  //   backgroundColor: 'transparent',
+  //   margin: BorderWidth * 2,
+  //   top: 0,
+  //   left: 0,
+  //   width: CellSize * 9 + BorderWidth * 4,
+  //   height: CellSize + BorderWidth,
+  //   borderColor: '#fc0',
+  //   borderWidth: 2,
+  //   borderRadius: BorderWidth,
+  // },
+  // column: {
+  //   position: 'absolute',
+  //   backgroundColor: 'transparent',
+  //   margin: BorderWidth * 2,
+  //   top: 0,
+  //   left: 0,
+  //   width: CellSize + BorderWidth,
+  //   height: CellSize * 9 + BorderWidth * 4,
+  //   borderColor: '#fc0',
+  //   borderWidth: 2,
+  //   borderRadius: BorderWidth,
+  // },
 });
 
 export default Board;

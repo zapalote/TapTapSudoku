@@ -15,7 +15,7 @@ import { Store, sudoku, isNumber, Lang, } from '../utils';
 
 class Main extends Component {
 
-  appVersion = '1.4.3';
+  appVersion = '1.5';
 
   state = {
     appState: AppState.currentState,
@@ -224,7 +224,7 @@ class Main extends Component {
             });
           }
         },
-        { text: Lang.txt('newgame'), onPress: () => this.onCreate() },
+        { text: Lang.txt('newgame'), onPress: () =>  this.onCreate() },
       ]);
     }, 1000);
   }
@@ -239,7 +239,7 @@ class Main extends Component {
     setTimeout(() => {
       Alert.alert(Lang.txt('Info'), msg, [
         { text: Lang.txt('ok') },
-        // { text: 'Stop', onPress: () => this.onFinish() },
+        { text: 'Stop', onPress: () => this.onFinish() },
       ]);
     }, 300);
   }
@@ -375,7 +375,8 @@ class Main extends Component {
 
   render() {
     const {
-      game, playing, showMenu, showHelp, showAbout, showSettings, showDoc, updateBoard, loading, levelValue,
+      game, playing, showMenu, showHelp, showAbout, showSettings, showDoc, 
+      updateBoard, loading, levelValue,
     } = this.state;
     const disabled = !playing;
 

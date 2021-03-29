@@ -113,6 +113,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: activePadColor,
     backgroundColor: 'transparent',
+    ...Platform.select({
+      ios: { },
+      android: {
+        lineHeight: Math.floor(CellSize * 1.05),
+      },
+    })
   }
 });
 
