@@ -239,7 +239,7 @@ class Main extends Component {
     setTimeout(() => {
       Alert.alert(Lang.txt('Info'), msg, [
         { text: Lang.txt('ok') },
-        { text: 'Stop', onPress: () => this.onFinish() },
+        { text: 'Stop', onPress: () => this.board.stopIt() },
       ]);
     }, 300);
   }

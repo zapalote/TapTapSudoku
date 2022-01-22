@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { InteractionManager, StyleSheet, View } from 'react-native';
+import { Animated, InteractionManager, StyleSheet, View } from 'react-native';
 import { CellSize, BoardWidth, BorderWidth } from './GlobalStyle';
 import Grid from './Grid';
 import { sudoku, isNumber, Store } from '../utils';
@@ -22,6 +22,8 @@ function toZ(index) {
 class Board extends Component {
   state = {
     index: -1,
+    solved: false,
+    fadeIn: new Animated.Value(0),
   }
   game = [];
   cells = [];
@@ -32,7 +34,6 @@ class Board extends Component {
   errTimeout = null;
   hightlightIndex = null;
   inited = false;
-  solved = false;
 
   constructor(props) {
     super(props);
@@ -54,7 +55,7 @@ class Board extends Component {
 
   initBoard() {
     this.inited = false;
-    this.solved = false;
+    this.setState({ solved: false });
     this.hightlightNumber = null;
     this.hightlightIndex = null;
 
@@ -213,17 +214,8 @@ class Board extends Component {
 
     // game solved
     if (this.puzzle.filter(x => x != null).length == 81) {
-      this.solved = true;
       this.cells[index].setHighlight(false);
-      this.setState({
-        index: -1,
-      });
-      this.props.onFinish && this.props.onFinish();
-      // InteractionManager.runAfterInteractions(() => {
-      //   this.puzzle.forEach((item, i) => {
-      //     this.cells[i].animate();
-      //   });
-      // });
+      this.stopIt();
       return true;
     }
     // grid solved
@@ -324,13 +316,31 @@ class Board extends Component {
     });
   }
 
+  stopIt(){
+    this.setState({
+      index: -1,
+      solved: true,
+    }, () => {
+      Animated.timing(this.state.fadeIn, { 
+        toValue: 0.4,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+      this.props.onFinish && this.props.onFinish();
+    });
+  }
+  
   render() {
+    const { solved, fadeIn } = this.state;
+    const fadedStyle = {
+      opacity: fadeIn
+    }
     return (
       <View style={styles.container} >
         <View style={styles.board} >
-          <View style={this.solved && styles.finished} >
+          <Animated.View style={[styles.finished, solved&&fadedStyle]} >
             <Grid ref={ref => ref && (this.cells = ref.cells)} onPress={this.onCellPress} />
-          </View>
+          </Animated.View>
         </View>
       </View>
     );
@@ -340,7 +350,6 @@ class Board extends Component {
 const styles = StyleSheet.create({
   finished: {
     backgroundColor: '#fc0',
-    opacity: 0.4,
     zIndex: 999,
   },
   container: {
