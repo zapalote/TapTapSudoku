@@ -1,17 +1,20 @@
 {
   "name": "TapTapSudoku",
-  "version": "0.0.1",
+  "version": "1.6.0",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "android": "rnc-cli run-android",
+    "ios": "rnc-cli run-ios",
     "lint": "eslint .",
-    "start": "react-native start",
+    "start": "rnc-cli start",
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.1.2",
+    "@rnc/cli": "^0.0.28",
     "react": "19.0.0",
-    "react-native": "0.79.1"
+    "react-native": "0.79.1",
+    "react-native-svg": "^15.11.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -21,7 +24,6 @@
     "@react-native-community/cli-platform-android": "18.0.0",
     "@react-native-community/cli-platform-ios": "18.0.0",
     "@react-native/babel-preset": "0.79.1",
-    "@react-native/eslint-config": "0.79.1",
     "@react-native/metro-config": "0.79.1",
     "@react-native/typescript-config": "0.79.1",
     "@types/jest": "^29.5.13",
@@ -35,5 +37,6 @@
   },
   "engines": {
     "node": ">=18"
-  }
+  },
+  "packageManager": "yarn@4.9.1"
 }

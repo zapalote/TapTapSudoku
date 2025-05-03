@@ -1,4 +1,22 @@
 {
   "name": "TapTapSudoku",
-  "displayName": "TapTapSudoku"
+  "displayName": "TapTapSudoku",
+  "slug": "TapTapSudoku",
+  "version": "1.6.0",
+  "orientation": "portrait",
+  "icon": "./assets/icons/icon.png",
+  "scheme": "myapp",
+  "userInterfaceStyle": "automatic",
+  "newArchEnabled": true,
+  "ios": {
+    "supportsTablet": false,
+    "bundleIdentifier": "com.zapalote.TapTapSudoku",
+    "requireFullScreen": true
+  },
+  "android": {
+    "adaptiveIcon": {
+      "foregroundImage": "./assets/icons/icon.png",
+      "backgroundColor": "#ffffff"
+    }
+  }
 }

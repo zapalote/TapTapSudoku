@@ -1,97 +1,59 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# TapTapSudoku
 
-# Getting Started
+One tap to pencil, two taps to lock-in the number.
+Developed entirely with react-native (no expo).
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+We developed this app for the pure pleasure of a daily sudoku.
+We found no other app that would offer this usability.
+It's free of charge. No ads. We don't collect any data.
+No rankings, no competitions. It's just you solving a game.
 
-## Step 1: Start Metro
+![](./assets/mockup-3d-for-app-store.jpg)
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Prerequisites
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+Install node, react-native, react-native-cli
 
-```sh
-# Using npm
-npm start
+## Dependencies
 
-# OR using Yarn
-yarn start
+See also package.json.
+```
+"@react-native-community/async-storage": "^1.5.1",
+"react": "16.8.6",
+"react-native": "0.60.3",
+"react-native-svg": "^9.5.3"
 ```
 
-## Step 2: Build and run your app
+## Build
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+Clone this repo.
+```
+npm install
+react-native link
+react-native run-ios or react-native run-android.
 ```
 
-### iOS
+## Play
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+You can find TapTapSudoku at
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+[![App Store](https://linkmaker.itunes.apple.com/assets/shared/badges/en-us/appstore-lrg.svg)](https://itunes.apple.com/us/app/taptapsudoku/id1320628951?mt=8)   [![Play Store](./assets/google-play-badge.png)](https://play.google.com/store/apps/details?id=com.zapalote.taptapsudoku)
 
-```sh
-bundle install
-```
+## Contributing
 
-Then, and every time you update your native dependencies, run:
+Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
 
-```sh
-bundle exec pod install
-```
+## Authors
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+* **Miguel Albrecht** - [zapalote](https://zapalote.com/TapTapSudoku/)
 
-```sh
-# Using npm
-npm run ios
+## License
 
-# OR using Yarn
-yarn ios
-```
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+## Acknowledgments
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+* Thanks to Neo (nihgwu@live.com) who gave inspiration and shared his react native code.
+* Thanks to David Bau who developed and shared the original sudoku generator
+* Thanks to Blagovest Dachev who ported David Bau's algorithm to Node.js
+* App development and graphics by zapalote.com.
