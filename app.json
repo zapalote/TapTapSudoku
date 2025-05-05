@@ -2,7 +2,7 @@
   "name": "TapTapSudoku",
   "displayName": "TapTapSudoku",
   "slug": "TapTapSudoku",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "orientation": "portrait",
   "icon": "./assets/icons/icon.png",
   "scheme": "myapp",

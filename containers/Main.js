@@ -14,10 +14,9 @@ import {
 import { ProvideHelp, ProvideAbout, ProvideSettings, ProvideMenu, } from '../containers';
 import { Store, sudoku, isNumber, Lang, } from '../utils';
 import { BoardMargin } from '../components/GlobalStyle';
+import { version as appVersion } from '../app.json';
 
 class Main extends Component {
-
-  appVersion = '1.6';
 
   state = {
     appState: AppState.currentState,
@@ -476,7 +475,7 @@ class Main extends Component {
 
           <Modal animationType='fade' visible={showAbout} transparent={true} onRequestClose={this.onCloseAbout} >
             <ProvideAbout textStyle={styles.helpTextStyle} layoutStyle={this.getLayout()}
-              appVersion={this.appVersion} onClose={this.onCloseAbout} />
+              appVersion={appVersion} onClose={this.onCloseAbout} />
           </Modal>
 
           <Modal animationType='fade' visible={showSettings} transparent={true} onRequestClose={this.onCloseSettings} >
