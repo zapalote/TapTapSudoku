@@ -266,7 +266,7 @@
 				ENABLE_BITCODE = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = TapTapSudoku/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = TapTapSudoku;
+				INFOPLIST_KEY_CFBundleDisplayName = TapTapSudokuR;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.puzzle-games";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -303,7 +303,7 @@
 				DEVELOPMENT_TEAM = JV96YA4RCX;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = TapTapSudoku/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = TapTapSudoku;
+				INFOPLIST_KEY_CFBundleDisplayName = TapTapSudokuR;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.puzzle-games";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
