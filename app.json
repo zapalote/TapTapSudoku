@@ -1,22 +1,32 @@
 {
-  "name": "TapTapSudoku",
-  "displayName": "TapTapSudoku",
-  "slug": "TapTapSudoku",
-  "version": "1.7.0",
-  "orientation": "portrait",
-  "icon": "./assets/icons/icon.png",
-  "scheme": "myapp",
-  "userInterfaceStyle": "automatic",
-  "newArchEnabled": true,
-  "ios": {
-    "supportsTablet": false,
-    "bundleIdentifier": "com.zapalote.TapTapSudoku",
-    "requireFullScreen": true
-  },
-  "android": {
-    "adaptiveIcon": {
-      "foregroundImage": "./assets/icons/icon.png",
+  "expo": {
+    "name": "TapTapSudoku",
+    "slug": "TapTapSudoku",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icons/icon.png",
+    "scheme": "taptapsudoku",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash/tap-tap-splash@3x.png",
+      "resizeMode": "contain",
       "backgroundColor": "#ffffff"
-    }
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.zapalote.TapTapSudoku",
+      "requireFullScreen": true
+    },
+    "android": {
+      "package": "com.zapalote.TapTapSudoku",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icons/icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
