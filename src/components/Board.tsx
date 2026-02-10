@@ -124,11 +124,11 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
     setSelectedIndex(-1);
     selectedIndexRef.current = -1;
     setSolved(true);
-    Animated.timing(fadeIn, {
-      toValue: 0.4,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
+    // Animated.timing(fadeIn, {
+    //   toValue: 0.4,
+    //   duration: 500,
+    //   useNativeDriver: true,
+    // }).start();
     onFinish?.();
   }, [fadeIn, onFinish]);
 

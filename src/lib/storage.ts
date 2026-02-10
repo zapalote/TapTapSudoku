@@ -11,7 +11,7 @@ function setErrorMethod(method: (error: unknown) => void) {
 function get<T = unknown>(key: string): T | null {
   try {
     const value = storage.getString(key);
-    return value !== undefined ? JSON.parse(value) : null;
+    return value === undefined ? null : JSON.parse(value);
   } catch (error) {
     setError?.(error);
     return null;

@@ -5,14 +5,10 @@ import Store from '@/lib/storage';
 import { Size, CellSize } from '@/constants/layout';
 
 export default function HelpScreen() {
-  const onClose = async () => {
-    const first = await Store.get('first');
-    if (first == null) {
-      await Store.set('first', new Date().toDateString());
-    }
+  const onClose = () => {
     // @ts-expect-error global handler
     global.__gameHandlers?.onCloseHelp?.();
-    router.navigate('/menu');
+    router.back();
   };
 
   return (

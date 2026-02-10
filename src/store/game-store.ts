@@ -34,13 +34,13 @@ interface GameState {
   updateRecord: (difficulty: number, time: number) => boolean;
 
   // Game lifecycle
-  newGame: (levelRange: number[]) => Promise<{
+  newGame: (levelRange: number[]) => {
     game: (CellData | undefined)[];
     difficulty: number;
-  }>;
+  };
   restartGame: () => (CellData | undefined)[];
-  loadFromStore: () => Promise<boolean>;
-  saveToStore: (elapsedTime: number) => Promise<void>;
+  loadFromStore: () => boolean;
+  saveToStore: (elapsedTime: number) => void;
 }
 
 export const useGameStore = create<GameState>()((set, get) => ({
@@ -97,7 +97,7 @@ export const useGameStore = create<GameState>()((set, get) => ({
     return false;
   },
 
-  newGame: async (levelRange) => {
+  newGame: (levelRange) => {
     let puzzle: (number | null)[];
     let d: number;
 
@@ -122,8 +122,8 @@ export const useGameStore = create<GameState>()((set, get) => ({
       playing: true,
     });
 
-    await Store.set('error', 0);
-    await Store.set('board', game);
+    Store.set('error', 0);
+    Store.set('board', game);
 
     return { game, difficulty: d };
   },
@@ -149,23 +149,23 @@ export const useGameStore = create<GameState>()((set, get) => ({
     return game;
   },
 
-  loadFromStore: async () => {
+  loadFromStore: () => {
     set({ storeError: null });
     Store.setErrorMethod((error) => set({ storeError: error }));
 
-    const recs = await Store.get<number[]>('records');
+    const recs = Store.get<number[]>('records');
     if (recs) set({ records: recs });
 
-    const game = await Store.get<(CellData | undefined)[]>('board');
+    const game = Store.get<(CellData | undefined)[]>('board');
     if (game === null || get().storeError) {
       set({ playing: false, game: [] });
       return false;
     }
 
-    const elapsed = await Store.get<number>('elapsed') ?? 0;
-    const errors = await Store.get<number>('error') ?? 0;
-    const levelRange = await Store.get<number[]>('levelRange') ?? [0, 1];
-    const levelValue = await Store.get<number>('levelValue') ?? 0;
+    const elapsed =  Store.get<number>('elapsed') ?? 0;
+    const errors = Store.get<number>('error') ?? 0;
+    const levelRange = Store.get<number[]>('levelRange') ?? [0, 1];
+    const levelValue = Store.get<number>('levelValue') ?? 0;
 
     set({
       game,
@@ -179,14 +179,14 @@ export const useGameStore = create<GameState>()((set, get) => ({
     return true;
   },
 
-  saveToStore: async (elapsedTime) => {
+  saveToStore: (elapsedTime) => {
     const { game, errors, records, levelRange, levelValue } = get();
-    await Store.set('board', game);
-    await Store.set('elapsed', elapsedTime);
-    await Store.set('error', errors);
-    await Store.set('records', records);
-    await Store.set('levelRange', levelRange);
-    await Store.set('levelValue', levelValue);
+    Store.set('board', game);
+    Store.set('elapsed', elapsedTime);
+    Store.set('error', errors);
+    Store.set('records', records);
+    Store.set('levelRange', levelRange);
+    Store.set('levelValue', levelValue);
     set({ storeError: null });
   },
 }));

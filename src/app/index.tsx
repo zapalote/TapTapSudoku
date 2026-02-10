@@ -41,21 +41,23 @@ export default function GameScreen() {
 
     Store.setErrorMethod((error) => setStoreError(error));
 
-    (async () => {
-      const first = await Store.get('first');
-      if (first == null) {
-        router.navigate('/help');
+    const first = Store.get('first');
+    if (first === null) {
+      Store.set('first', new Date().toDateString());
+      startNewGame();
+      setTimeout(() => {
+        router.push('/help');
+      }, 300);
+    } else {
+      const loaded = loadFromStore();
+      if (loaded) {
+        const elapsed = Store.get<number>('elapsed') ?? 0;
+        timer.setElapsed(elapsed);
       } else {
-        const loaded = await loadFromStore();
-        if (loaded) {
-          const elapsed = await Store.get<number>('elapsed') ?? 0;
-          timer.setElapsed(elapsed);
-        } else {
-          startNewGame();
-        }
-        router.push('/menu');
+        startNewGame();
       }
-    })();
+      router.push('/menu');
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -69,15 +71,15 @@ export default function GameScreen() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game]);
 
-  const startNewGame = useCallback(async () => {
+  const startNewGame = useCallback( () => {
     timer.reset();
     const currentRange = useGameStore.getState().levelRange;
-    await newGame(currentRange);
+    newGame(currentRange);
   }, [newGame, timer]);
 
-  const storeElapsed = useCallback(async () => {
+  const storeElapsed = useCallback( () => {
     const time = timer.getElapsed();
-    await Store.set('elapsed', time);
+    Store.set('elapsed', time);
   }, [timer]);
 
   const onInit = useCallback(() => {
@@ -93,7 +95,7 @@ export default function GameScreen() {
     incrementError();
   }, [incrementError]);
 
-  const onFinish = useCallback(async () => {
+  const onFinish = useCallback( () => {
     const eta = timer.stop();
     Store.remove('board');
 
@@ -124,7 +126,7 @@ export default function GameScreen() {
     }, 100);
   }, [setLoading, timer, startNewGame]);
 
-  const handleRestart = useCallback(async () => {
+  const handleRestart = useCallback( () => {
     timer.reset();
     const restarted = restartGame();
     boardRef.current?.resetGame(restarted);
@@ -162,10 +164,10 @@ export default function GameScreen() {
   }, []);
 
   // App lifecycle
-  const onForeground = useCallback(async () => {
-    const loaded = await loadFromStore();
+  const onForeground = useCallback(() => {
+    const loaded = loadFromStore();
     if (loaded) {
-      const elapsed = await Store.get<number>('elapsed') ?? 0;
+      const elapsed = Store.get<number>('elapsed') ?? 0;
       timer.setElapsed(elapsed);
       boardRef.current?.resetGame(useGameStore.getState().game);
       timer.resume();
@@ -174,9 +176,9 @@ export default function GameScreen() {
     }
   }, [loadFromStore, timer, startNewGame]);
 
-  const onBackground = useCallback(async () => {
+  const onBackground = useCallback(() => {
     const elapsed = timer.pause();
-    await Store.set('elapsed', elapsed);
+    Store.set('elapsed', elapsed);
   }, [timer]);
 
   useAppLifecycle(onForeground, onBackground);
@@ -188,16 +190,16 @@ export default function GameScreen() {
       onResume: handleResume,
       onRestart: handleRestart,
       onCreate: handleCreate,
-      showHelp: async () => {
+      showHelp: () => {
         const elapsed = timer.pause();
-        await Store.set('elapsed', elapsed);
+        Store.set('elapsed', elapsed);
       },
       onCloseHelp: () => {
         timer.resume();
       },
-      onShowMenu: async () => {
+      onShowMenu: () => {
         const elapsed = timer.pause();
-        await Store.set('elapsed', elapsed);
+        Store.set('elapsed', elapsed);
       },
     };
     return () => {
@@ -227,16 +229,16 @@ export default function GameScreen() {
             </View>
           </Pressable>
           <View style={styles.buttonBox}>
-            <Pressable onPress={async () => {
+            <Pressable onPress={() => {
               const elapsed = timer.pause();
-              await Store.set('elapsed', elapsed);
+              Store.set('elapsed', elapsed);
               router.push('/help');
             }}>
               <Image style={styles.menuIcon} source={require('../../assets/images/help.png')} />
             </Pressable>
-            <Pressable onPress={async () => {
+            <Pressable onPress={() => {
               const elapsed = timer.pause();
-              await Store.set('elapsed', elapsed);
+              Store.set('elapsed', elapsed);
               router.push('/menu');
             }}>
               <Image style={styles.menuIcon} source={require('../../assets/images/menu.png')} />
