@@ -1,4 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MMKV } from 'react-native-mmkv';
+
+const storage = new MMKV({ id: 'taptap-sudoku' });
 
 let setError: ((error: unknown) => void) | undefined;
 
@@ -6,35 +8,35 @@ function setErrorMethod(method: (error: unknown) => void) {
   setError = method;
 }
 
-async function get<T = unknown>(key: string): Promise<T | null> {
+function get<T = unknown>(key: string): T | null {
   try {
-    const value = await AsyncStorage.getItem(key);
-    return (value !== null) ? JSON.parse(value) : null;
+    const value = storage.getString(key);
+    return value !== undefined ? JSON.parse(value) : null;
   } catch (error) {
     setError?.(error);
     return null;
   }
 }
 
-async function set(key: string, value: unknown): Promise<void> {
+function set(key: string, value: unknown): void {
   try {
-    await AsyncStorage.setItem(key, JSON.stringify(value));
+    storage.set(key, JSON.stringify(value));
   } catch (error) {
     setError?.(error);
   }
 }
 
-async function remove(key: string): Promise<void> {
+function remove(key: string): void {
   try {
-    await AsyncStorage.removeItem(key);
+    storage.delete(key);
   } catch (error) {
     setError?.(error);
   }
 }
 
-async function clearAll(): Promise<void> {
+function clearAll(): void {
   try {
-    await AsyncStorage.clear();
+    storage.clearAll();
   } catch (error) {
     setError?.(error);
   }
