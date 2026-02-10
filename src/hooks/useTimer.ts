@@ -3,7 +3,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 export function formatTime(elapsed: number): string {
   const minute = Math.floor(elapsed / 60);
   const second = elapsed % 60;
-  return [minute, second].map(x => x < 10 ? '0' + x : x).join(':');
+  return minute.toString().padStart(2, '0') + ':' + second.toString().padStart(2, '0');
 }
 
 export function useTimer(initialElapsed = 0) {

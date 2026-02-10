@@ -18,21 +18,21 @@ export default function RootLayout() {
         <Stack.Screen
           name="help"
           options={{
-            presentation: 'modal',
+            presentation: 'transparentModal',
             animation: 'fade',
           }}
         />
         <Stack.Screen
           name="about"
           options={{
-            presentation: 'modal',
+            presentation: 'transparentModal',
             animation: 'fade',
           }}
         />
         <Stack.Screen
           name="settings"
           options={{
-            presentation: 'modal',
+            presentation: 'transparentModal',
             animation: 'fade',
           }}
         />

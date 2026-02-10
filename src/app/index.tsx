@@ -44,7 +44,7 @@ export default function GameScreen() {
     (async () => {
       const first = await Store.get('first');
       if (first == null) {
-        router.push('/help');
+        router.navigate('/help');
       } else {
         const loaded = await loadFromStore();
         if (loaded) {

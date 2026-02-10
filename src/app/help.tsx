@@ -12,7 +12,7 @@ export default function HelpScreen() {
     }
     // @ts-expect-error global handler
     global.__gameHandlers?.onCloseHelp?.();
-    router.back();
+    router.navigate('/menu');
   };
 
   return (
