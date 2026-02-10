@@ -1,5 +1,12 @@
-import React, { useState, useCallback, useImperativeHandle, forwardRef } from 'react';
-import { StyleSheet, Animated, Platform, Text, Pressable } from 'react-native';
+import React, { useState, useCallback, useImperativeHandle, forwardRef, useRef } from 'react';
+import { StyleSheet, Platform, Text, Pressable } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  interpolate,
+  runOnJS,
+} from 'react-native-reanimated';
 import { CellSize } from '@/constants/layout';
 
 export interface CellHandle {
@@ -26,8 +33,12 @@ const Cell = forwardRef<CellHandle, CellProps>(function Cell({ index, onPress },
   const [glow, setGlowState] = useState(false);
   const [error, setErrorState] = useState(false);
   const [fixed, setFixed] = useState(false);
-  const [toggle, setToggle] = useState(false);
-  const [anim] = useState(() => new Animated.Value(0));
+  const animatingRef = useRef(false);
+  const anim = useSharedValue(0);
+
+  const clearAnimating = useCallback(() => {
+    animatingRef.current = false;
+  }, []);
 
   useImperativeHandle(ref, () => ({
     setNumber(num: number, isFixed: boolean) {
@@ -74,15 +85,11 @@ const Cell = forwardRef<CellHandle, CellProps>(function Cell({ index, onPress },
       setErrorState(e);
     },
     animate() {
-      if (toggle) return;
-      setToggle(true);
-      anim.setValue(0);
-      Animated.timing(anim, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: true,
-      }).start(() => {
-        setToggle(false);
+      if (animatingRef.current) return;
+      animatingRef.current = true;
+      anim.value = 0;
+      anim.value = withTiming(1, { duration: 1000 }, (finished) => {
+        if (finished) runOnJS(clearAnimating)();
       });
     },
     reset() {
@@ -93,8 +100,8 @@ const Cell = forwardRef<CellHandle, CellProps>(function Cell({ index, onPress },
       setGlowState(false);
       setErrorState(false);
       setFixed(false);
-      setToggle(false);
-      anim.setValue(0);
+      animatingRef.current = false;
+      anim.value = 0;
     },
   }));
 
@@ -102,16 +109,14 @@ const Cell = forwardRef<CellHandle, CellProps>(function Cell({ index, onPress },
     onPress(index, number);
   }, [index, number, onPress]);
 
-  const rotate = anim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
-  const scale = anim.interpolate({
-    inputRange: [0, 0.1, 0.9, 1],
-    outputRange: [1, 1.1, 1.1, 1],
-  });
-  const transform = [{ rotate }, { scale }];
-  const zIndex = toggle ? 100 : 0;
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { rotate: `${interpolate(anim.value, [0, 1], [0, 360])}deg` },
+      { scale: interpolate(anim.value, [0, 0.1, 0.9, 1], [1, 1.1, 1.1, 1]) },
+    ],
+    zIndex: anim.value > 0 && anim.value < 1 ? 100 : 0,
+  }));
+
   const filled = typeof number === 'number';
   const text = filled ? String(number + 1) : '';
   const hint = hints.map(x => x + 1).join('');
@@ -128,7 +133,7 @@ const Cell = forwardRef<CellHandle, CellProps>(function Cell({ index, onPress },
         highlight && styles.highlightCell,
         glow && styles.glowCell,
         error && styles.errorCell,
-        { transform, zIndex },
+        animatedStyle,
       ]}
     >
       {pencil ? (

@@ -1,6 +1,11 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState, useCallback } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
-import { CellSize, BoardWidth, BorderWidth } from '@/constants/layout';
+import { StyleSheet, View } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
+import { BoardWidth, BorderWidth } from '@/constants/layout';
 import Grid, { type GridHandle } from './Grid';
 import { isNumber } from '@/lib/helpers';
 import sudoku from '@/lib/sudoku';
@@ -41,7 +46,7 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
 ) {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [solved, setSolved] = useState(false);
-  const [fadeIn] = useState(() => new Animated.Value(0));
+  const fadeIn = useSharedValue(0);
 
   const gridRef = useRef<GridHandle>(null);
   const gameRef = useRef<(CellData | undefined)[]>([]);
@@ -124,11 +129,7 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
     setSelectedIndex(-1);
     selectedIndexRef.current = -1;
     setSolved(true);
-    Animated.timing(fadeIn, {
-      toValue: 0.4,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
+    fadeIn.value = withTiming(0.4, { duration: 500 });
     onFinish?.();
   }, [fadeIn, onFinish]);
 
@@ -311,6 +312,7 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
 
     initedRef.current = false;
     setSolved(false);
+    fadeIn.value = 0;
     highlightNumberRef.current = null;
     highlightIndexRef.current = null;
 
@@ -340,7 +342,7 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
     });
     initedRef.current = true;
     onInit?.();
-  }, [getCells, onInit]);
+  }, [getCells, onInit, fadeIn]);
 
   useImperativeHandle(ref, () => ({
     resetGame,
@@ -348,9 +350,9 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
     stopIt,
   }));
 
-  const fadedStyle = {
-    opacity: fadeIn,
-  };
+  const fadedStyle = useAnimatedStyle(() => ({
+    opacity: fadeIn.value,
+  }));
 
   return (
     <View style={styles.container}>
