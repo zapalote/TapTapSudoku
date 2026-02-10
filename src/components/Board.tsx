@@ -305,6 +305,7 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
 
     initedRef.current = false;
     setSolved(false);
+    fadeIn.value = 0;
     highlightNumberRef.current = null;
     highlightIndexRef.current = null;
 
@@ -334,7 +335,7 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
     });
     initedRef.current = true;
     onInit?.();
-  }, [getCells, onInit]);
+  }, [getCells, onInit, fadeIn]);
 
   useImperativeHandle(ref, () => ({
     resetGame,
