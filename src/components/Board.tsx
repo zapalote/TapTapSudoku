@@ -1,6 +1,12 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState, useCallback } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef, useState, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { CellSize, BoardWidth, BorderWidth } from '@/constants/layout';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
+import { BorderWidth } from '@/constants/layout';
+import { useLayoutContext } from '@/contexts/LayoutContext';
 import Grid, { type GridHandle } from './Grid';
 import { isNumber } from '@/lib/helpers';
 import sudoku from '@/lib/sudoku';
@@ -39,6 +45,7 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
   { game: gameProp, storeElapsed, onInit, onErrorMove, onFinish },
   ref
 ) {
+  const { boardWidth } = useLayoutContext();
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [solved, setSolved] = useState(false);
 
@@ -343,8 +350,17 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
     stopIt,
   }));
 
+  const fadedStyle = useAnimatedStyle(() => ({
+    opacity: fadeIn.value,
+  }));
+
+  const containerStyle = useMemo(() => [
+    styles.container,
+    { width: boardWidth },
+  ], [boardWidth]);
+
   return (
-    <View style={styles.container}>
+    <View style={containerStyle}>
       <View style={styles.board}>
         <Grid ref={gridRef} onPress={onCellPress} />
       </View>
@@ -356,7 +372,6 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     alignSelf: 'center',
-    width: BoardWidth,
   },
   board: {
     flexDirection: 'row',
