@@ -11,11 +11,9 @@ import TimerDisplay from '@/components/Timer';
 import ErrorCounter from '@/components/ErrorCounter';
 import { useTimer, formatTime } from '@/hooks/useTimer';
 import { useAppLifecycle } from '@/hooks/useAppLifecycle';
-import { useLayout } from '@/hooks/useLayout';
+import { useLayoutContext } from '@/contexts/LayoutContext';
 import { useGameStore } from '@/store/game-store';
-import {
-  Size, CellSize, BorderWidth, BoardMargin,
-} from '@/constants/layout';
+import { BorderWidth } from '@/constants/layout';
 import Store from '@/lib/storage';
 import Lang from '@/lib/language';
 import { isNumber } from '@/lib/helpers';
@@ -24,7 +22,7 @@ export default function GameScreen() {
   const boardRef = useRef<BoardHandle>(null);
   const numberPadRef = useRef<NumberPadHandle>(null);
   const initializedRef = useRef(false);
-  const layout = useLayout();
+  const layout = useLayoutContext();
 
   const {
     game, playing, loading, difficulty, errors, pad,
@@ -208,17 +206,74 @@ export default function GameScreen() {
     };
   }, [handleResume, handleRestart, handleCreate, timer]);
 
-  const containerStyle = useMemo(() => [
-    styles.container,
-    { flexDirection: layout.isPortrait ? 'column' as const : 'row' as const },
-  ], [layout.isPortrait]);
+  const { isPortrait, cellSize, boardMargin, width, height } = layout;
 
-  const controlsStyle = useMemo(() => [
-    styles.box,
-    layout.isPortrait
-      ? { marginTop: CellSize * 0.6, flexDirection: 'row' as const }
-      : { marginTop: 0, marginLeft: CellSize * 0.6, flexDirection: 'column' as const },
-  ], [layout.isPortrait]);
+  const containerStyle = useMemo(() => ({
+    flex: 1,
+    flexDirection: isPortrait ? 'column' as const : 'row' as const,
+    justifyContent: 'flex-start' as const,
+    alignItems: 'center' as const,
+    backgroundColor: '#fff',
+    margin: boardMargin,
+  }), [isPortrait, boardMargin]);
+
+  const controlsStyle = useMemo(() => ({
+    marginLeft: BorderWidth * 4,
+    marginRight: BorderWidth * 4,
+    flexWrap: 'wrap' as const,
+    justifyContent: 'space-between' as const,
+    ...(isPortrait
+      ? { marginTop: cellSize * 0.6, flexDirection: 'row' as const }
+      : { marginTop: 0, marginLeft: cellSize * 0.6, flexDirection: 'column' as const }),
+  }), [isPortrait, cellSize]);
+
+  const iconSize = useMemo(() => ({
+    width: cellSize,
+    height: cellSize,
+  }), [cellSize]);
+
+  const timerStyle = useMemo(() => ({
+    fontSize: cellSize * 0.65,
+    alignSelf: 'flex-start' as const,
+    color: '#6b6b6b',
+  }), [cellSize]);
+
+  const levelInfoStyle = useMemo(() => ({
+    marginLeft: BorderWidth * 2,
+    color: '#6b6b6b',
+    alignItems: 'flex-start' as const,
+    fontSize: cellSize * 3 / 8,
+    fontWeight: '100' as const,
+    fontFamily: 'Menlo',
+  }), [cellSize]);
+
+  const buttonBoxStyle = useMemo(() => ({
+    marginTop: cellSize * 0.3,
+    width: cellSize * 2.1,
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+  }), [cellSize]);
+
+  const loadingOverlayStyle = useMemo(() => ({
+    ...StyleSheet.absoluteFillObject,
+    flex: 1,
+    alignItems: 'center' as const,
+    flexDirection: 'column' as const,
+    justifyContent: 'space-around' as const,
+    backgroundColor: 'white',
+    opacity: 0.7,
+  }), []);
+
+  const loadingBoxStyle = useMemo(() => ({
+    backgroundColor: 'white',
+    opacity: 1,
+    height: cellSize * 3,
+    width: cellSize * 3,
+    borderRadius: 50,
+    display: 'flex' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-around' as const,
+  }), [cellSize]);
 
   return (
     <SafeAreaView style={containerStyle}>
@@ -233,27 +288,27 @@ export default function GameScreen() {
       />
 
       <View style={controlsStyle}>
-        <View style={styles.menuBox}>
-          <TimerDisplay elapsed={timer.elapsed} style={styles.timer} />
+        <View>
+          <TimerDisplay elapsed={timer.elapsed} style={timerStyle} />
           <Pressable onPress={showInfo}>
             <View style={styles.info}>
-              <ErrorCounter errors={errors} style={styles.levelInfo} />
+              <ErrorCounter errors={errors} style={levelInfoStyle} />
             </View>
           </Pressable>
-          <View style={styles.buttonBox}>
+          <View style={buttonBoxStyle}>
             <Pressable onPress={async () => {
               const elapsed = timer.pause();
               await Store.set('elapsed', elapsed);
               router.push('/help');
             }}>
-              <Image style={styles.menuIcon} source={require('../../assets/images/help.png')} />
+              <Image style={iconSize} source={require('../../assets/images/help.png')} />
             </Pressable>
             <Pressable onPress={async () => {
               const elapsed = timer.pause();
               await Store.set('elapsed', elapsed);
               router.push('/menu');
             }}>
-              <Image style={styles.menuIcon} source={require('../../assets/images/menu.png')} />
+              <Image style={iconSize} source={require('../../assets/images/menu.png')} />
             </Pressable>
           </View>
         </View>
@@ -266,8 +321,8 @@ export default function GameScreen() {
       </View>
 
       {loading && (
-        <View style={styles.loadingBackground}>
-          <View style={styles.loadingBox}>
+        <View style={loadingOverlayStyle}>
+          <View style={loadingBoxStyle}>
             <ActivityIndicator color="black" size="large" />
           </View>
         </View>
@@ -277,70 +332,10 @@ export default function GameScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    margin: BoardMargin,
-  },
-  box: {
-    marginLeft: BorderWidth * 4,
-    marginRight: BorderWidth * 4,
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  menuBox: {},
-  buttonBox: {
-    marginTop: CellSize * 0.3,
-    width: CellSize * 2.1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  menuIcon: {
-    width: CellSize,
-    height: CellSize,
-  },
-  timer: {
-    fontSize: CellSize * 0.65,
-    alignSelf: 'flex-start',
-    color: '#6b6b6b',
-  },
   info: {
     flexDirection: 'row',
     backgroundColor: '#f2f2f2',
     justifyContent: 'space-between',
     padding: 2,
-  },
-  levelInfo: {
-    marginLeft: BorderWidth * 2,
-    color: '#6b6b6b',
-    alignItems: 'flex-start',
-    fontSize: CellSize * 3 / 8,
-    fontWeight: '100',
-    fontFamily: 'Menlo',
-  },
-  loadingBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: Size.width,
-    height: Size.height,
-    flex: 1,
-    alignItems: 'center',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    backgroundColor: 'white',
-    opacity: 0.7,
-  },
-  loadingBox: {
-    backgroundColor: 'white',
-    opacity: 1,
-    height: CellSize * 3,
-    width: CellSize * 3,
-    borderRadius: 50,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-around',
   },
 });

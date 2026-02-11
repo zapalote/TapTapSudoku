@@ -1,10 +1,9 @@
-import React, { useState, forwardRef, useImperativeHandle, useCallback } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useCallback, useMemo } from 'react';
 import { Text, View, StyleSheet, Platform, Pressable } from 'react-native';
-import { CellSize } from '@/constants/layout';
+import { useLayoutContext } from '@/contexts/LayoutContext';
 import CircularProgress from './CircularProgress';
 import { useDoubleTap } from '@/hooks/useDoubleTap';
 
-const Diam = CellSize * 1.5;
 const activePadColor = '#333';
 
 export interface CircularPadCellHandle {
@@ -20,7 +19,21 @@ interface CircularPadCellProps {
 
 const CircularPadCell = forwardRef<CircularPadCellHandle, CircularPadCellProps>(
   function CircularPadCell({ number, fillCount, onSingleTap, onDoubleTap }, ref) {
+    const { cellSize } = useLayoutContext();
     const [count, setCount] = useState(fillCount);
+
+    const diam = cellSize * 1.5;
+
+    const ds = useMemo(() => ({
+      padCell: { width: diam, height: diam, borderRadius: diam },
+      padText: {
+        fontSize: diam / 1.7,
+        ...Platform.select({
+          ios: {},
+          android: { lineHeight: Math.floor(cellSize * 1.05) },
+        }),
+      },
+    }), [diam, cellSize]);
 
     useImperativeHandle(ref, () => ({
       resetPadCell(newCount: number) {
@@ -43,13 +56,13 @@ const CircularPadCell = forwardRef<CircularPadCellHandle, CircularPadCellProps>(
     const handlePress = useDoubleTap(handleSingleTap, handleDoubleTap);
 
     const fill = count * 11.12;
-    const stroke = Diam / 9;
+    const stroke = diam / 9;
     const disabled = count === 9;
 
     return (
       <Pressable onPress={handlePress}>
         <CircularProgress
-          size={Diam}
+          size={diam}
           width={stroke}
           fill={fill}
           style={styles.surface}
@@ -57,8 +70,8 @@ const CircularPadCell = forwardRef<CircularPadCellHandle, CircularPadCellProps>(
           backgroundColor={activePadColor}
         >
           {() => (
-            <View style={[styles.padCell, disabled && styles.disabled]}>
-              <Text style={styles.padText}>{number}</Text>
+            <View style={[styles.padCell, ds.padCell, disabled && styles.disabled]}>
+              <Text style={[styles.padText, ds.padText]}>{number}</Text>
             </View>
           )}
         </CircularProgress>
@@ -80,24 +93,14 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     backgroundColor: 'transparent',
-    width: Diam,
-    height: Diam,
     flex: 1,
     justifyContent: 'space-around',
-    borderRadius: Diam,
   },
   padText: {
-    fontSize: Diam / 1.7,
     fontWeight: 'bold',
     textAlign: 'center',
     color: activePadColor,
     backgroundColor: 'transparent',
-    ...Platform.select({
-      ios: {},
-      android: {
-        lineHeight: Math.floor(CellSize * 1.05),
-      },
-    }),
   },
 });
 

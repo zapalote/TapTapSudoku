@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useImperativeHandle, forwardRef, useRef } from 'react';
+import React, { useState, useCallback, useImperativeHandle, forwardRef, useRef, useMemo } from 'react';
 import { StyleSheet, Platform, Text, Pressable } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -7,7 +7,7 @@ import Animated, {
   interpolate,
   runOnJS,
 } from 'react-native-reanimated';
-import { CellSize } from '@/constants/layout';
+import { useLayoutContext } from '@/contexts/LayoutContext';
 
 export interface CellHandle {
   setNumber: (number: number, fixed: boolean) => void;
@@ -26,6 +26,7 @@ interface CellProps {
 }
 
 const Cell = forwardRef<CellHandle, CellProps>(function Cell({ index, onPress }, ref) {
+  const { cellSize } = useLayoutContext();
   const [number, setNumberState] = useState<number | null>(null);
   const [hints, setHints] = useState<number[]>([]);
   const [pencil, setPencil] = useState(false);
@@ -35,6 +36,24 @@ const Cell = forwardRef<CellHandle, CellProps>(function Cell({ index, onPress },
   const [fixed, setFixed] = useState(false);
   const animatingRef = useRef(false);
   const anim = useSharedValue(0);
+
+  const ds = useMemo(() => ({
+    cell: { width: cellSize, height: cellSize },
+    handle: { width: cellSize, height: cellSize },
+    text: { fontSize: cellSize * 2 / 3 },
+    pencilText: {
+      fontSize: cellSize * 2 / 5,
+      marginHorizontal: cellSize / 8,
+      ...Platform.select({
+        ios: { marginTop: cellSize / 12, lineHeight: cellSize * 2 / 5 },
+        android: { lineHeight: Math.floor(cellSize / 2) },
+      }),
+    },
+    highlightText: Platform.select({
+      ios: {},
+      android: { lineHeight: Math.floor(cellSize * 0.85) },
+    }),
+  }), [cellSize]);
 
   const clearAnimating = useCallback(() => {
     animatingRef.current = false;
@@ -121,15 +140,16 @@ const Cell = forwardRef<CellHandle, CellProps>(function Cell({ index, onPress },
   const text = filled ? String(number + 1) : '';
   const hint = hints.map(x => x + 1).join('');
 
-  let styleArray = [styles.text, fixed && styles.fixedText, highlight && styles.highlightText];
+  let styleArray = [styles.text, ds.text, fixed && styles.fixedText, highlight && styles.highlightText, highlight && ds.highlightText];
   if (glow) {
-    styleArray = [styles.text, styles.glowText];
+    styleArray = [styles.text, ds.text, styles.glowText];
   }
 
   return (
     <Animated.View
       style={[
         styles.cell,
+        ds.cell,
         highlight && styles.highlightCell,
         glow && styles.glowCell,
         error && styles.errorCell,
@@ -137,13 +157,13 @@ const Cell = forwardRef<CellHandle, CellProps>(function Cell({ index, onPress },
       ]}
     >
       {pencil ? (
-        <Text style={[styles.text, styles.pencilText]}>{hint}</Text>
+        <Text style={[styles.text, ds.text, styles.pencilText, ds.pencilText]}>{hint}</Text>
       ) : (
         <Text style={styleArray}>{text}</Text>
       )}
       <Pressable
         onPress={handlePress}
-        style={styles.handle}
+        style={[styles.handle, ds.handle]}
         hitSlop={0}
       />
     </Animated.View>
@@ -152,15 +172,11 @@ const Cell = forwardRef<CellHandle, CellProps>(function Cell({ index, onPress },
 
 const styles = StyleSheet.create({
   handle: {
-    width: CellSize,
-    height: CellSize,
     position: 'absolute',
     top: 0,
     left: 0,
   },
   cell: {
-    width: CellSize,
-    height: CellSize,
     backgroundColor: '#fff',
     borderColor: '#ccc',
     borderWidth: StyleSheet.hairlineWidth,
@@ -170,24 +186,12 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'black',
-    fontSize: CellSize * 2 / 3,
     fontFamily: 'HelveticaNeue',
   },
   pencilText: {
     textAlign: 'center',
     textAlignVertical: 'center',
     color: 'darkturquoise',
-    fontSize: CellSize * 2 / 5,
-    marginHorizontal: CellSize / 8,
-    ...Platform.select({
-      ios: {
-        marginTop: CellSize / 12,
-        lineHeight: CellSize * 2 / 5,
-      },
-      android: {
-        lineHeight: Math.floor(CellSize * 2 / 4),
-      },
-    }),
   },
   fixedText: {
     color: '#888',
@@ -198,12 +202,6 @@ const styles = StyleSheet.create({
   },
   highlightText: {
     color: '#c90',
-    ...Platform.select({
-      ios: {},
-      android: {
-        lineHeight: Math.floor(CellSize * 0.85),
-      },
-    }),
   },
   errorCell: {
     borderColor: 'red',
