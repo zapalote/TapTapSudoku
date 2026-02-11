@@ -56,7 +56,9 @@ export default function GameScreen() {
       } else {
         startNewGame();
       }
-      router.push('/menu');
+      setTimeout(() => {
+        router.push('/menu');
+      }, 300);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
