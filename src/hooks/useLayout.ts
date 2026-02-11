@@ -48,10 +48,10 @@ export function useLayout(): LayoutValues {
 
   return useMemo(() => {
     const isPortrait = orientation === 'portrait';
-    const boardPadding = 6;
+    const boardPadding = 10;
     const boardMargin = boardPadding / 2;
     const shortSide = Math.min(width, height);
-    const boardWidth = Math.min(shortSide - boardPadding, 500);
+    const boardWidth = Math.min(shortSide - boardPadding, 400);
     const cellSize = Math.floor(boardWidth / 9) - boardMargin;
 
     return {

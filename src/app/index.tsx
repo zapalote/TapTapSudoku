@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useCallback, useMemo } from 'react';
 import {
-  StyleSheet, View, SafeAreaView, Image, Pressable,
+  StyleSheet, View, Image, Pressable,
   Alert, Platform, ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import Board, { type BoardHandle } from '@/components/Board';
@@ -219,17 +221,22 @@ export default function GameScreen() {
     alignItems: 'center' as const,
     backgroundColor: '#fff',
     margin: boardMargin,
+    marginTop: boardMargin + 10,
   }), [isPortrait, boardMargin]);
 
   const controlsStyle = useMemo(() => ({
-    marginLeft: BorderWidth * 4,
-    marginRight: BorderWidth * 4,
     flexWrap: 'wrap' as const,
     justifyContent: 'space-between' as const,
     ...(isPortrait
-      ? { marginTop: cellSize * 0.6, flexDirection: 'row' as const }
-      : { marginTop: 0, marginLeft: cellSize * 0.6, flexDirection: 'column' as const }),
+      ? { marginTop: boardMargin + 10, marginLeft: cellSize * 0.6, flexDirection: 'row' as const }
+      : { marginTop: boardMargin + 5, marginLeft: cellSize * 0.6, flex: 1, flexDirection: 'column' as const }),
   }), [isPortrait, cellSize]);
+
+  const ctrlColummnOne = useMemo(() => ({
+    flexDirection: 'column' as const,
+    alignItems: 'flex-start' as const,
+    flex: 1,
+  }), []);
 
   const iconSize = useMemo(() => ({
     width: cellSize,
@@ -292,7 +299,7 @@ export default function GameScreen() {
       />
 
       <View style={controlsStyle}>
-        <View>
+        <View style={ctrlColummnOne}>
           <TimerDisplay elapsed={timer.elapsed} style={timerStyle} />
           <Pressable onPress={showInfo}>
             <View style={styles.info}>
