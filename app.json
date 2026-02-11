@@ -3,7 +3,7 @@
     "name": "TapTapSudoku",
     "slug": "TapTapSudoku",
     "version": "2.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icons/icon.png",
     "scheme": "taptapsudoku",
     "userInterfaceStyle": "automatic",
@@ -14,9 +14,15 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": false,
+      "infoPlist": {
+        "UISupportedInterfaceOrientations": [
+          "UIInterfaceOrientationPortrait",
+          "UIInterfaceOrientationLandscapeLeft",
+          "UIInterfaceOrientationLandscapeRight"
+        ]
+      },
       "bundleIdentifier": "com.zapalote.TapTapSudoku",
-      "requireFullScreen": true
+      "supportsTablet": true
     },
     "android": {
       "package": "com.zapalote.TapTapSudoku",
@@ -26,7 +32,8 @@
       }
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-screen-orientation"
     ]
   }
 }
