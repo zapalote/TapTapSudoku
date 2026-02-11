@@ -1,28 +1,69 @@
 import { useWindowDimensions } from 'react-native';
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
-export function useLayout() {
+export type Orientation = 'portrait' | 'landscape';
+
+export interface LayoutValues {
+  width: number;
+  height: number;
+  orientation: Orientation;
+  isPortrait: boolean;
+  boardWidth: number;
+  cellSize: number;
+  boardMargin: number;
+  boardPadding: number;
+  topMargin: number;
+}
+
+export function useLayout(): LayoutValues {
   const { width, height } = useWindowDimensions();
+  const [orientation, setOrientation] = useState<Orientation>(
+    height >= width ? 'portrait' : 'landscape'
+  );
+
+  useEffect(() => {
+    // Sync initial orientation from the native API
+    ScreenOrientation.getOrientationAsync().then((o) => {
+      setOrientation(
+        o === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
+        o === ScreenOrientation.Orientation.LANDSCAPE_RIGHT
+          ? 'landscape'
+          : 'portrait'
+      );
+    });
+
+    const subscription = ScreenOrientation.addOrientationChangeListener((event) => {
+      const o = event.orientationInfo.orientation;
+      setOrientation(
+        o === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
+        o === ScreenOrientation.Orientation.LANDSCAPE_RIGHT
+          ? 'landscape'
+          : 'portrait'
+      );
+    });
+
+    return () => ScreenOrientation.removeOrientationChangeListener(subscription);
+  }, []);
 
   return useMemo(() => {
-    const isPortrait = height > width;
+    const isPortrait = orientation === 'portrait';
     const boardPadding = 6;
     const boardMargin = boardPadding / 2;
-    const boardWidth = Math.min(
-      isPortrait ? width - boardPadding : height - boardPadding,
-      500
-    );
+    const shortSide = Math.min(width, height);
+    const boardWidth = Math.min(shortSide - boardPadding, 500);
     const cellSize = Math.floor(boardWidth / 9) - boardMargin;
 
     return {
       width,
       height,
+      orientation,
       isPortrait,
       boardWidth,
       cellSize,
       boardMargin,
+      boardPadding,
       topMargin: isPortrait ? 18 : 6,
-      layoutDirection: (isPortrait ? 'column' : 'row') as 'column' | 'row',
     };
-  }, [width, height]);
+  }, [width, height, orientation]);
 }

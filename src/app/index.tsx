@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   StyleSheet, View, SafeAreaView, Image, Pressable,
-  Vibration, Alert, Platform, Linking, ActivityIndicator,
+  Alert, Platform, ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -11,6 +11,7 @@ import TimerDisplay from '@/components/Timer';
 import ErrorCounter from '@/components/ErrorCounter';
 import { useTimer, formatTime } from '@/hooks/useTimer';
 import { useAppLifecycle } from '@/hooks/useAppLifecycle';
+import { useLayout } from '@/hooks/useLayout';
 import { useGameStore } from '@/store/game-store';
 import {
   Size, CellSize, BorderWidth, BoardMargin,
@@ -23,6 +24,7 @@ export default function GameScreen() {
   const boardRef = useRef<BoardHandle>(null);
   const numberPadRef = useRef<NumberPadHandle>(null);
   const initializedRef = useRef(false);
+  const layout = useLayout();
 
   const {
     game, playing, loading, difficulty, errors, pad,
@@ -206,8 +208,20 @@ export default function GameScreen() {
     };
   }, [handleResume, handleRestart, handleCreate, timer]);
 
+  const containerStyle = useMemo(() => [
+    styles.container,
+    { flexDirection: layout.isPortrait ? 'column' as const : 'row' as const },
+  ], [layout.isPortrait]);
+
+  const controlsStyle = useMemo(() => [
+    styles.box,
+    layout.isPortrait
+      ? { marginTop: CellSize * 0.6, flexDirection: 'row' as const }
+      : { marginTop: 0, marginLeft: CellSize * 0.6, flexDirection: 'column' as const },
+  ], [layout.isPortrait]);
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={containerStyle}>
       <Board
         ref={boardRef}
         game={game}
@@ -218,7 +232,7 @@ export default function GameScreen() {
         onFinish={onFinish}
       />
 
-      <View style={styles.box}>
+      <View style={controlsStyle}>
         <View style={styles.menuBox}>
           <TimerDisplay elapsed={timer.elapsed} style={styles.timer} />
           <Pressable onPress={showInfo}>
@@ -264,19 +278,15 @@ export default function GameScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
-    flexDirection: 'row',
+    flex: 1,
     justifyContent: 'flex-start',
-    flexWrap: 'wrap',
+    alignItems: 'center',
     backgroundColor: '#fff',
     margin: BoardMargin,
   },
   box: {
-    marginTop: CellSize * 0.6,
     marginLeft: BorderWidth * 4,
     marginRight: BorderWidth * 4,
-    flex: 1,
-    flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
