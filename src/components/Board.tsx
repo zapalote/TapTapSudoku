@@ -1,10 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
 import { BorderWidth } from '@/constants/layout';
 import { useLayoutContext } from '@/contexts/LayoutContext';
 import Grid, { type GridHandle } from './Grid';
@@ -312,7 +307,6 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
 
     initedRef.current = false;
     setSolved(false);
-    fadeIn.value = 0;
     highlightNumberRef.current = null;
     highlightIndexRef.current = null;
 
@@ -342,7 +336,7 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
     });
     initedRef.current = true;
     onInit?.();
-  }, [getCells, onInit, fadeIn]);
+  }, [getCells, onInit]);
 
   useImperativeHandle(ref, () => ({
     resetGame,
@@ -350,10 +344,13 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
     stopIt,
   }));
 
+<<<<<<< HEAD
   const fadedStyle = useAnimatedStyle(() => ({
     opacity: fadeIn.value,
   }));
 
+=======
+>>>>>>> 69c1fdc (layout remove animated fade-in effect when the board is solved, and call onFinish callback immediately after setting the solved state to true.)
   const containerStyle = useMemo(() => [
     styles.container,
     { width: boardWidth },
