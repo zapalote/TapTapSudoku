@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState, useCallback } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { CellSize, BoardWidth, BorderWidth } from '@/constants/layout';
 import Grid, { type GridHandle } from './Grid';
 import { isNumber } from '@/lib/helpers';
@@ -41,7 +41,6 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
 ) {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [solved, setSolved] = useState(false);
-  const [fadeIn] = useState(() => new Animated.Value(0));
 
   const gridRef = useRef<GridHandle>(null);
   const gameRef = useRef<(CellData | undefined)[]>([]);
@@ -124,13 +123,8 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
     setSelectedIndex(-1);
     selectedIndexRef.current = -1;
     setSolved(true);
-    // Animated.timing(fadeIn, {
-    //   toValue: 0.4,
-    //   duration: 500,
-    //   useNativeDriver: true,
-    // }).start();
     onFinish?.();
-  }, [fadeIn, onFinish]);
+  }, [onFinish]);
 
   const storeGame = useCallback((type: string, index: number, number: number | null, hints?: number[]) => {
     const game = gameRef.current;
@@ -348,26 +342,16 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
     stopIt,
   }));
 
-  const fadedStyle = {
-    opacity: fadeIn,
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.board}>
-        <Animated.View style={[styles.finished, solved && fadedStyle]}>
-          <Grid ref={gridRef} onPress={onCellPress} />
-        </Animated.View>
+        <Grid ref={gridRef} onPress={onCellPress} />
       </View>
     </View>
   );
 });
 
 const styles = StyleSheet.create({
-  finished: {
-    backgroundColor: '#fc0',
-    zIndex: 999,
-  },
   container: {
     alignItems: 'center',
     alignSelf: 'center',
