@@ -218,7 +218,6 @@ export default function GameScreen() {
     flex: 1,
     flexDirection: isPortrait ? 'column' as const : 'row' as const,
     justifyContent: 'flex-start' as const,
-    alignItems: 'center' as const,
     backgroundColor: '#fff',
     margin: boardMargin,
     marginTop: boardMargin + 10,
@@ -228,8 +227,14 @@ export default function GameScreen() {
     flexWrap: 'wrap' as const,
     justifyContent: 'space-between' as const,
     ...(isPortrait
-      ? { marginTop: boardMargin + 10, marginLeft: cellSize * 0.6, flexDirection: 'row' as const }
-      : { marginTop: boardMargin + 5, marginLeft: cellSize * 0.6, flex: 1, flexDirection: 'column' as const }),
+      ? {
+        marginTop: boardMargin + 10,
+        marginLeft: cellSize * 0.6,
+        flexDirection: 'row' as const }
+      : { marginTop: boardMargin + 5,
+        marginLeft: cellSize * 0.6,
+        flex: 1,
+        flexDirection: 'row' as const }),
   }), [isPortrait, cellSize]);
 
   const ctrlColummnOne = useMemo(() => ({
