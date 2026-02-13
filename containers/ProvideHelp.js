@@ -2,28 +2,31 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, Image, Platform, } from 'react-native';
 import { Size, CellSize, Touchable } from '../components';
+import ThemeContext from '../utils/ThemeContext';
 
 class ProvideHelp extends Component {
+  static contextType = ThemeContext;
 
   render() {
     const { layoutStyle, } = this.props;
+    const { theme } = this.context;
 
     return (
-      <View style={styles.modal}>
+      <View style={[styles.modal, { backgroundColor: theme.modalBackground }]}>
         
         <View style={[styles.modalContainer, layoutStyle]} >
           <Image style={styles.logo} source={require('../images/tap-tap-sudoku.png')} />
           <View style={styles.logo}>
-            <Text style={styles.textStyle}>
+            <Text style={[styles.textStyle, { color: theme.text }]}>
               <Text >{'CHOOSE THE CELL YOU WANT TO PLAY'}</Text>
             </Text>
-            <Text style={styles.textStyle}>
+            <Text style={[styles.textStyle, { color: theme.text }]}>
               <Text >{'TAP A NUMBER ONCE TO PENCIL IT'}</Text>
             </Text>
-            <Text style={styles.textStyle}>
+            <Text style={[styles.textStyle, { color: theme.text }]}>
               <Text >{'TAP TWICE TO LOCK IT'}</Text>
             </Text>
-            <Text style={styles.textStyle}>
+            <Text style={[styles.textStyle, { color: theme.text }]}>
               <Text >{'BON PLAISIR!'}</Text>
             </Text>
           </View>
@@ -41,7 +44,6 @@ class ProvideHelp extends Component {
 const styles = StyleSheet.create({
   modal: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   modalContainer: {
     flex: 1,

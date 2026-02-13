@@ -5,6 +5,7 @@ import { Animated, InteractionManager, StyleSheet, View } from 'react-native';
 import { CellSize, BoardWidth, BorderWidth } from './GlobalStyle';
 import Grid from './Grid';
 import { sudoku, isNumber, Store } from '../utils';
+import ThemeContext from '../utils/ThemeContext';
 
 const line = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
@@ -20,6 +21,7 @@ function toZ(index) {
 }
 
 class Board extends Component {
+  static contextType = ThemeContext;
   state = {
     index: -1,
     solved: false,
@@ -332,13 +334,14 @@ class Board extends Component {
   
   render() {
     const { solved, fadeIn } = this.state;
+    const { theme } = this.context;
     const fadedStyle = {
       opacity: fadeIn
     }
     return (
       <View style={styles.container} >
-        <View style={styles.board} >
-          <Animated.View style={[styles.finished, solved&&fadedStyle]} >
+        <View style={[styles.board, { backgroundColor: theme.boardBackground }]} >
+          <Animated.View style={[styles.finished, { backgroundColor: theme.finishedOverlay }, solved&&fadedStyle]} >
             <Grid ref={ref => ref && (this.cells = ref.cells)} onPress={this.onCellPress} />
           </Animated.View>
         </View>
@@ -349,7 +352,6 @@ class Board extends Component {
 
 const styles = StyleSheet.create({
   finished: {
-    backgroundColor: '#fc0',
     zIndex: 999,
   },
   container: {
@@ -360,7 +362,6 @@ const styles = StyleSheet.create({
   board: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    backgroundColor: '#ddd',
     padding: BorderWidth,
   },
   // row: {

@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, PanResponder } from 'react-native';
+import { Text, View, StyleSheet, Platform, PanResponder } from 'react-native';
 import { CellSize } from './GlobalStyle';
 import Touchable from './Touchable';
 import CircularProgress from './CircularProgress';
+import ThemeContext from '../utils/ThemeContext';
 
 const doubleTap = {
   delay: 300
 };
 const Diam = CellSize * 1.5;
-const activePadColor = '#333';
 
 class CircularPadCell extends Component {
+  static contextType = ThemeContext;
   constructor(props) {
     super(props);
 
@@ -68,17 +69,18 @@ class CircularPadCell extends Component {
   render() {
     const { number } = this.props;
     const { count } = this.state;
+    const { theme } = this.context;
     const fill = count * 11.12;
     const stroke = Diam / 9;
     const disabled = count == 9;
     return (
       <Touchable>
         <CircularProgress size={Diam} width={stroke} fill={fill}
-          style={styles.surface} tintColor={'#999'} backgroundColor={activePadColor}>
+          style={styles.surface} tintColor={theme.padProgress} backgroundColor={theme.padText}>
           {
             () => (
               <View style={[styles.padCell, disabled && styles.disabled]} {...this.myPanResponder.panHandlers}>
-                <Text style={styles.padText}>{number}</Text>
+                <Text style={[styles.padText, { color: theme.padText }]}>{number}</Text>
               </View>
             )
           }
@@ -111,7 +113,6 @@ const styles = StyleSheet.create({
     fontSize: Diam / 1.7,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: activePadColor,
     backgroundColor: 'transparent',
     ...Platform.select({
       ios: { },

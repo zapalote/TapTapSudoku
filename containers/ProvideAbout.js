@@ -2,24 +2,27 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, Image, Linking, Platform, } from 'react-native';
 import { Size, CellSize, BorderWidth, Touchable } from '../components';
+import ThemeContext from '../utils/ThemeContext';
 
 class ProvideAbout extends Component {
+  static contextType = ThemeContext;
 
   render() {
     const { layoutStyle, appVersion } = this.props;
+    const { theme } = this.context;
 
     return (
-      <View style={styles.modal}>
-        <View style={[styles.modalContainer, layoutStyle]} >
+      <View style={[styles.modal, { backgroundColor: theme.modalBackground }]}>
+        <View style={[styles.modalContainer, layoutStyle, { backgroundColor: theme.modalBackground }]} >
           <Image style={styles.logo} source={require('../images/tap-tap-sudoku.png')} />
           <View style={styles.textBlock}>
-            <Text style={styles.textStyle}>
+            <Text style={[styles.textStyle, { color: theme.text }]}>
               <Text>{`A SUDOKU APP FOR PLAYERS BY PLAYERS`}</Text>
             </Text>
-            <Text style={styles.textStyle}>
+            <Text style={[styles.textStyle, { color: theme.text }]}>
               <Text>{`Privacy: We don't collect any data`}</Text>
             </Text>
-            <Text style={[styles.textStyle, styles.link, styles.copyrightText]}>
+            <Text style={[styles.textStyle, styles.link, styles.copyrightText, { color: theme.text, textDecorationColor: theme.linkUnderline }]}>
               <Text onPress={() => Linking.openURL('https://zapalote.com/TapTapSudoku/')}>
                 {`${appVersion} — © ${(new Date()).getFullYear()} zapalote`}
               </Text>
@@ -39,13 +42,11 @@ class ProvideAbout extends Component {
 const styles = StyleSheet.create({
   modal: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   modalContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
   },
   textStyle: {
     fontFamily: Platform.OS === 'ios' ? 'Varela Round' : 'varela',

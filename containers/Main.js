@@ -11,9 +11,10 @@ import {
   Size, CellSize, BorderWidth, Board, Timer, Touchable, NumberPad, BadMove,
 } from '../components';
 import { ProvideHelp, ProvideAbout, ProvideSettings, ProvideMenu, } from '../containers';
-import { Store, sudoku, isNumber, Lang, } from '../utils';
+import { Store, sudoku, isNumber, Lang, ThemeContext } from '../utils';
 
 class Main extends Component {
+  static contextType = ThemeContext;
 
   appVersion = '1.5';
 
@@ -375,23 +376,24 @@ class Main extends Component {
 
   render() {
     const {
-      game, playing, showMenu, showHelp, showAbout, showSettings, showDoc, 
+      game, playing, showMenu, showHelp, showAbout, showSettings, showDoc,
       updateBoard, loading, levelValue,
     } = this.state;
     const disabled = !playing;
+    const { theme } = this.context;
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
         <Board game={game} ref={ref => this.board = ref} reset={updateBoard}
           storeElapsed={this.storeElapsed} onInit={this.onInit}
           onErrorMove={this.onErrorMove} onFinish={this.onFinish} />
 
         <View style={styles.box}>
           <View style={styles.menuBox}>
-            <Timer ref={ref => this.timer = ref} style={styles.timer} />
+            <Timer ref={ref => this.timer = ref} style={[styles.timer, { color: theme.textSecondary }]} />
             <Touchable onPress={this.showInfo} >
-              <View style={styles.info}>
-                <BadMove style={styles.levelInfo} ref={ref => this.bad = ref}  />
+              <View style={[styles.info, { backgroundColor: theme.surface }]}>
+                <BadMove style={[styles.levelInfo, { color: theme.textSecondary }]} ref={ref => this.bad = ref}  />
               </View>
             </Touchable>
             <View style={styles.buttonBox} >
@@ -416,9 +418,9 @@ class Main extends Component {
             onAbout={this.onAbout} onSettings={this.onSettings} onRate={this.onRate} />
 
           {loading?
-            <View style={styles.loadingBackground}>
-              <View style={styles.loading}>
-                <ActivityIndicator color='black' size='large' style={styles.loading} animating={loading} />
+            <View style={[styles.loadingBackground, { backgroundColor: theme.loadingBackground }]}>
+              <View style={[styles.loading, { backgroundColor: theme.loadingBackground }]}>
+                <ActivityIndicator color={theme.text} size='large' style={styles.loading} animating={loading} />
               </View>
             </View>
             : null }
@@ -448,7 +450,6 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     justifyContent: 'flex-start',
     flexWrap: 'wrap',
-    backgroundColor: '#fff',
   },
   box:{
     marginTop: CellSize * 0.6,
@@ -481,17 +482,14 @@ const styles = StyleSheet.create({
   timer: {
     fontSize: CellSize * 0.65,
     alignSelf: 'flex-start',
-    color: '#6b6b6b',
   },
   info:{
     flexDirection:'row',
-    backgroundColor: '#f2f2f2',
     justifyContent:'space-between',
     padding: 2,
   },
   levelInfo: {
     marginLeft: BorderWidth * 2,
-    color: '#6b6b6b',
     alignItems:'flex-start',
     fontSize: CellSize * 3 / 8,
     fontWeight: '100',
@@ -507,11 +505,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
     justifyContent: 'space-around',
-    backgroundColor: 'white',
     opacity: 0.7,
   },
   loading: {
-    backgroundColor: 'white',
     opacity: 1,
     height: CellSize * 3,
     width: CellSize * 3,

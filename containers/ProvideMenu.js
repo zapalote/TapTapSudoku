@@ -2,14 +2,17 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Image, } from 'react-native';
 import { Size, CellSize, Touchable } from '../components';
+import ThemeContext from '../utils/ThemeContext';
 
 class ProvideMenu extends Component {
+  static contextType = ThemeContext;
 
   render() {
     const { layoutStyle, disabled } = this.props;
+    const { theme } = this.context;
 
     return (
-      <View style={styles.modal}>
+      <View style={[styles.modal, { backgroundColor: theme.modalBackground }]}>
         <View style={[styles.modalContainer, layoutStyle]} >
           <Image style={styles.logo} source={require('../images/tap-tap-sudoku.png')} />
           <View style={styles.textBlock}>
@@ -46,7 +49,6 @@ class ProvideMenu extends Component {
 const styles = StyleSheet.create({
   modal: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   modalContainer: {
     flex: 1,

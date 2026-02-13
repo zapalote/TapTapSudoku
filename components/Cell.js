@@ -4,8 +4,10 @@ import React, { Component } from 'react';
 import { StyleSheet, Animated, Platform, Text, } from 'react-native';
 import { CellSize, } from './GlobalStyle';
 import Touchable from './Touchable';
+import ThemeContext from '../utils/ThemeContext';
 
 class Cell extends Component {
+  static contextType = ThemeContext;
 
   state = {
     number: this.props.number,
@@ -104,6 +106,7 @@ class Cell extends Component {
 
   render() {
     const { number, fixed, highlight, glow, pencil, hints, toggle, error } = this.state;
+    const { theme } = this.context;
     const rotate = this.state.anim.interpolate({
       inputRange: [0, 1],
       outputRange: ['0deg', '360deg'],
@@ -118,15 +121,25 @@ class Cell extends Component {
     const text = filled ? (number + 1) : '';
     const hint = hints.map(x => x + 1).join('');
 
-    let styleArray = [styles.text, fixed&&styles.fixedText, highlight&&styles.highlightText];
+    const themedCell = { backgroundColor: theme.cellBackground, borderColor: theme.cellBorder };
+    const themedText = { color: theme.text };
+    const themedFixedText = { color: theme.fixedText };
+    const themedHighlightCell = { borderColor: theme.highlightBorder, borderWidth: 4 };
+    const themedHighlightText = { color: theme.highlightText };
+    const themedErrorCell = { borderColor: theme.errorBorder, borderWidth: 4 };
+    const themedGlowCell = { borderColor: theme.glowColor, borderWidth: 3 };
+    const themedGlowText = { color: theme.glowColor };
+    const themedPencilText = { color: theme.pencilText };
+
+    let styleArray = [styles.text, themedText, fixed && themedFixedText, highlight && themedHighlightText];
     if(glow){
-      styleArray = [styles.text, styles.glowText];
+      styleArray = [styles.text, themedGlowText];
     }
     return (
-      <Animated.View style={[styles.cell, highlight && styles.highlightCell,
-        glow && styles.glowCell, error && styles.errorCell, {transform, zIndex}]}>
+      <Animated.View style={[styles.cell, themedCell, highlight && themedHighlightCell,
+        glow && themedGlowCell, error && themedErrorCell, {transform, zIndex}]}>
         {pencil?
-          <Text style={[styles.text, styles.pencilText]} >{hint}</Text>:
+          <Text style={[styles.text, styles.pencilText, themedPencilText]} >{hint}</Text>:
           <Text style={styleArray}>{text}</Text>
         }
         <Touchable activeOpacity={fixed?1:0.8} onPress={this.onPress} style={styles.handle} />
@@ -146,23 +159,18 @@ const styles = StyleSheet.create({
   cell: {
     width: CellSize,
     height: CellSize,
-    backgroundColor: '#fff',
-    borderColor: '#ccc',
     borderWidth: StyleSheet.hairlineWidth,
-    //borderRadius: BorderWidth,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
   },
   text: {
-    color: 'black',
     fontSize: CellSize * 2 / 3,
     fontFamily: 'HelveticaNeue',
   },
   pencilText: {
     textAlign: 'center',
     textAlignVertical: 'center',
-    color: 'darkturquoise',
     fontSize: CellSize * 2 / 5,
     marginHorizontal: CellSize / 8,
     ...Platform.select({
@@ -174,33 +182,6 @@ const styles = StyleSheet.create({
         lineHeight: Math.floor(CellSize * 2 / 4),
       },
     })
-  },
-  fixedText: {
-    color: '#888',
-  },
-  highlightCell: {
-    borderColor: '#fc0',
-    borderWidth: 4,
-  },
-  highlightText: {
-    color: '#c90',
-    ...Platform.select({
-      ios: {  },
-      android: {
-        lineHeight: Math.floor(CellSize * 0.85),
-      },
-    })
-  },
-  errorCell:{
-    borderColor: 'red',
-    borderWidth: 4,
-  },
-  glowCell: {
-    borderColor: 'darkturquoise',
-    borderWidth: 3,
-  },
-  glowText: {
-    color: 'darkturquoise',
   },
 });
 

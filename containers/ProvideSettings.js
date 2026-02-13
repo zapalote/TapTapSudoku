@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Image, Platform, } from 'react-native';
 import { RadioGroup, Size, CellSize, Touchable } from '../components';
 import { Lang, } from '../utils';
+import ThemeContext from '../utils/ThemeContext';
 
 class ProvideSettings extends Component {
+  static contextType = ThemeContext;
 
   levels = [
     { label: Lang.txt('manageable'),  value: 2, size: CellSize/1.8, range: [0,1],     color: '#fc0' },
@@ -19,17 +21,18 @@ class ProvideSettings extends Component {
 
   render() {
     const { layoutStyle, levelValue } = this.props;
+    const { theme } = this.context;
     this.levels.forEach((item, idx, lev) => {
       lev[idx].selected = (idx == levelValue)? true : false;
     });
 
     return (
-      <View style={styles.modal}>
-        <View style={[styles.modalContainer, layoutStyle]} >
+      <View style={[styles.modal, { backgroundColor: theme.modalBackground }]}>
+        <View style={[styles.modalContainer, layoutStyle, { backgroundColor: theme.modalBackground }]} >
           <Image style={styles.logo} source={require('../images/tap-tap-sudoku.png')} />
           <View style={styles.textBlock}>
             <RadioGroup radioButtons={this.levels} onPress={this.onSelect}
-              style={styles.radioText} heading={'LEVEL'} headingStyle={styles.optionHeading}/>
+              style={[styles.radioText, { color: theme.text }]} heading={'LEVEL'} headingStyle={[styles.optionHeading, { color: theme.text }]}/>
           </View>
         </View>
         <View style={styles.footer}>
@@ -45,13 +48,11 @@ class ProvideSettings extends Component {
 const styles = StyleSheet.create({
   modal: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   modalContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
   },
   textBlock: {
     alignItems: 'center',
