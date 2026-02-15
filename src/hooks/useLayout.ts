@@ -20,6 +20,11 @@ export async function lockPortrait() {
   await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
 }
 
+export async function unlockOrientation() {
+  await ScreenOrientation.unlockAsync();
+}
+
+
 export function useLayout(): LayoutValues {
   const { width, height } = useWindowDimensions();
   const [orientation, setOrientation] = useState<Orientation>(
@@ -39,6 +44,8 @@ export function useLayout(): LayoutValues {
 
     const subscription = ScreenOrientation.addOrientationChangeListener((event) => {
       const o = event.orientationInfo.orientation;
+      console.log('o change', o);
+
       setOrientation(
         o === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
         o === ScreenOrientation.Orientation.LANDSCAPE_RIGHT

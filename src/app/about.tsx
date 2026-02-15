@@ -2,14 +2,18 @@ import React, { useEffect } from 'react';
 import { StyleSheet, View, Text, Image, Pressable, Linking, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { Size, CellSize, BorderWidth } from '@/constants/layout';
-import { lockPortrait } from '@/hooks/useLayout';
+import { lockPortrait, unlockOrientation } from '@/hooks/useLayout';
 
-const appVersion = '2.0.0';
+const appVersion = '2.0';
 
 export default function AboutScreen() {
 
   useEffect(() => {
     lockPortrait();
+
+    return () => {
+      unlockOrientation();
+    };
   }, []);
 
   return (

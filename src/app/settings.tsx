@@ -6,7 +6,7 @@ import { useGameStore } from '@/store/game-store';
 import Store from '@/lib/storage';
 import Lang from '@/lib/language';
 import { Size, CellSize } from '@/constants/layout';
-import { lockPortrait } from '@/hooks/useLayout';
+import { lockPortrait, unlockOrientation } from '@/hooks/useLayout';
 
 export default function SettingsScreen() {
   const levelValue = useGameStore((s) => s.levelValue);
@@ -16,6 +16,10 @@ export default function SettingsScreen() {
 
   useEffect(() => {
     lockPortrait();
+
+    return () => {
+      unlockOrientation();
+    };
   }, []);
 
   const levels = useMemo(

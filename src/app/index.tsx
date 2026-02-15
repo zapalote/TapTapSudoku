@@ -18,13 +18,14 @@ import { useGameStore } from '@/store/game-store';
 import { BorderWidth } from '@/constants/layout';
 import Store from '@/lib/storage';
 import Lang from '@/lib/language';
+import { unlockOrientation } from '@/hooks/useLayout';
 import { isNumber } from '@/lib/helpers';
 
 export default function GameScreen() {
   const boardRef = useRef<BoardHandle>(null);
   const numberPadRef = useRef<NumberPadHandle>(null);
   const initializedRef = useRef(false);
-  const layout = useLayoutContext();
+  const { isPortrait, cellSize, boardMargin } = useLayoutContext();
 
   const {
     game, playing, loading, difficulty, errors, pad,
@@ -35,6 +36,10 @@ export default function GameScreen() {
   } = useGameStore();
 
   const timer = useTimer();
+
+  useEffect(() => {
+    unlockOrientation();
+  }, []);
 
   // Initialize on mount
   useEffect(() => {
@@ -211,8 +216,6 @@ export default function GameScreen() {
       delete global.__gameHandlers;
     };
   }, [handleResume, handleRestart, handleCreate, timer]);
-
-  const { isPortrait, cellSize, boardMargin, width, height } = layout;
 
   const containerStyle = useMemo(() => ({
     flex: 1,

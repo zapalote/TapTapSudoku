@@ -3,7 +3,7 @@
     "name": "TapTapSudoku",
     "slug": "TapTapSudoku",
     "version": "2.0.0",
-    "orientation": "default",
+    "orientation": [ "portrait", "landscape" ],
     "icon": "./assets/icons/icon.png",
     "scheme": "taptapsudoku",
     "userInterfaceStyle": "automatic",
@@ -33,7 +33,7 @@
     },
     "plugins": [
       "expo-router",
-      "expo-screen-orientation"
+      ["expo-screen-orientation", { "initialOrientation": "DEFAULT" } ]
     ]
   }
 }
