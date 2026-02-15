@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useEffect } from 'react';
 import { StyleSheet, View, Image, Pressable, Platform } from 'react-native';
 import { router } from 'expo-router';
 import RadioGroup from '@/components/RadioGroup';
@@ -6,12 +6,17 @@ import { useGameStore } from '@/store/game-store';
 import Store from '@/lib/storage';
 import Lang from '@/lib/language';
 import { Size, CellSize } from '@/constants/layout';
+import { lockPortrait } from '@/hooks/useLayout';
 
 export default function SettingsScreen() {
   const levelValue = useGameStore((s) => s.levelValue);
   const setLevelRange = useGameStore((s) => s.setLevelRange);
   const setLevelValue = useGameStore((s) => s.setLevelValue);
   const setPlaying = useGameStore((s) => s.setPlaying);
+
+  useEffect(() => {
+    lockPortrait();
+  }, []);
 
   const levels = useMemo(
     () => [

@@ -16,6 +16,10 @@ export interface LayoutValues {
   topMargin: number;
 }
 
+export async function lockPortrait() {
+  await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+}
+
 export function useLayout(): LayoutValues {
   const { width, height } = useWindowDimensions();
   const [orientation, setOrientation] = useState<Orientation>(

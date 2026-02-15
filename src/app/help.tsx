@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, Text, Image, Pressable, Platform } from 'react-native';
 import { router } from 'expo-router';
-import Store from '@/lib/storage';
 import { Size, CellSize } from '@/constants/layout';
+import { lockPortrait } from '@/hooks/useLayout';
 
 export default function HelpScreen() {
+  useEffect(() => {
+    lockPortrait();
+  }, []);
+
   const onClose = () => {
     // @ts-expect-error global handler
     global.__gameHandlers?.onCloseHelp?.();

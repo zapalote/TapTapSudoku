@@ -1,13 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, Image, Pressable, Linking, Platform, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { useGameStore } from '@/store/game-store';
 import { Size, CellSize } from '@/constants/layout';
 import Lang from '@/lib/language';
+import { lockPortrait } from '@/hooks/useLayout';
 
 export default function MenuScreen() {
   const playing = useGameStore((s) => s.playing);
   const disabled = !playing;
+
+  // Menu should always be in portrait mode, even if the game is in landscape
+  useEffect(() => {
+    lockPortrait();
+  }, []);
 
   const onResume = () => {
     // @ts-expect-error global handler
