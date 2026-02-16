@@ -44,7 +44,6 @@ export function useLayout(): LayoutValues {
 
     const subscription = ScreenOrientation.addOrientationChangeListener((event) => {
       const o = event.orientationInfo.orientation;
-      console.log('o change', o);
 
       setOrientation(
         o === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
