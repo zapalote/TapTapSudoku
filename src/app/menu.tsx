@@ -42,7 +42,7 @@ export default function MenuScreen() {
     const link =
       Platform.OS === 'android'
         ? 'https://play.google.com/store/apps/details?id=com.zapalote.taptapsudoku'
-        : 'itms-apps://itunes.apple.com/us/app/taptapsudoku/id1320628951?mt=8';
+        : 'https://apps.apple.com/app/id1320628951?action=write-review';
     Alert.alert(Lang.txt('rate'), Lang.txt('ratemessage'), [
       { text: Lang.txt('notnow') },
       { text: Lang.txt('appstore'), onPress: () => Linking.openURL(link) },
