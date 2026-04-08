@@ -2,7 +2,7 @@
   "expo": {
     "name": "TapTapSudoku",
     "slug": "TapTapSudoku",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "orientation": [ "portrait", "landscape" ],
     "icon": "./assets/icons/icon.png",
     "scheme": "taptapsudoku",
