@@ -1,0 +1,17 @@
+current directory: /Users/miguel/Apps/TapTapSudoku/vendor/bundle/ruby/2.7.0/gems/nkf-0.2.0/ext/nkf
+/Users/miguel/.rbenv/versions/2.7.5/bin/ruby -I /Users/miguel/.rbenv/versions/2.7.5/lib/ruby/2.7.0 -r ./siteconf20250430-40423-hv2tq6.rb extconf.rb
+creating Makefile
+
+current directory: /Users/miguel/Apps/TapTapSudoku/vendor/bundle/ruby/2.7.0/gems/nkf-0.2.0/ext/nkf
+make "DESTDIR=" clean
+
+current directory: /Users/miguel/Apps/TapTapSudoku/vendor/bundle/ruby/2.7.0/gems/nkf-0.2.0/ext/nkf
+make "DESTDIR="
+compiling nkf.c
+linking shared-object nkf.bundle
+ld: warning: -multiply_defined is obsolete
+ld: warning: -multiply_defined is obsolete
+
+current directory: /Users/miguel/Apps/TapTapSudoku/vendor/bundle/ruby/2.7.0/gems/nkf-0.2.0/ext/nkf
+make "DESTDIR=" install
+/usr/bin/install -c -m 0755 nkf.bundle ./.gem.20250430-40423-g5pdvd
