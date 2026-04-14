@@ -15,7 +15,7 @@ export default function AppDispatcher() {
     const first = Store.get('firstTime');
     if (first === null) {
       Store.set('firstTime', new Date().toDateString());
-      router.replace({ pathname: '/game', params: { firstTime: 'true' } });
+      router.replace('/help');
     } else {
       router.replace('/game');
     }
