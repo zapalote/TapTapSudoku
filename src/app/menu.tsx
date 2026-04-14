@@ -22,17 +22,17 @@ export default function MenuScreen() {
 
   const onResume = () => {
     gameHandlers.onResume();
-    router.push('/game');
+    router.back();
   };
 
   const onRestart = () => {
     gameHandlers.onRestart();
-    router.push('/game');
+    router.back();
   };
 
   const onCreate = () => {
     gameHandlers.onCreate();
-    router.push('/game');
+    router.back();
   };
 
   const onRate = () => {
