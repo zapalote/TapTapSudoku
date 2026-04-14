@@ -122,8 +122,8 @@ export const useGameStore = create<GameState>()((set, get) => ({
       playing: true,
     });
 
-    Store.set('error', 0);
     Store.set('board', game);
+    Store.set('error', 0);
 
     return { game, difficulty: d };
   },

@@ -49,22 +49,12 @@ export default function GameScreen() {
 
     Store.setErrorMethod((error) => setStoreError(error));
 
-    if (returnTo === 'true') {
-      // startNewGame();
-      setTimeout(() => {
-        router.push('/help');
-      }, 100);
+    const loaded = loadFromStore();
+    if (loaded) {
+      const elapsed = Store.get<number>('elapsed') ?? 0;
+      timer.setElapsed(elapsed);
     } else {
-      const loaded = loadFromStore();
-      if (loaded) {
-        const elapsed = Store.get<number>('elapsed') ?? 0;
-        timer.setElapsed(elapsed);
-      } else {
-        startNewGame();
-      }
-      setTimeout(() => {
-        router.push('/menu');
-      }, 100);
+      startNewGame();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -128,13 +118,14 @@ export default function GameScreen() {
 
   const handleCreate = useCallback(() => {
     setLoading(true);
-    timer.reset();
     setTimeout(() => {
       startNewGame();
     }, 100);
   }, [setLoading, timer, startNewGame]);
 
   const handleRestart = useCallback( () => {
+    console.log('restart');
+
     timer.reset();
     const restarted = restartGame();
     boardRef.current?.resetGame(restarted);

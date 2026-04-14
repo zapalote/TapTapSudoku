@@ -22,13 +22,14 @@ export default function MenuScreen() {
   const onResume = () => {
     // @ts-expect-error global handler
     global.__gameHandlers?.onResume?.();
-    router.back();
+    router.push('/game');
   };
 
   const onRestart = () => {
     // @ts-expect-error global handler
+    console.log('restart', typeof global.__gameHandlers?.onRestart);
     global.__gameHandlers?.onRestart?.();
-    router.back();
+    router.push('/game');
   };
 
   const onCreate = () => {
