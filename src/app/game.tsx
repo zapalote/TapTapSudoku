@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useEffect, useRef, useCallback, useMemo, useLayoutEffect } from 'react';
 import {
   StyleSheet, View, Image, Pressable,
   Alert, Platform, ActivityIndicator,
@@ -38,7 +38,7 @@ export default function GameScreen() {
 
   const timer = useTimer();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     unlockOrientation();
   }, []);
 
@@ -50,10 +50,10 @@ export default function GameScreen() {
     Store.setErrorMethod((error) => setStoreError(error));
 
     if (firstTime === 'true') {
-      startNewGame();
+      // startNewGame();
       setTimeout(() => {
         router.push('/help');
-      }, 300);
+      }, 100);
     } else {
       const loaded = loadFromStore();
       if (loaded) {
@@ -64,7 +64,7 @@ export default function GameScreen() {
       }
       setTimeout(() => {
         router.push('/menu');
-      }, 300);
+      }, 100);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

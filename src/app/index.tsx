@@ -5,9 +5,9 @@ import Store from '@/lib/storage';
 
 export default function AppDispatcher() {
   useEffect(() => {
-    const first = Store.get('first');
+    const first = Store.get('firstTime');
     if (first === null) {
-      Store.set('first', new Date().toDateString());
+      Store.set('firstTime', new Date().toDateString());
       router.replace({ pathname: '/game', params: { firstTime: 'true' } });
     } else {
       router.replace('/game');

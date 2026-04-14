@@ -27,7 +27,6 @@ export default function RootLayout() {
         <GestureHandlerRootView style={{ flex: 1 }}>
           <StatusBar hidden />
           <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
             <Stack.Screen
               name="menu"
               options={{
