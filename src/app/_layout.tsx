@@ -27,6 +27,8 @@ export default function RootLayout() {
         <GestureHandlerRootView style={{ flex: 1 }}>
           <StatusBar hidden />
           <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="game" />
             <Stack.Screen
               name="menu"
               options={{
@@ -34,8 +36,6 @@ export default function RootLayout() {
                 animation: 'fade',
               }}
             />
-            <Stack.Screen name="index" />
-            <Stack.Screen name="game" />
             <Stack.Screen
               name="help"
               options={{
