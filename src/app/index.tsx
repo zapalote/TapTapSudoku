@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useEffect, useRef, useCallback, useMemo, useLayoutEffect } from 'react';
 import {
   StyleSheet, View, Image, Pressable,
   Alert, Platform, ActivityIndicator,
@@ -37,7 +37,7 @@ export default function GameScreen() {
 
   const timer = useTimer();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     unlockOrientation();
   }, []);
 
@@ -48,13 +48,13 @@ export default function GameScreen() {
 
     Store.setErrorMethod((error) => setStoreError(error));
 
-    const first = Store.get('first');
+    const first = Store.get('firstTime');
     if (first === null) {
-      Store.set('first', new Date().toDateString());
-      startNewGame();
+      Store.set('firstTime', new Date().toDateString());
+      // startNewGame();
       setTimeout(() => {
         router.push('/help');
-      }, 300);
+      }, 100);
     } else {
       const loaded = loadFromStore();
       if (loaded) {
@@ -63,9 +63,10 @@ export default function GameScreen() {
       } else {
         startNewGame();
       }
+      // at start show menu instead of game screen if there's a saved game, to avoid confusion about resuming vs starting new
       setTimeout(() => {
         router.push('/menu');
-      }, 300);
+      }, 100);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
