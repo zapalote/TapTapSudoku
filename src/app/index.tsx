@@ -12,11 +12,11 @@ export default function AppDispatcher() {
     const first = Store.get('firstTime');
     if (first === null) {
       Store.set('firstTime', new Date().toDateString());
-      router.replace({ pathname: '/game', params: { firstTime: 'true' } });
+      router.replace({ pathname: '/help', params: { returnTo: '/menu' } });
     } else {
-      router.replace('/game');
+      router.replace('/menu');
     }
   }, [navState?.key]);
 
-  return <View style={{ flex: 1, backgroundColor: '#fff' }} />;
+  // return <View style={{ flex: 1, backgroundColor: '#fff' }} />;
 }

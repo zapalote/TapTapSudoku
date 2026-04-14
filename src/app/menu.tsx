@@ -34,7 +34,7 @@ export default function MenuScreen() {
   const onCreate = () => {
     // @ts-expect-error global handler
     global.__gameHandlers?.onCreate?.();
-    router.back();
+    router.push('/game');
   };
 
   const onRate = () => {
@@ -88,7 +88,7 @@ export default function MenuScreen() {
         </Pressable>
         <Pressable
           style={styles.button}
-          onPress={() => router.push('/help')}
+          onPress={() =>router.push('/help')}
         >
           <Image
             style={styles.buttonIcon}

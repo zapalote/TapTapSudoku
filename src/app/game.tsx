@@ -26,7 +26,7 @@ export default function GameScreen() {
   const numberPadRef = useRef<NumberPadHandle>(null);
   const initializedRef = useRef(false);
   const { isPortrait, cellSize, boardMargin } = useLayoutContext();
-  const { firstTime } = useLocalSearchParams<{ firstTime?: string }>();
+  const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
 
   const {
     game, playing, loading, difficulty, errors, pad,
@@ -49,7 +49,7 @@ export default function GameScreen() {
 
     Store.setErrorMethod((error) => setStoreError(error));
 
-    if (firstTime === 'true') {
+    if (returnTo === 'true') {
       // startNewGame();
       setTimeout(() => {
         router.push('/help');
@@ -324,7 +324,7 @@ export default function GameScreen() {
             <Pressable onPress={() => {
               const elapsed = timer.pause();
               Store.set('elapsed', elapsed);
-              router.push('/menu');
+              router.replace('/menu');
             }}>
               <Image style={iconSize} source={require('../../assets/images/menu.png')} />
             </Pressable>

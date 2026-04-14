@@ -5,6 +5,7 @@ import { Size, CellSize } from '@/constants/layout';
 import { lockPortrait, unlockOrientation } from '@/hooks/useLayout';
 
 export default function HelpScreen() {
+
   useLayoutEffect(() => {
     lockPortrait();
 
@@ -16,7 +17,12 @@ export default function HelpScreen() {
   const onClose = () => {
     // @ts-expect-error global handler
     global.__gameHandlers?.onCloseHelp?.();
-    router.back();
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/menu');
+    }
+
   };
 
   return (
