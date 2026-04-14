@@ -305,7 +305,7 @@ export default function GameScreen() {
             <Pressable onPress={() => {
               const elapsed = timer.pause();
               Store.set('elapsed', elapsed);
-              router.replace('/menu');
+              router.push('/menu');
             }}>
               <Image style={iconSize} source={require('../../assets/images/menu.png')} />
             </Pressable>
