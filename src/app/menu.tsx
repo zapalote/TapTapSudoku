@@ -5,6 +5,7 @@ import { useGameStore } from '@/store/game-store';
 import { Size, CellSize } from '@/constants/layout';
 import { lockPortrait, unlockOrientation } from '@/hooks/useLayout';
 import Lang from '@/lib/language';
+import gameHandlers from '@/lib/gameHandlers';
 
 export default function MenuScreen() {
   const playing = useGameStore((s) => s.playing);
@@ -20,20 +21,17 @@ export default function MenuScreen() {
   }, []);
 
   const onResume = () => {
-    // @ts-expect-error global handler
-    global.__gameHandlers?.onResume?.();
+    gameHandlers.onResume();
     router.push('/game');
   };
 
   const onRestart = () => {
-    // @ts-expect-error global handler
-    global.__gameHandlers?.onRestart?.();
+    gameHandlers.onRestart();
     router.push('/game');
   };
 
   const onCreate = () => {
-    // @ts-expect-error global handler
-    global.__gameHandlers?.onCreate?.();
+    gameHandlers.onCreate();
     router.push('/game');
   };
 

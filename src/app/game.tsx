@@ -20,6 +20,7 @@ import Store from '@/lib/storage';
 import Lang from '@/lib/language';
 import { unlockOrientation } from '@/hooks/useLayout';
 import { isNumber } from '@/lib/helpers';
+import gameHandlers from '@/lib/gameHandlers';
 
 export default function GameScreen() {
   const boardRef = useRef<BoardHandle>(null);
@@ -182,33 +183,13 @@ export default function GameScreen() {
 
   useAppLifecycle(onForeground, onBackground);
 
-  // Menu navigation handlers — exposed via global for menu/help screens.
-  // Use a stable ref so the global pointer never becomes undefined between
-  // effect runs; properties are kept current on every render.
-  const gameHandlersRef = useRef({
-    onResume: handleResume,
-    onRestart: handleRestart,
-    onCreate: handleCreate,
-    showHelp: () => { Store.set('elapsed', timer.pause()); },
-    onCloseHelp: () => { timer.resume(); },
-    onShowMenu: () => { Store.set('elapsed', timer.pause()); },
-  });
-  gameHandlersRef.current.onResume = handleResume;
-  gameHandlersRef.current.onRestart = handleRestart;
-  gameHandlersRef.current.onCreate = handleCreate;
-  gameHandlersRef.current.showHelp = () => { Store.set('elapsed', timer.pause()); };
-  gameHandlersRef.current.onCloseHelp = () => { timer.resume(); };
-  gameHandlersRef.current.onShowMenu = () => { Store.set('elapsed', timer.pause()); };
-
-  useEffect(() => {
-    // @ts-expect-error global handlers for menu
-    global.__gameHandlers = gameHandlersRef.current;
-    return () => {
-      // @ts-expect-error cleanup
-      delete global.__gameHandlers;
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Keep the shared gameHandlers module current on every render.
+  gameHandlers.onResume = handleResume;
+  gameHandlers.onRestart = handleRestart;
+  gameHandlers.onCreate = handleCreate;
+  gameHandlers.showHelp = () => { Store.set('elapsed', timer.pause()); };
+  gameHandlers.onCloseHelp = () => { timer.resume(); };
+  gameHandlers.onShowMenu = () => { Store.set('elapsed', timer.pause()); };
 
   const containerStyle = useMemo(() => ({
     flex: 1,

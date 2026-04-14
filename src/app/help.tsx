@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, Image, Pressable, Platform } from 'react-native
 import { router } from 'expo-router';
 import { Size, CellSize } from '@/constants/layout';
 import { lockPortrait, unlockOrientation } from '@/hooks/useLayout';
+import gameHandlers from '@/lib/gameHandlers';
 
 export default function HelpScreen() {
 
@@ -15,14 +16,12 @@ export default function HelpScreen() {
   }, []);
 
   const onClose = () => {
-    // @ts-expect-error global handler
-    global.__gameHandlers?.onCloseHelp?.();
+    gameHandlers.onCloseHelp();
     if (router.canGoBack()) {
       router.back();
     } else {
       router.replace('/menu');
     }
-
   };
 
   return (
