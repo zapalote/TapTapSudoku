@@ -172,7 +172,9 @@ export default function GameScreen() {
     if (loaded) {
       const elapsed = Store.get<number>('elapsed') ?? 0;
       timer.setElapsed(elapsed);
-      boardRef.current?.resetGame(useGameStore.getState().game);
+      // Board reset is handled by useEffect([game]) after the store update —
+      // calling resetGame here too would double-fire it, and since setHintNumber
+      // toggles, every hint would be added then immediately removed.
       timer.resume();
     } else {
       startNewGame();
