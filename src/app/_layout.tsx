@@ -7,7 +7,6 @@ import { Text as RNText } from 'react-native';
 
 export default function RootLayout() {
 
-
   // Override default Text props to prevent font scaling and auto resizing
   // Source - https://stackoverflow.com/a/79737227
   const defaultProps = {
@@ -28,6 +27,7 @@ export default function RootLayout() {
         <GestureHandlerRootView style={{ flex: 1 }}>
           <StatusBar hidden />
           <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
             <Stack.Screen
               name="menu"
               options={{
