@@ -27,7 +27,7 @@ export default function GameScreen() {
   const numberPadRef = useRef<NumberPadHandle>(null);
   const initializedRef = useRef(false);
   const { isPortrait, cellSize, boardMargin } = useLayoutContext();
-  const { firstTime } = useLocalSearchParams<{ firstTime?: string }>();
+  const { fromFirstTime } = useLocalSearchParams<{ fromFirstTime?: string }>();
 
   const {
     game, playing, loading, difficulty, errors, pad,
@@ -50,10 +50,8 @@ export default function GameScreen() {
 
     Store.setErrorMethod((error) => setStoreError(error));
 
-    if (firstTime === 'true') {
-      startNewGame();
-      setTimeout(() => router.push('/help'), 300);
-    } else {
+    if (fromFirstTime !== 'true') {
+      // Returning user — load saved game or start fresh.
       const loaded = loadFromStore();
       if (loaded) {
         const elapsed = Store.get<number>('elapsed') ?? 0;
@@ -61,8 +59,9 @@ export default function GameScreen() {
       } else {
         startNewGame();
       }
-      setTimeout(() => router.push('/menu'), 300);
     }
+    // Always show the menu on startup (first-time: no game yet; returning: resume/restart).
+    setTimeout(() => router.push('/menu'), 300);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
