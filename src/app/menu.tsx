@@ -27,7 +27,6 @@ export default function MenuScreen() {
 
   const onRestart = () => {
     // @ts-expect-error global handler
-    console.log('restart', typeof global.__gameHandlers?.onRestart);
     global.__gameHandlers?.onRestart?.();
     router.push('/game');
   };
