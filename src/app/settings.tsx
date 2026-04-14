@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useEffect } from 'react';
+import React, { useMemo, useCallback, useLayoutEffect } from 'react';
 import { StyleSheet, View, Image, Pressable, Platform } from 'react-native';
 import { router } from 'expo-router';
 import RadioGroup from '@/components/RadioGroup';
@@ -14,7 +14,7 @@ export default function SettingsScreen() {
   const setLevelValue = useGameStore((s) => s.setLevelValue);
   const setPlaying = useGameStore((s) => s.setPlaying);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     lockPortrait();
 
     return () => {

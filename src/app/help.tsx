@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useLayoutEffect } from 'react';
 import { StyleSheet, View, Text, Image, Pressable, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { Size, CellSize } from '@/constants/layout';
 import { lockPortrait, unlockOrientation } from '@/hooks/useLayout';
 
 export default function HelpScreen() {
-  useEffect(() => {
+  useLayoutEffect(() => {
     lockPortrait();
 
     return () => {

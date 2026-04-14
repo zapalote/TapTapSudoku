@@ -1,18 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useLayoutEffect } from 'react';
 import { StyleSheet, View, Image, Pressable, Linking, Platform, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { useGameStore } from '@/store/game-store';
 import { Size, CellSize } from '@/constants/layout';
-import { useLayout, lockPortrait, unlockOrientation } from '@/hooks/useLayout';
+import { lockPortrait, unlockOrientation } from '@/hooks/useLayout';
 import Lang from '@/lib/language';
 
 export default function MenuScreen() {
   const playing = useGameStore((s) => s.playing);
   const disabled = !playing;
-  const { orientation } = useLayout();
 
   // Menu should always be in portrait mode, even if the game is in landscape
-  useEffect(() => {
+  useLayoutEffect(() => {
     lockPortrait();
 
     return () => {

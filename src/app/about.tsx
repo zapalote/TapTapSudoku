@@ -1,14 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useLayoutEffect } from 'react';
 import { StyleSheet, View, Text, Image, Pressable, Linking, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { Size, CellSize, BorderWidth } from '@/constants/layout';
 import { lockPortrait, unlockOrientation } from '@/hooks/useLayout';
+import * as Application from 'expo-application';
 
-const appVersion = '2.0';
+const appVersion = Application.nativeApplicationVersion || '2.0';
 
 export default function AboutScreen() {
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     lockPortrait();
 
     return () => {

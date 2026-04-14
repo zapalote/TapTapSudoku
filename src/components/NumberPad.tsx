@@ -29,7 +29,7 @@ const NumberPad = forwardRef<NumberPadHandle, NumberPadProps>(
     }));
 
     const ds = useMemo(() => ({
-      container: { width: cellSize * 5, height: cellSize * 5 },
+      container: { width: cellSize * 5.6, height: cellSize * 5.6 },
     }), [cellSize]);
 
     return (

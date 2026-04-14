@@ -2,7 +2,7 @@
   "expo": {
     "name": "TapTapSudoku",
     "slug": "TapTapSudoku",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "orientation": [ "portrait", "landscape" ],
     "icon": "./assets/icons/icon.png",
     "scheme": "taptapsudoku",
@@ -22,7 +22,7 @@
         ]
       },
       "bundleIdentifier": "com.zapalote.TapTapSudoku",
-      "supportsTablet": true
+      "supportsTablet": false
     },
     "android": {
       "package": "com.zapalote.TapTapSudoku",

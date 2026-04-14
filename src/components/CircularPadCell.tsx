@@ -22,7 +22,7 @@ const CircularPadCell = forwardRef<CircularPadCellHandle, CircularPadCellProps>(
     const { cellSize } = useLayoutContext();
     const [count, setCount] = useState(fillCount);
 
-    const diam = cellSize * 1.5;
+    const diam = cellSize * 1.65;
 
     const ds = useMemo(() => ({
       padCell: { width: diam, height: diam, borderRadius: diam },
