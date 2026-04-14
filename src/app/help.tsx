@@ -20,7 +20,7 @@ export default function HelpScreen() {
     if (router.canGoBack()) {
       router.back();
     } else {
-      router.replace({ pathname: '/game', params: { fromHelp: 'true' } });
+      router.replace({ pathname: '/game', params: { fromFirstTime: 'true' } });
     }
   };
 

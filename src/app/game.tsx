@@ -26,7 +26,7 @@ import gameHandlers from '@/lib/gameHandlers';
 export default function GameScreen() {
   const boardRef = useRef<BoardHandle>(null);
   const numberPadRef = useRef<NumberPadHandle>(null);
-  const { fromHelp } = useLocalSearchParams<{ fromHelp?: string }>();
+  const { fromFirstTime } = useLocalSearchParams<{ fromFirstTime?: string }>();
   const initializedRef = useRef(false);
   const { isPortrait, cellSize, boardMargin } = useLayoutContext();
 
@@ -51,7 +51,7 @@ export default function GameScreen() {
 
     Store.setErrorMethod((error) => setStoreError(error));
 
-    if (fromHelp === 'true') {
+    if (fromFirstTime === 'true') {
       // First-time user just closed the help screen — start playing immediately.
       startNewGame();
     } else {
