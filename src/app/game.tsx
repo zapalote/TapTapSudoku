@@ -6,7 +6,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { router, useLocalSearchParams } from 'expo-router';
-
 import * as Haptics from 'expo-haptics';
 import Board, { type BoardHandle } from '@/components/Board';
 import NumberPad, { type NumberPadHandle } from '@/components/NumberPad';
@@ -26,9 +25,9 @@ import gameHandlers from '@/lib/gameHandlers';
 export default function GameScreen() {
   const boardRef = useRef<BoardHandle>(null);
   const numberPadRef = useRef<NumberPadHandle>(null);
-  const { fromFirstTime } = useLocalSearchParams<{ fromFirstTime?: string }>();
   const initializedRef = useRef(false);
   const { isPortrait, cellSize, boardMargin } = useLayoutContext();
+  const { firstTime } = useLocalSearchParams<{ firstTime?: string }>();
 
   const {
     game, playing, loading, difficulty, errors, pad,
@@ -51,11 +50,10 @@ export default function GameScreen() {
 
     Store.setErrorMethod((error) => setStoreError(error));
 
-    if (fromFirstTime === 'true') {
-      // First-time user just closed the help screen — start playing immediately.
+    if (firstTime === 'true') {
       startNewGame();
+      setTimeout(() => router.push('/help'), 300);
     } else {
-      // Returning user — load saved game or start fresh, then show the menu.
       const loaded = loadFromStore();
       if (loaded) {
         const elapsed = Store.get<number>('elapsed') ?? 0;
@@ -133,8 +131,6 @@ export default function GameScreen() {
   }, [setLoading, timer, startNewGame]);
 
   const handleRestart = useCallback( () => {
-    console.log('restart');
-
     timer.reset();
     const restarted = restartGame();
     boardRef.current?.resetGame(restarted);
