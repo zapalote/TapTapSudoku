@@ -35,6 +35,8 @@ export default function RootLayout() {
                 animation: 'fade',
               }}
             />
+            <Stack.Screen name="index" />
+            <Stack.Screen name="game" />
             <Stack.Screen
               name="help"
               options={{
