@@ -41,7 +41,8 @@
         {
           "initialOrientation": "DEFAULT"
         }
-      ]
+      ],
+      "expo-build-properties"
     ],
     "extra": {
       "router": {
