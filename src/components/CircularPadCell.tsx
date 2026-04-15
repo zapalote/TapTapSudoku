@@ -30,7 +30,7 @@ const CircularPadCell = forwardRef<CircularPadCellHandle, CircularPadCellProps>(
         fontSize: diam / 1.7,
         ...Platform.select({
           ios: {},
-          android: { lineHeight: Math.floor(cellSize * 1.05) },
+          android: { lineHeight: Math.floor(cellSize * 1.25) },
         }),
       },
     }), [diam, cellSize]);
