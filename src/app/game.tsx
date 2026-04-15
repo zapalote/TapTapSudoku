@@ -168,13 +168,19 @@ export default function GameScreen() {
 
   // App lifecycle
   const onForeground = useCallback(() => {
+    // If a game is already in memory, don't reload from the store — just resume.
+    // On Android, orientation changes (e.g. from lockPortrait in help/menu) trigger
+    // spurious AppState events that would otherwise clear and re-render the board.
+    if (useGameStore.getState().game.length > 0) {
+      const elapsed = Store.get<number>('elapsed') ?? 0;
+      timer.setElapsed(elapsed);
+      timer.resume();
+      return;
+    }
     const loaded = loadFromStore();
     if (loaded) {
       const elapsed = Store.get<number>('elapsed') ?? 0;
       timer.setElapsed(elapsed);
-      // Board reset is handled by useEffect([game]) after the store update —
-      // calling resetGame here too would double-fire it, and since setHintNumber
-      // toggles, every hint would be added then immediately removed.
       timer.resume();
     } else {
       startNewGame();
