@@ -3,7 +3,10 @@
     "name": "TapTapSudoku",
     "slug": "TapTapSudoku",
     "version": "2.0.2",
-    "orientation": [ "portrait", "landscape" ],
+    "orientation": [
+      "portrait",
+      "landscape"
+    ],
     "icon": "./assets/icons/icon.png",
     "scheme": "taptapsudoku",
     "userInterfaceStyle": "automatic",
@@ -33,7 +36,20 @@
     },
     "plugins": [
       "expo-router",
-      ["expo-screen-orientation", { "initialOrientation": "DEFAULT" } ]
-    ]
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "DEFAULT"
+        }
+      ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "cb05d61d-8894-4a22-ba59-7d4bb01fbbf4"
+      }
+    }
   }
 }
