@@ -59,9 +59,16 @@ export default function GameScreen() {
       } else {
         startNewGame();
       }
+    } else {
+      // First-time user: start a game so the board is ready behind the menu.
+      startNewGame();
     }
-    // Always show the menu on startup (first-time: no game yet; returning: resume/restart).
-    setTimeout(() => router.push('/menu'), 300);
+    // Always show the menu on startup. Pause the timer so it doesn't run
+    // while the user is reading the menu for the first time.
+    setTimeout(() => {
+      Store.set('elapsed', timer.pause());
+      router.push('/menu');
+    }, 300);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
