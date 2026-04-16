@@ -17,7 +17,7 @@ export default function AppDispatcher() {
       Store.set('firstTime', new Date().toDateString());
       router.replace('/firstTime');
     } else {
-      router.replace('/game');
+      router.replace('/menu');
     }
   }, [navState?.key]);
 
