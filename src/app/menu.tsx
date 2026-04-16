@@ -1,6 +1,6 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useCallback } from 'react';
 import { StyleSheet, View, Image, Pressable, Linking, Platform, Alert } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useGameStore } from '@/store/game-store';
 import { Size, CellSize } from '@/constants/layout';
 import { lockPortrait, unlockOrientation } from '@/hooks/useLayout';
@@ -10,6 +10,12 @@ import gameHandlers from '@/lib/gameHandlers';
 export default function MenuScreen() {
   const playing = useGameStore((s) => s.playing);
   const disabled = !playing;
+
+  // Resume the timer whenever the menu loses focus — covers Android back button
+  // in addition to the explicit Resume/Restart/New Game button paths.
+  useFocusEffect(useCallback(() => {
+    return () => { gameHandlers.onResume(); };
+  }, []));
 
   // Menu should always be in portrait mode, even if the game is in landscape
   useLayoutEffect(() => {

@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import Board, { type BoardHandle } from '@/components/Board';
 import NumberPad, { type NumberPadHandle } from '@/components/NumberPad';
@@ -42,14 +42,6 @@ export default function GameScreen() {
   useLayoutEffect(() => {
     unlockOrientation();
   }, []);
-
-  // Resume the timer whenever the game screen comes back into focus
-  // (e.g. Android back button dismissing menu/help without using the Resume button).
-  useFocusEffect(useCallback(() => {
-    if (useGameStore.getState().playing) {
-      timer.resume();
-    }
-  }, [timer]));
 
   // Initialize on mount
   useEffect(() => {
@@ -187,8 +179,9 @@ export default function GameScreen() {
     // On Android, orientation changes (e.g. from lockPortrait in help/menu) trigger
     // spurious AppState events that would otherwise clear and re-render the board.
     if (useGameStore.getState().game.length > 0) {
-      const elapsed = Store.get<number>('elapsed') ?? 0;
-      timer.setElapsed(elapsed);
+      // Game already in memory — just resume. Don't call setElapsed here;
+      // it resets the start reference and causes oscillation when combined
+      // with the focus-based resume in menu/help.
       timer.resume();
       return;
     }
