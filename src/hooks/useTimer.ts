@@ -13,6 +13,9 @@ export function useTimer(initialElapsed = 0) {
   const lastElapsedRef = useRef(initialElapsed);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pausedRef = useRef(false);
+  // Ref-tracked elapsed so pause() doesn't need it in its closure (keeps pause stable).
+  const elapsedRef = useRef(initialElapsed);
+  elapsedRef.current = elapsed;
 
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
@@ -21,11 +24,8 @@ export function useTimer(initialElapsed = 0) {
     }
   }, []);
 
-  const start = useCallback(() => {
+  const createInterval = useCallback(() => {
     clearTimer();
-    startTimeRef.current = new Date();
-    pausedRef.current = false;
-    setPaused(false);
     intervalRef.current = setInterval(() => {
       if (pausedRef.current) return;
       if (!startTimeRef.current) return;
@@ -35,39 +35,40 @@ export function useTimer(initialElapsed = 0) {
     }, 100);
   }, [clearTimer]);
 
+  const start = useCallback(() => {
+    lastElapsedRef.current = 0;
+    startTimeRef.current = new Date();
+    pausedRef.current = false;
+    setPaused(false);
+    setElapsed(0);
+    createInterval();
+  }, [createInterval]);
+
+  // pause() is stable (no closure on elapsed — uses elapsedRef instead).
   const pause = useCallback((): number => {
     pausedRef.current = true;
     setPaused(true);
-    lastElapsedRef.current = elapsed;
-    return elapsed;
-  }, [elapsed]);
+    lastElapsedRef.current = elapsedRef.current;
+    return elapsedRef.current;
+  }, []);
 
+  // resume() is stable. Recreates the interval if it was cleared (e.g. after stop/reset).
   const resume = useCallback(() => {
-    // No-op only when truly running: interval exists AND not paused.
-    // If the interval was cleared (e.g. by reset/stop) we fall through and recreate it.
-    if (!pausedRef.current && intervalRef.current !== null) return;
+    if (!pausedRef.current && intervalRef.current !== null) return; // truly running
     pausedRef.current = false;
     setPaused(false);
     startTimeRef.current = new Date();
     if (!intervalRef.current) {
-      intervalRef.current = setInterval(() => {
-        if (pausedRef.current) return;
-        if (!startTimeRef.current) return;
-        const now = new Date();
-        const newElapsed = Math.floor((now.getTime() - startTimeRef.current.getTime()) / 1000) + lastElapsedRef.current;
-        setElapsed(prev => prev !== newElapsed ? newElapsed : prev);
-      }, 100);
+      createInterval();
     }
-  }, []);
+  }, [createInterval]);
 
   const stop = useCallback((): number => {
     clearTimer();
-    if (pausedRef.current) {
-      pausedRef.current = false;
-      setPaused(false);
-    }
-    return elapsed;
-  }, [clearTimer, elapsed]);
+    pausedRef.current = false;
+    setPaused(false);
+    return elapsedRef.current;
+  }, [clearTimer]);
 
   const reset = useCallback(() => {
     clearTimer();
@@ -85,8 +86,8 @@ export function useTimer(initialElapsed = 0) {
   }, []);
 
   const getElapsed = useCallback((): number => {
-    return elapsed;
-  }, [elapsed]);
+    return elapsedRef.current;
+  }, []);
 
   useEffect(() => {
     return () => clearTimer();

@@ -38,25 +38,25 @@ export default function GameScreen() {
   } = useGameStore();
 
   const timer = useTimer();
+  // Destructure stable method references so useCallback deps don't change on every render.
+  // pause/resume/reset/start/setElapsed are all useCallback(fn, []) in useTimer.
+  const { pause: timerPause, resume: timerResume, reset: timerReset,
+          start: timerStart, stop: timerStop, setElapsed: timerSetElapsed, getElapsed: timerGetElapsed } = timer;
 
   useLayoutEffect(() => {
     unlockOrientation();
   }, []);
 
-  // When the game screen gains focus (returning from menu/help), resume the timer
-  // if the game is playing. Combined with resume() being idempotent (no-op when
-  // already running), this safely covers Android back button dismissals where the
-  // menu/help cleanup may not fire, without causing oscillation.
+  // Pause when game loses focus (menu/help on top); resume when it regains focus.
+  // Using stable method refs so this only fires on actual focus changes, not every render.
   useFocusEffect(useCallback(() => {
-    // Game gained focus — resume if playing.
     if (useGameStore.getState().playing) {
-      timer.resume();
+      timerResume();
     }
     return () => {
-      // Game losing focus (menu/help pushed on top) — pause and persist elapsed.
-      Store.set('elapsed', timer.pause());
+      Store.set('elapsed', timerPause());
     };
-  }, [timer]));
+  }, [timerPause, timerResume]));
 
   // Initialize on mount
   useEffect(() => {
@@ -70,7 +70,7 @@ export default function GameScreen() {
       const loaded = loadFromStore();
       if (loaded) {
         const elapsed = Store.get<number>('elapsed') ?? 0;
-        timer.setElapsed(elapsed);
+        timerSetElapsed(elapsed);
       } else {
         startNewGame();
       }
@@ -95,21 +95,21 @@ export default function GameScreen() {
   }, [game]);
 
   const startNewGame = useCallback( () => {
-    timer.reset();
+    timerReset();
     const currentRange = useGameStore.getState().levelRange;
     newGame(currentRange);
-  }, [newGame, timer]);
+  }, [newGame, timerReset]);
 
   const storeElapsed = useCallback( () => {
-    const time = timer.getElapsed();
+    const time = timerGetElapsed();
     Store.set('elapsed', time);
-  }, [timer]);
+  }, [timerGetElapsed]);
 
   const onInit = useCallback(() => {
     setPlaying(true);
     resetErrors();
-    timer.start();
-  }, [setPlaying, resetErrors, timer]);
+    timerStart();
+  }, [setPlaying, resetErrors, timerStart]);
 
   const onErrorMove = useCallback(async () => {
     if (Platform.OS !== 'web') {
@@ -119,7 +119,7 @@ export default function GameScreen() {
   }, [incrementError]);
 
   const onFinish = useCallback( () => {
-    const eta = timer.stop();
+    const eta = timerStop();
     Store.remove('board');
 
     const d = useGameStore.getState().difficulty;
@@ -139,27 +139,27 @@ export default function GameScreen() {
       ]);
     }, 1000);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timer, updateRecord, setPlaying]);
+  }, [timerStop, updateRecord, setPlaying]);
 
   const handleCreate = useCallback(() => {
     setLoading(true);
     setTimeout(() => {
       startNewGame();
     }, 100);
-  }, [setLoading, timer, startNewGame]);
+  }, [setLoading, startNewGame]);
 
   const handleRestart = useCallback( () => {
-    timer.reset();
+    timerReset();
     const restarted = restartGame();
     boardRef.current?.resetGame(restarted);
     resetErrors();
     updatePad(restarted);
     numberPadRef.current?.resetPadCells(useGameStore.getState().pad);
-  }, [timer, restartGame, resetErrors, updatePad]);
+  }, [timerReset, restartGame, resetErrors, updatePad]);
 
   const handleResume = useCallback(() => {
-    timer.resume();
-  }, [timer]);
+    timerResume();
+  }, [timerResume]);
 
   const showInfo = useCallback(() => {
     const d = useGameStore.getState().difficulty;
@@ -194,23 +194,23 @@ export default function GameScreen() {
       // Game already in memory — just resume. Don't call setElapsed here;
       // it resets the start reference and causes oscillation when combined
       // with the focus-based resume in menu/help.
-      timer.resume();
+      timerResume();
       return;
     }
     const loaded = loadFromStore();
     if (loaded) {
       const elapsed = Store.get<number>('elapsed') ?? 0;
-      timer.setElapsed(elapsed);
-      timer.resume();
+      timerSetElapsed(elapsed);
+      timerResume();
     } else {
       startNewGame();
     }
-  }, [loadFromStore, timer, startNewGame]);
+  }, [loadFromStore, timerResume, timerSetElapsed, startNewGame]);
 
   const onBackground = useCallback(() => {
-    const elapsed = timer.pause();
+    const elapsed = timerPause();
     Store.set('elapsed', elapsed);
-  }, [timer]);
+  }, [timerPause]);
 
   useAppLifecycle(onForeground, onBackground);
 
@@ -218,9 +218,9 @@ export default function GameScreen() {
   gameHandlers.onResume = handleResume;
   gameHandlers.onRestart = handleRestart;
   gameHandlers.onCreate = handleCreate;
-  gameHandlers.showHelp = () => { Store.set('elapsed', timer.pause()); };
-  gameHandlers.onCloseHelp = () => { timer.resume(); };
-  gameHandlers.onShowMenu = () => { Store.set('elapsed', timer.pause()); };
+  gameHandlers.showHelp = () => { Store.set('elapsed', timerPause()); };
+  gameHandlers.onCloseHelp = () => { timerResume(); };
+  gameHandlers.onShowMenu = () => { Store.set('elapsed', timerPause()); };
 
   const containerStyle = useMemo(() => ({
     flex: 1,
@@ -321,14 +321,14 @@ export default function GameScreen() {
           </Pressable>
           <View style={buttonBoxStyle}>
             <Pressable onPress={async () => {
-              const elapsed = timer.pause();
+              const elapsed = timerPause();
               Store.set('elapsed', elapsed);
               router.push('/help');
             }}>
               <Image style={iconSize} source={require('../../assets/images/help.png')} />
             </Pressable>
             <Pressable onPress={() => {
-              const elapsed = timer.pause();
+              const elapsed = timerPause();
               Store.set('elapsed', elapsed);
               router.push('/menu');
             }}>
