@@ -99,7 +99,11 @@ export default function GameScreen() {
   }, []);
 
   // Sync board whenever game state changes, then start or resume the timer.
+  // Guard on initializedRef: the store may already have a non-empty game from the
+  // previous session, causing this effect to fire before the init effect sets the
+  // correct timerActionRef. Skip until init has run.
   useEffect(() => {
+    if (!initializedRef.current) return;
     if (game.length > 0 && boardRef.current) {
       boardRef.current.resetGame(game);
       updatePad(game);

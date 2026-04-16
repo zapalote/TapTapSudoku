@@ -55,7 +55,9 @@ export function useTimer(initialElapsed = 0) {
   // resume() is stable. Always recreates the interval — the OS can kill setInterval
   // when the app is backgrounded, so we can't rely on the old one still firing.
   const resume = useCallback(() => {
-    if (!pausedRef.current && intervalRef.current !== null) return; // truly running
+    // startTimeRef is null after setElapsed(); treat that as "not truly running" even
+    // if an interval exists (e.g. from a stale timerStart in a prior render).
+    if (!pausedRef.current && intervalRef.current !== null && startTimeRef.current !== null) return;
     pausedRef.current = false;
     setPaused(false);
     startTimeRef.current = new Date();
