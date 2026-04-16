@@ -43,6 +43,7 @@ export function useTimer(initialElapsed = 0) {
   }, [elapsed]);
 
   const resume = useCallback(() => {
+    if (!pausedRef.current) return; // already running, don't reset start time
     pausedRef.current = false;
     setPaused(false);
     startTimeRef.current = new Date();
