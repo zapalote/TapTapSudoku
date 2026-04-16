@@ -35,7 +35,7 @@ export default function FirstTimeScreen() {
             TAP TWICE TO LOCK IT
           </Text>
           <Text style={styles.textStyle}>
-            BON PLAISIR!
+            CHANGE LEVEL IN SETTINGS
           </Text>
         </View>
       </View>
