@@ -1,44 +1,32 @@
-import React, { useLayoutEffect, useCallback } from 'react';
+import React, { useLayoutEffect } from 'react';
 import { StyleSheet, View, Image, Pressable, Linking, Platform, Alert } from 'react-native';
-import { router, useFocusEffect } from 'expo-router';
+import { router } from 'expo-router';
 import { useGameStore } from '@/store/game-store';
 import { Size, CellSize } from '@/constants/layout';
 import { lockPortrait, unlockOrientation } from '@/hooks/useLayout';
 import Lang from '@/lib/language';
-import gameHandlers from '@/lib/gameHandlers';
 
 export default function MenuScreen() {
   const playing = useGameStore((s) => s.playing);
   const disabled = !playing;
 
-  // Resume the timer whenever the menu loses focus — covers Android back button
-  // in addition to the explicit Resume/Restart/New Game button paths.
-  useFocusEffect(useCallback(() => {
-    return () => { gameHandlers.onResume(); };
-  }, []));
-
-  // Menu should always be in portrait mode, even if the game is in landscape
   useLayoutEffect(() => {
     lockPortrait();
-
     return () => {
       unlockOrientation();
     };
   }, []);
 
   const onResume = () => {
-    gameHandlers.onResume();
-    router.back();
+    router.replace('/game?action=continue');
   };
 
   const onRestart = () => {
-    gameHandlers.onRestart();
-    router.back();
+    router.replace('/game?action=restart');
   };
 
   const onCreate = () => {
-    gameHandlers.onCreate();
-    router.back();
+    router.replace('/game?action=new');
   };
 
   const onRate = () => {
@@ -92,7 +80,7 @@ export default function MenuScreen() {
         </Pressable>
         <Pressable
           style={styles.button}
-          onPress={() =>router.push('/help')}
+          onPress={() => router.push('/help')}
         >
           <Image
             style={styles.buttonIcon}
@@ -148,7 +136,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: 'row',
-    marginBottom: CellSize,
+    marginBottom: CellSize / 1.7,
     alignItems: 'center',
     justifyContent: 'space-around',
   },

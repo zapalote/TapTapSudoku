@@ -3,18 +3,18 @@ import { StyleSheet, View, Text, Image, Pressable, Platform } from 'react-native
 import { router } from 'expo-router';
 import { Size, CellSize } from '@/constants/layout';
 import { lockPortrait, unlockOrientation } from '@/hooks/useLayout';
-export default function HelpScreen() {
+
+export default function FirstTimeScreen() {
 
   useLayoutEffect(() => {
     lockPortrait();
-
     return () => {
       unlockOrientation();
     };
   }, []);
 
   const onClose = () => {
-    router.back();
+    router.replace('/menu');
   };
 
   return (
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: 'row',
-    marginBottom: CellSize,
+    marginBottom: CellSize / 1.7,
     alignItems: 'center',
     justifyContent: 'space-around',
   },
