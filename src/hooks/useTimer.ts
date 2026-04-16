@@ -43,10 +43,21 @@ export function useTimer(initialElapsed = 0) {
   }, [elapsed]);
 
   const resume = useCallback(() => {
-    if (!pausedRef.current) return; // already running, don't reset start time
+    // No-op only when truly running: interval exists AND not paused.
+    // If the interval was cleared (e.g. by reset/stop) we fall through and recreate it.
+    if (!pausedRef.current && intervalRef.current !== null) return;
     pausedRef.current = false;
     setPaused(false);
     startTimeRef.current = new Date();
+    if (!intervalRef.current) {
+      intervalRef.current = setInterval(() => {
+        if (pausedRef.current) return;
+        if (!startTimeRef.current) return;
+        const now = new Date();
+        const newElapsed = Math.floor((now.getTime() - startTimeRef.current.getTime()) / 1000) + lastElapsedRef.current;
+        setElapsed(prev => prev !== newElapsed ? newElapsed : prev);
+      }, 100);
+    }
   }, []);
 
   const stop = useCallback((): number => {

@@ -48,9 +48,14 @@ export default function GameScreen() {
   // already running), this safely covers Android back button dismissals where the
   // menu/help cleanup may not fire, without causing oscillation.
   useFocusEffect(useCallback(() => {
+    // Game gained focus — resume if playing.
     if (useGameStore.getState().playing) {
       timer.resume();
     }
+    return () => {
+      // Game losing focus (menu/help pushed on top) — pause and persist elapsed.
+      Store.set('elapsed', timer.pause());
+    };
   }, [timer]));
 
   // Initialize on mount
@@ -73,12 +78,9 @@ export default function GameScreen() {
       // First-time user: start a game so the board is ready behind the menu.
       startNewGame();
     }
-    // Always show the menu on startup. Pause the timer so it doesn't run
-    // while the user is reading the menu for the first time.
-    setTimeout(() => {
-      Store.set('elapsed', timer.pause());
-      router.push('/menu');
-    }, 300);
+    // Always show the menu on startup. useFocusEffect cleanup pauses the timer
+    // when the game screen loses focus to the menu.
+    setTimeout(() => router.push('/menu'), 300);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
