@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: 'row',
-    marginBottom: CellSize / 1.7,
+    marginBottom: CellSize,
     alignItems: 'center',
     justifyContent: 'space-around',
   },
