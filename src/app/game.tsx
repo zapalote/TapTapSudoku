@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import Board, { type BoardHandle } from '@/components/Board';
 import NumberPad, { type NumberPadHandle } from '@/components/NumberPad';
@@ -42,6 +42,16 @@ export default function GameScreen() {
   useLayoutEffect(() => {
     unlockOrientation();
   }, []);
+
+  // When the game screen gains focus (returning from menu/help), resume the timer
+  // if the game is playing. Combined with resume() being idempotent (no-op when
+  // already running), this safely covers Android back button dismissals where the
+  // menu/help cleanup may not fire, without causing oscillation.
+  useFocusEffect(useCallback(() => {
+    if (useGameStore.getState().playing) {
+      timer.resume();
+    }
+  }, [timer]));
 
   // Initialize on mount
   useEffect(() => {
