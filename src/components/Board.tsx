@@ -52,6 +52,7 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
   const glowNumberRef = useRef<number | null>(null);
   const glowTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const errTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resetTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const initedRef = useRef(false);
   const selectedIndexRef = useRef(-1);
 
@@ -299,6 +300,9 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
   }, [getCells, setHighlight, setGlow, setError, storeGame, stopIt, animateGrid, animateRow, animateColumn, onErrorMove]);
 
   const resetGame = useCallback((game: (CellData | undefined)[]) => {
+    resetTimeoutsRef.current.forEach(t => clearTimeout(t));
+    resetTimeoutsRef.current = [];
+
     const cells = getCells();
     cells.forEach(cell => cell?.reset());
     gameRef.current = game;
@@ -316,7 +320,7 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
       if (!cell) return;
       count++;
       const i = cell.idx;
-      setTimeout(() => {
+      const tid = setTimeout(() => {
         switch (cell.type) {
           case 'F':
             cells[i]?.setNumber(cell.n!, true);
@@ -333,6 +337,7 @@ const Board = forwardRef<BoardHandle, BoardProps>(function Board(
             break;
         }
       }, 50 * count);
+      resetTimeoutsRef.current.push(tid);
     });
     initedRef.current = true;
     onInit?.();
