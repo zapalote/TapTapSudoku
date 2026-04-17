@@ -32,7 +32,7 @@ export default function FirstTimeScreen() {
             TAP A NUMBER ONCE TO PENCIL IT
           </Text>
           <Text style={styles.textStyle}>
-            TAP TWICE TO LOCK IT
+            TAP TWICE TO LOCK IT{"\n"}{"\n"}
           </Text>
           <Text style={styles.textStyle}>
             CHANGE LEVEL IN SETTINGS
