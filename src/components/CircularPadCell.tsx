@@ -4,8 +4,8 @@ import { useLayoutContext } from '@/contexts/LayoutContext';
 import CircularProgress from './CircularProgress';
 import { useDoubleTap } from '@/hooks/useDoubleTap';
 
-const activePadColor = '#333';
-
+const activePadColor = '#555';
+const passivePadColor = "#999";
 export interface CircularPadCellHandle {
   resetPadCell: (fillCount: number) => void;
 }
@@ -66,7 +66,7 @@ const CircularPadCell = forwardRef<CircularPadCellHandle, CircularPadCellProps>(
           width={stroke}
           fill={fill}
           style={styles.surface}
-          tintColor="#999"
+          tintColor={passivePadColor}
           backgroundColor={activePadColor}
         >
           {() => (
