@@ -3,10 +3,7 @@
     "name": "TapTapSudoku",
     "slug": "TapTapSudoku",
     "version": "2.0.2",
-    "orientation": [
-      "portrait",
-      "landscape"
-    ],
+    "orientation": "default",
     "icon": "./assets/icons/icon.png",
     "scheme": "taptapsudoku",
     "userInterfaceStyle": "automatic",
