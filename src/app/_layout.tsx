@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Stack, StackNavigationOptions } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { LayoutProvider } from '@/contexts/LayoutContext';
@@ -21,6 +21,11 @@ export default function RootLayout() {
     ...defaultProps
   };
 
+  const modalScreenOptions: StackNavigationOptions = {
+    presentation: 'transparentModal',
+    animation: 'fade'
+  };
+
   return (
     <SafeAreaProvider>
       <LayoutProvider>
@@ -31,31 +36,19 @@ export default function RootLayout() {
             <Stack.Screen name="game" />
             <Stack.Screen
               name="menu"
-              options={{
-                presentation: 'transparentModal',
-                animation: 'fade',
-              }}
+              options={modalScreenOptions}
             />
             <Stack.Screen
               name="help"
-              options={{
-                presentation: 'transparentModal',
-                animation: 'fade',
-              }}
+              options={modalScreenOptions}
             />
             <Stack.Screen
               name="about"
-              options={{
-                presentation: 'transparentModal',
-                animation: 'fade',
-              }}
+              options={modalScreenOptions}
             />
             <Stack.Screen
               name="settings"
-              options={{
-                presentation: 'transparentModal',
-                animation: 'fade',
-              }}
+              options={modalScreenOptions}
             />
           </Stack>
         </GestureHandlerRootView>
