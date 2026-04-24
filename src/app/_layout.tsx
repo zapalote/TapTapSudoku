@@ -1,4 +1,4 @@
-import { Stack, StackNavigationOptions } from 'expo-router';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { LayoutProvider } from '@/contexts/LayoutContext';
@@ -19,6 +19,11 @@ export default function RootLayout() {
     // @ts-expect-error missing type
     ...(RNText.defaultProps || {}),
     ...defaultProps
+  };
+
+  interface StackNavigationOptions {
+    presentation: 'transparentModal' | 'modal' | 'card';
+    animation: 'fade' | 'slide_from_right' | 'slide_from_left' | 'slide_from_bottom' | 'none';
   };
 
   const modalScreenOptions: StackNavigationOptions = {

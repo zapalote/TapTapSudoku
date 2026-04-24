@@ -20,6 +20,8 @@ import Store from '@/lib/storage';
 import Lang from '@/lib/language';
 import { unlockOrientation } from '@/hooks/useLayout';
 
+// main game screen, responsible for rendering the board and number pad, managing the timer,
+// and handling game actions (new, restart, continue)
 export default function GameScreen() {
   const boardRef = useRef<BoardHandle>(null);
   const numberPadRef = useRef<NumberPadHandle>(null);
