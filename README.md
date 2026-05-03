@@ -1,7 +1,7 @@
 # TapTapSudoku
 
 One tap to pencil, two taps to lock-in the number.
-Developed entirely with react-native (no expo).
+Developed entirely with react-native.
 
 We developed this app for the pure pleasure of a daily sudoku.
 We found no other app that would offer this usability.
@@ -9,29 +9,6 @@ It's free of charge. No ads. We don't collect any data.
 No rankings, no competitions. It's just you solving a game.
 
 ![](./assets/mockup-3d-for-app-store.jpg)
-
-## Prerequisites
-
-Install node, react-native, react-native-cli
-
-## Dependencies
-
-See also package.json.
-```
-"@react-native-community/async-storage": "^1.5.1",
-"react": "16.8.6",
-"react-native": "0.60.3",
-"react-native-svg": "^9.5.3"
-```
-
-## Build
-
-Clone this repo.
-```
-npm install
-react-native link
-react-native run-ios or react-native run-android.
-```
 
 ## Play
 
